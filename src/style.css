@@ -1,0 +1,17 @@
+body {
+    background-color: #1d2021;
+}
+
+h1 {
+   /* color: #fe8019;  */
+   color: #bdae93;
+} 
+
+li, a{
+    color: #b8bb26; 
+}
+
+
+h2, h3, h4, h5, h6, p {
+    color: #ebdbb2;
+}
