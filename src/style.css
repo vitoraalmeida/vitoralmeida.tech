@@ -1,15 +1,27 @@
 *,
 *:before,
 *:after {
-  margin: 0;
   box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  line-height: 1.2;
 }
 
 body {
   background-color: #1d2021;
   font-family: "Inconsolata", monospace;
   color: #bdae93;
-  margin: 0px 10px;
+  margin: 0 auto;
+  max-width: 80ch;
+}
+
+@media (max-width: 640px) {
+  body {
+    margin: 0 10px;
+  }
 }
 
 header {
@@ -56,8 +68,8 @@ h1:after {
   border-bottom: 2px dashed #98971a;
   display: inline-block;
   padding-bottom: 2px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  margin-top: 15px;
+  margin-bottom: 15px;
 }
 
 h2:before,
@@ -68,10 +80,8 @@ h3:before {
 
 p {
   color: #ebdbb2;
-  line-height: 1.2;
   font-size: 18px;
   text-align: justify;
-  max-width: 80ch;
 }
 
 a {
