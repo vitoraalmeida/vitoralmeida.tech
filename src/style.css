@@ -2,7 +2,6 @@ body {
     background-color: #1d2021;
     font-family: 'Inconsolata', monospace;
     color: #bdae93;
-    font-size: 16px;
 }
 
 h1 {
@@ -20,13 +19,24 @@ h1:after {
     color: #98971a;
 }
 
-h2, h3, h4, h5, h6, p {
+.title {
     color: #ebdbb2;
+    border-bottom: 2px dashed #98971a;
+    display: inline-block;
+    padding-bottom: 2px; 
 }
 
 h2:before, h3:before {
     color: #98971a;
     content: "» "
+}
+
+p {
+    color: #ebdbb2;
+    line-height: 1.2;
+    font-size: 18px;
+    text-align: justify;
+    max-width: 80ch;
 }
 
 a {
