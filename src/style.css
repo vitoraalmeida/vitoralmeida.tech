@@ -1,7 +1,39 @@
+*,
+*:before,
+*:after {
+    margin: 0;
+    box-sizing: border-box;
+}
+
 body {
     background-color: #1d2021;
     font-family: 'Inconsolata', monospace;
     color: #bdae93;
+    margin-left: 5px
+}
+
+header {
+    margin-bottom: 20px;
+}
+
+main {
+    margin: 10px 0px;
+}
+
+article {
+    margin-bottom: 10px;
+}
+
+section {
+    margin: 15px 0px;
+}
+
+footer {
+    margin-top: 20px;
+}
+
+hr {
+    margin: 10px 0px;
 }
 
 h1 {
@@ -23,7 +55,9 @@ h1:after {
     color: #ebdbb2;
     border-bottom: 2px dashed #98971a;
     display: inline-block;
-    padding-bottom: 2px; 
+    padding-bottom: 2px;
+    margin-top: 20px;
+    margin-bottom: 20px;
 }
 
 h2:before, h3:before {
@@ -52,3 +86,4 @@ li > a {
     text-decoration: underline;
     text-decoration-color: #98971a;     
 }
+
