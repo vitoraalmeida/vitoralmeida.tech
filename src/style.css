@@ -1,17 +1,44 @@
 body {
     background-color: #1d2021;
+    font-family: 'Inconsolata', monospace;
+    color: #bdae93;
+    font-size: 16px;
 }
 
 h1 {
-   /* color: #fe8019;  */
-   color: #bdae93;
+   color: #d5c4a1;
+   font-size: 24px;
 } 
 
-li, a{
-    color: #b8bb26; 
+h1:before {
+    content: "[";
+    color: #98971a;
 }
 
+h1:after {
+    content: "]》";
+    color: #98971a;
+}
 
 h2, h3, h4, h5, h6, p {
     color: #ebdbb2;
+}
+
+h2:before, h3:before {
+    color: #98971a;
+    content: "» "
+}
+
+a {
+    color: #98971a;
+}
+
+ul {
+    list-style-type: none;    
+}
+
+li > a {
+    color: #bdae93;
+    text-decoration: underline;
+    text-decoration-color: #98971a;     
 }
