@@ -47,12 +47,6 @@ a {
   color: #98971a;
 }
 
-li > a {
-  color: #bdae93;
-  text-decoration: underline;
-  text-decoration-color: #98971a;
-}
-
 main {
   flex: 1;
 }
@@ -138,6 +132,22 @@ hr {
   align-self: center;
 }
 
+/* contact */
+.contact-list {
+  margin-bottom: 1rem;
+}
+
+.contact-list__item {
+  color: #bdae93;
+  text-decoration: underline;
+  text-decoration-color: #98971a;
+}
+
+.contact-list__item:before {
+  color: #98971a;
+  content: "» ";
+}
+
 /* footer */
 footer {
   margin: 15px 0;
@@ -155,7 +165,6 @@ footer {
   margin-bottom: 10px;
 }
 
-.title:before,
 .title:before {
   color: #98971a;
   content: "» ";
