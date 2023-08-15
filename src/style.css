@@ -102,6 +102,8 @@ section {
 
 footer {
   margin: 15px 0;
+  padding-top: 0.4rem;
+  border-top: 1px solid #808080;
 }
 
 hr {
