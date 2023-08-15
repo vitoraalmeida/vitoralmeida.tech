@@ -33,47 +33,9 @@ body {
   }
 }
 
-header {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  align-items: center;
-  padding: 0.1rem 0;
-}
-
-.logo {
-  font-size: 1.2rem;
-}
-
-.logo:before {
-  content: "[";
-  color: #98971a;
-}
-
-.logo:after {
-  content: "]》";
-  color: #98971a;
-}
-
-.logo-link {
-  text-decoration: none;
-  color: #bdae93;
-}
-
-.menu {
-  display: flex;
-  gap: 0.6rem;
-}
-
-.link {
-  color: #bdae93;
-  text-decoration-color: #98971a;
-}
-
 p {
   color: #ebdbb2;
   font-size: 1.2rem;
-  text-align: justify;
   margin-top: 10px;
 }
 
@@ -95,20 +57,95 @@ main {
   flex: 1;
 }
 
-section {
-  margin: 15px 0px;
+hr {
+  margin: 10px 0px;
 }
 
+/* header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  align-items: center;
+  padding: 0.1rem 0;
+}
+
+.header__logo {
+  font-size: 1.2rem;
+}
+
+.header__logo:before {
+  content: "[";
+  color: #98971a;
+}
+
+.header__logo:after {
+  content: "]》";
+  color: #98971a;
+}
+
+.header__logo-link {
+  text-decoration: none;
+  color: #bdae93;
+}
+
+.header__menu {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.header__link {
+  color: #bdae93;
+  text-decoration-color: #98971a;
+}
+
+/* post-short */
+.post-short {
+  margin: 25px 0;
+}
+
+.post-short__date {
+  font-size: 0.9rem;
+  color: #808080;
+  margin-top: 1px;
+}
+
+.post-short__link {
+  font-size: 1rem;
+  margin-right: 10px;
+  margin-top: 0px;
+  display: block;
+  text-align: right;
+}
+
+.post-short__subtitle {
+  margin-top: 1px;
+}
+
+.footer-text {
+  font-size: 0.9rem;
+  margin-top: 1px;
+}
+
+/* about */
+.about {
+  display: flex;
+  flex-direction: column;
+}
+.about-img {
+  margin-top: 30px;
+  display: inline-block;
+  align-self: center;
+}
+
+/* footer */
 footer {
   margin: 15px 0;
   padding: 0.4rem 0;
   border-top: 1px solid #808080;
 }
 
-hr {
-  margin: 10px 0px;
-}
-
+/* utility class */
 .title {
   color: #ebdbb2;
   border-bottom: 2px dashed #98971a;
@@ -122,41 +159,4 @@ hr {
 .title:before {
   color: #98971a;
   content: "» ";
-}
-
-.article-listing {
-  margin-bottom: 25px;
-}
-
-.article-publish-date {
-  font-size: 0.9rem;
-  color: #808080;
-  margin-top: 1px;
-}
-
-.article-link {
-  font-size: 1rem;
-  margin-right: 10px;
-  margin-top: 0px;
-  display: block;
-  text-align: right;
-}
-
-.article-short {
-  margin-top: 1px;
-}
-
-.footer-text {
-  font-size: 0.9rem;
-  margin-top: 1px;
-}
-
-.about {
-  display: flex;
-  flex-direction: column;
-}
-.about-img {
-  margin-top: 30px;
-  display: inline-block;
-  align-self: center;
 }
