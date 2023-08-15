@@ -33,7 +33,7 @@ body {
   }
 }
 header {
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   padding-bottom: 4px;
   display: flex;
   justify-content: space-between;
@@ -93,7 +93,6 @@ li > a {
 }
 
 main {
-  margin: 5px 0px;
   flex-grow: 1;
 }
 
@@ -151,4 +150,14 @@ hr {
 .footer-text {
   font-size: 0.9rem;
   margin-top: 1px;
+}
+
+.about {
+  display: flex;
+  flex-direction: column;
+}
+.about-img {
+  margin-top: 30px;
+  display: inline-block;
+  align-self: center;
 }
