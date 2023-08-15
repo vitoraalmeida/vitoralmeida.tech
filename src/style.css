@@ -32,33 +32,17 @@ body {
     margin: 0 10px;
   }
 }
+
 header {
-  margin-bottom: 10px;
-  padding-bottom: 4px;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
-  align-items: baseline;
-  border-bottom: 1px solid #808080;
-}
-
-.menu {
-  display: flex;
-  margin: 2px 0;
-}
-
-.menu > li {
-  margin: 0 5px;
+  align-items: center;
+  padding: 0.1rem 0;
 }
 
 .logo {
-  color: #d5c4a1;
   font-size: 1.2rem;
-}
-
-.logo-link {
-  text-decoration: none;
-  color: #bdae93;
 }
 
 .logo:before {
@@ -69,6 +53,21 @@ header {
 .logo:after {
   content: "]》";
   color: #98971a;
+}
+
+.logo-link {
+  text-decoration: none;
+  color: #bdae93;
+}
+
+.menu {
+  display: flex;
+  gap: 0.6rem;
+}
+
+.link {
+  color: #bdae93;
+  text-decoration-color: #98971a;
 }
 
 p {
@@ -93,7 +92,7 @@ li > a {
 }
 
 main {
-  flex-grow: 1;
+  flex: 1;
 }
 
 section {
@@ -102,7 +101,7 @@ section {
 
 footer {
   margin: 15px 0;
-  padding-top: 0.4rem;
+  padding: 0.4rem 0;
   border-top: 1px solid #808080;
 }
 
