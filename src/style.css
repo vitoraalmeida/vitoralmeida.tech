@@ -16,7 +16,7 @@ body {
   color: #bdae93;
   margin: 0 auto; /* centraliza todo o conteúdo */
   max-width: 80ch;
-  height: 100vh;
+  height: 100dvh;
   display: flex;
   flex-direction: column;
 }
