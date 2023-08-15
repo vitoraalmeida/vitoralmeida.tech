@@ -34,14 +34,17 @@ body {
 }
 header {
   margin-bottom: 20px;
+  padding-bottom: 4px;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+  align-items: baseline;
+  border-bottom: 1px solid #808080;
 }
 
 .menu {
   display: flex;
-  margin: 5px 0;
+  margin: 2px 0;
 }
 
 .menu > li {
@@ -49,9 +52,12 @@ header {
 }
 
 .logo {
-  margin-top: 3px;
   color: #d5c4a1;
   font-size: 1.2rem;
+}
+
+.logo-link {
+  text-decoration: none;
 }
 
 .logo:before {
