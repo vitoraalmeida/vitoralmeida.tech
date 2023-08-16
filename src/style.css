@@ -240,9 +240,10 @@ main {
 /* blog-post */
 .blog-post-page-title {
   color: #ebdbb2;
+  font-size: 1.3rem;
   border-bottom: 2px dashed #98971a;
   display: inline-block;
-  padding-bottom: 2px;
+  padding-bottom: 7px;
   margin-bottom: 1px;
 }
 .blog-post-page-title:before {
@@ -296,7 +297,7 @@ main {
 .post-meta__date {
   color: #808080;
   font-size: 1rem;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
 .post-meta__subtitle {
