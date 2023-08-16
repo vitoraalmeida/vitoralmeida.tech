@@ -51,10 +51,6 @@ main {
   flex: 1;
 }
 
-hr {
-  margin: 10px 0px;
-}
-
 /* header */
 .header {
   display: flex;
@@ -66,15 +62,18 @@ hr {
 
 .header__logo {
   font-size: 1.2rem;
+  letter-spacing: -0.08rem;
 }
 
 .header__logo:before {
   content: "[";
+  margin-right: -0.4rem;
   color: #98971a;
 }
 
 .header__logo:after {
   content: "]》";
+  margin-left: -0.4rem;
   color: #98971a;
 }
 
@@ -149,10 +148,16 @@ hr {
 }
 
 /* footer */
-footer {
-  margin: 15px 0;
-  padding: 0.4rem 0;
+.footer {
+  margin: 10px 0;
+  text-align: center;
   border-top: 1px solid #808080;
+}
+
+.building {
+  display: flex;
+  justify-content: center;
+  margin: 10rem 0;
 }
 
 /* utility class */
