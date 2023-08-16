@@ -240,9 +240,8 @@ main {
 /* blog-post */
 .blog-post-page-title {
   color: #ebdbb2;
-  font-size: 1.3rem;
-  border-bottom: 2px dashed #98971a;
-  display: inline-block;
+  font-size: 1.5rem;
+
   padding-bottom: 7px;
   margin-bottom: 1px;
 }
