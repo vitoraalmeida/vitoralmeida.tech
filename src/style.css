@@ -106,7 +106,7 @@ main {
 }
 
 .intro__description {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   letter-spacing: -0.09px;
 }
 
@@ -294,7 +294,7 @@ main {
 
 /* blog post */
 .blog-post {
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   letter-spacing: -0.09px;
   color: #bdae93;
 }
@@ -316,7 +316,6 @@ main {
 /* post-meta */
 .post-meta {
   margin-bottom: 1rem;
-  font-size: 1.1rem;
 }
 
 .post-meta__date {
@@ -327,6 +326,7 @@ main {
 
 .post-meta__subtitle {
   margin-top: 0.5rem;
+  font-size: 1.1rem;
 }
 
 /* footer */
