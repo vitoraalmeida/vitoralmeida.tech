@@ -94,9 +94,12 @@ main {
 
 .intro__title {
   color: #ebdbb2;
-  display: inline-block;
   padding-bottom: 2px;
   margin-bottom: 15px;
+}
+
+.animation {
+  display: inline-block;
   overflow: hidden; /* Ensures the content is not revealed until the animation */
   border-right: 3px solid #98971a; /* The typwriter cursor */
   white-space: nowrap; /* Keeps the content on a single line */
@@ -111,11 +114,11 @@ main {
     width: 0;
   }
   to {
-    width: 16ch;
+    width: 14ch;
   }
 }
 
-.intro__title:before {
+.animation:before {
   color: #98971a;
   content: "» ";
 }
