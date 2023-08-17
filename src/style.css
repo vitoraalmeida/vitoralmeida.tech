@@ -104,8 +104,7 @@ main {
   overflow: hidden; /* Ensures the content is not revealed until the animation */
   border-right: 3px solid #98971a; /* The typwriter cursor */
   white-space: nowrap; /* Keeps the content on a single line */
-  animation: typing 2s steps(13, end),
-    blink-caret 0.5s step-end infinite alternate;
+  animation: typing 2s steps(13, end), blink-caret 0.8s infinite;
   width: 16ch;
 }
 
@@ -115,7 +114,7 @@ main {
     width: 0;
   }
   to {
-    width: 16ch;
+    width: 15ch;
   }
 }
 
