@@ -110,6 +110,9 @@ main {
   from {
     width: 0;
   }
+  to {
+    width: 16ch;
+  }
 }
 
 .intro__title:before {
