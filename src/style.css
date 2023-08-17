@@ -96,6 +96,7 @@ main {
   color: #ebdbb2;
   padding-bottom: 2px;
   margin-bottom: 15px;
+  display: inline-block;
 }
 
 .animation {
@@ -114,7 +115,7 @@ main {
     width: 0;
   }
   to {
-    width: 14ch;
+    width: 16ch;
   }
 }
 
