@@ -95,7 +95,7 @@ main {
 .intro__title {
   color: #ebdbb2;
   padding-bottom: 2px;
-  margin-bottom: 15px;
+  margin-bottom: 0.3rem;
   display: inline-block;
 }
 
@@ -104,8 +104,13 @@ main {
   overflow: hidden; /* Ensures the content is not revealed until the animation */
   border-right: 3px solid #98971a; /* The typwriter cursor */
   white-space: nowrap; /* Keeps the content on a single line */
-  animation: typing 2s steps(13, end), blink-caret 0.8s infinite;
+  animation: typing 2.5s steps(13, end), blink-caret 0.8s infinite;
   width: 16ch;
+}
+
+.animation:before {
+  color: #98971a;
+  content: "» ";
 }
 
 /* The typing effect */
@@ -116,11 +121,6 @@ main {
   to {
     width: 15ch;
   }
-}
-
-.animation:before {
-  color: #98971a;
-  content: "» ";
 }
 
 /* The typewriter cursor effect */
@@ -197,15 +197,33 @@ main {
 
 .about__title {
   color: #ebdbb2;
-  border-bottom: 2px dashed #98971a;
-  display: inline-block;
   padding-bottom: 2px;
-  margin-bottom: 1rem;
+  margin-bottom: 0.3rem;
+  display: inline-block;
 }
 
-.about__title:before {
+.about__animation {
+  display: inline-block;
+  overflow: hidden; /* Ensures the content is not revealed until the animation */
+  border-right: 3px solid #98971a; /* The typwriter cursor */
+  white-space: nowrap; /* Keeps the content on a single line */
+  animation: about-typing 2s steps(11, end), blink-caret 0.8s infinite;
+  width: 12ch;
+}
+
+.about__animation:before {
   color: #98971a;
   content: "» ";
+}
+
+/* The typing effect */
+@keyframes about-typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 12ch;
+  }
 }
 
 /*  about description */
@@ -281,14 +299,32 @@ main {
 
 .blog-page__title {
   color: #ebdbb2;
-  border-bottom: 2px dashed #98971a;
   display: inline-block;
   padding-bottom: 2px;
   margin-bottom: 1px;
 }
-.blog-page__title::before {
+.blog-page__animation::before {
   color: #98971a;
   content: "» ";
+}
+
+.blog-page__animation {
+  display: inline-block;
+  overflow: hidden; /* Ensures the content is not revealed until the animation */
+  border-right: 3px solid #98971a; /* The typwriter cursor */
+  white-space: nowrap; /* Keeps the content on a single line */
+  animation: blog-typing 1s steps(6, end), blink-caret 0.8s infinite;
+  width: 7ch;
+}
+
+/* The typing effect */
+@keyframes blog-typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 7ch;
+  }
 }
 
 /* blog-post */
