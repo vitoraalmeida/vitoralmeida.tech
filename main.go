@@ -34,5 +34,4 @@ func main() {
 	ssg.GeneratePortfolioPage()
 	os.Rename("styles", "html/styles")
 	os.Rename("public", "html/public")
-	os.Rename("html", "/var/www/vitoralmeida.net/html")
 }
