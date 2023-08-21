@@ -51,7 +51,7 @@ func GenerateIndexPage(posts []Post) {
 	t, err := template.ParseFiles("templates/home.gohtml")
 	postList := &bytes.Buffer{}
 
-	err = t.Execute(postList, posts[:3])
+	err = t.Execute(postList, posts)
 	if err != nil {
 		panic(err)
 	}
@@ -132,5 +132,5 @@ func GeneratePortfolioPage() {
 		Description: "Página pessoal de Vitor Almeida",
 		Content: portfolio.String(),
 	}
-	portfolioPage.generatePage("html/pages/portfolio.html")
+	portfolioPage.generatePage("html/pages/about.html")
 }
