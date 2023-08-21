@@ -32,7 +32,7 @@ jobs:
           TARGET: /opt/generator
 
       - name: executa
-        uses: appleboy/ssh-acttion@master
+        uses: appleboy/ssh-action@master
         with:
           KEY: ${{secrets.SERVER_SSH_KEY}}
           host: ${{ secrets.REMOTE_HOST }}
