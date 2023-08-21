@@ -1,5 +1,5 @@
 {
-    "liveServer.settings.port": 5501,
-    "liveServer.settings.multiRootWorkspaceName": "vitoralmeida.net",
-    "liveServer.settings.root": "/src"
+  "liveServer.settings.port": 5501,
+  "liveServer.settings.multiRootWorkspaceName": "vitoralmeida.net",
+  "liveServer.settings.root": "/html"
 }

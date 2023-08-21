@@ -1,0 +1,28 @@
+<section class="intro">
+  <h2 class="intro__title">
+    <span class="animation">Hello, friend</span>
+  </h2>
+  <p class="intro__description">
+    Vou usar esse pedacinho da internet para compartilhar o pouco que sei sobre
+    tecnologia e para mostrar um pouco das minhas habilidades para possíveis
+    parcerias futuras (🤑)
+  </p>
+</section>
+<section class="post-listing">
+  <h2 class="post-listing__title">Últimos posts</h2>
+  {{range .}}
+  <article class="post-short">
+    <h3 class="post-short__title">
+      🌐 {{ .Title }}
+    </h3>
+    <p class="post-short__date"> {{ .Date }} </p>
+    <p class="post-short__subtitle"> {{ .Description }} </p>
+    <a class="post-short__link" href="../blog/{{ .FileName }}.html">Leia o
+      post</a>
+  </article>
+  {{end}}
+  <p class="post-listing__blog-call">
+    <em>Veja todos os posts na página do
+      <a href="./pages/blog.html">blog</a></em>
+  </p>
+</section>
