@@ -132,5 +132,5 @@ func GeneratePortfolioPage() {
 		Description: "Página pessoal de Vitor Almeida",
 		Content: portfolio.String(),
 	}
-	portfolioPage.generatePage("html/pages/about.html")
+	portfolioPage.generatePage("html/pages/portfolio.html")
 }
