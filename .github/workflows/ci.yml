@@ -38,4 +38,4 @@ jobs:
           host: ${{ secrets.REMOTE_HOST }}
           USERNAME: ${{ secrets.REMOTE_USER }}
           PORT: ${{ secrets.REMOTE_PORT }}
-          script: cd /opt/generator && export PATH=$PATH:/usr/local/go/bin && go mod tidy && go run main.go && cp html /var/www/vitoralmeida.dev/html
+          script: cd /opt/generator && export PATH=$PATH:/usr/local/go/bin && go mod tidy && go run main.go && cp -r html /var/www/vitoralmeida.dev/html
