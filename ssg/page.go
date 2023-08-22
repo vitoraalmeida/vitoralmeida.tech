@@ -99,38 +99,22 @@ func GeneratePostsPages(posts []Post) {
 	}
 }
 
-func GenerateAboutPage() {
-	t, err := template.ParseFiles("templates/about.gohtml")
+func GenerateImmutablePage(title, description, page string) {
+	templateFile := fmt.Sprintf("templates/%s.gohtml", page)
+	t, err := template.ParseFiles(templateFile)
 	if err != nil {
 		panic(err)
 	}
-	about := &bytes.Buffer{}
-	err = t.Execute(about, nil)
-	if err != nil {
-		panic(err)
-	}
-	aboutPage := Page {
-		Title: "Vitor Almeida - Sobre mim",
-		Description: "Página pessoal de Vitor Almeida",
-		Content: about.String(),
-	}
-	aboutPage.generatePage("html/pages/about.html")
-}
-
-func GeneratePortfolioPage() {
-	t, err := template.ParseFiles("templates/portfolio.gohtml")
-	if err != nil {
-		panic(err)
-	}
-	portfolio := &bytes.Buffer{}
-	err = t.Execute(portfolio, nil)
+	pcontent := &bytes.Buffer{}
+	err = t.Execute(pcontent, nil)
 	if err != nil {
 		panic(err)
 	}
 	portfolioPage := Page {
-		Title: "Vitor Almeida - Sobre mim",
-		Description: "Página pessoal de Vitor Almeida",
-		Content: portfolio.String(),
+		Title: title,
+		Description: description,
+		Content: pcontent.String(),
 	}
-	portfolioPage.generatePage("html/pages/portfolio.html")
+	dest := fmt.Sprintf("html/pages/%s.html", page)
+	portfolioPage.generatePage(dest)
 }

@@ -30,8 +30,8 @@ func main() {
 	ssg.GenerateBlogPage(posts)
 	ssg.GenerateIndexPage(posts)
 	ssg.GeneratePostsPages(posts)
-	ssg.GenerateAboutPage()
-	ssg.GeneratePortfolioPage()
+	ssg.GenerateImmutablePage("Vitor Almeida - Sobre mim", "Página pessoal de Vitor Almeida", "about")
+	ssg.GenerateImmutablePage("Vitor Almeida - Portfólio", "Portfólio de Vitor Almeida", "portfolio")
 	os.Rename("styles", "html/styles")
 	os.Rename("public", "html/public")
 }
