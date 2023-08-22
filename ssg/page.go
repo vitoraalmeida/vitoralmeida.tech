@@ -27,44 +27,26 @@ func (p Page) generatePage(destination string) {
 	}
 }
 
-func GenerateBlogPage(posts []Post) {
-	t, err := template.ParseFiles("templates/blog.gohtml")
-	postList := &bytes.Buffer{}
-
-	err = t.Execute(postList, posts)
+func GeneratePage(nested, pageName, title, description string) {
+	templateFile := fmt.Sprintf("templates/%s.gohtml", pageName)
+	t, err := template.ParseFiles(templateFile)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Print(postList.String())
-
-	blogPage := Page {
-		Title: "Vitor Almeida - Blog",
-		Description: "Blog de Vitor Almeida",
-		Content: postList.String(),
-	}
-
-	blogPage.generatePage("html/pages/blog.html")
-}
-
-func GenerateIndexPage(posts []Post) {
-	t, err := template.ParseFiles("templates/home.gohtml")
-	postList := &bytes.Buffer{}
-
-	err = t.Execute(postList, posts)
+	finalContent := &bytes.Buffer{}
+	err = t.Execute(finalContent, nested)
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Print(postList.String())
-
-	indexPage := Page {
-		Title: "Vitor Almeida - Blog",
-		Description: "Blog de Vitor Almeida",
-		Content: postList.String(),
+	page := Page {
+		Title: title,
+		Description: description,
+		Content: finalContent.String(),
 	}
-
-	indexPage.generatePage("html/index.html")
+	dest := fmt.Sprintf("src/%s.html", pageName)
+	page.generatePage(dest)
 }
 
 func GeneratePostsPages(posts []Post) {
@@ -95,26 +77,6 @@ func GeneratePostsPages(posts []Post) {
 			Description: post.Description,
 			Content: postPage.String(),
 		}
-		postPage.generatePage(fmt.Sprintf("html/blog/%s.html", post.FileName))
+		postPage.generatePage(fmt.Sprintf("src/blog/%s.html", post.FileName))
 	}
-}
-
-func GenerateImmutablePage(title, description, page string) {
-	templateFile := fmt.Sprintf("templates/%s.gohtml", page)
-	t, err := template.ParseFiles(templateFile)
-	if err != nil {
-		panic(err)
-	}
-	pcontent := &bytes.Buffer{}
-	err = t.Execute(pcontent, nil)
-	if err != nil {
-		panic(err)
-	}
-	portfolioPage := Page {
-		Title: title,
-		Description: description,
-		Content: pcontent.String(),
-	}
-	dest := fmt.Sprintf("html/pages/%s.html", page)
-	portfolioPage.generatePage(dest)
 }

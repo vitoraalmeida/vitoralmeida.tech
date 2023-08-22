@@ -3,7 +3,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Vitor Almeida" />
-    <meta name="Description" content="{{ .Description}}" />
+    <meta name="Description" content="Página pessoal de Vitor Almeida" />
     <meta
       name="keywords"
       content="sites, web, internet, blog, tecnologia, segurança da informação, seginfo, security, desenvolvimento"
@@ -15,7 +15,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles/global.css" />
-    <title> {{ .Title}} </title>
+    <title> Vitor Almeida </title>
   </head>
   <body>
     <header class="header">
@@ -30,7 +30,35 @@
       </nav>
     </header>
     <main>
-      {{ .Content }}
+      <section class="intro">
+  <h2 class="intro__title">
+    <span class="animation">Hello, friend</span>
+  </h2>
+  <p class="intro__description">
+    Vou usar esse pedacinho da internet para compartilhar o pouco que sei sobre
+    tecnologia e para mostrar um pouco das minhas habilidades para possíveis
+    parcerias futuras (🤑)
+  </p>
+</section>
+<section class="post-listing">
+  <h2 class="post-listing__title">Últimos posts</h2>
+  
+<section class="post-short">
+  <h3 class="post-short__title">🌐 Por que resolvi criar um site pessoal</h3>
+  <p class="post-short__date">16/08/2023</p>
+  <p class="post-short__subtitle">E por que você também deveria</p>
+  <a class="post-short__link" href="/blog/por-que-criei-um-site.html"
+    >Leia o post</a
+  >
+</section>
+
+
+  <p class="post-listing__blog-call">
+    <em>Veja todos os posts na página do
+      <a href="/blog.html">blog</a></em>
+  </p>
+</section>
+
     </main>
     <footer class="footer">
       <h4>Página pessoal - Vitor Almeida</h4>

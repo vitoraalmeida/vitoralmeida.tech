@@ -3,7 +3,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Vitor Almeida" />
-    <meta name="Description" content="{{ .Description}}" />
+    <meta name="Description" content="Blog de Vitor Almeida" />
     <meta
       name="keywords"
       content="sites, web, internet, blog, tecnologia, segurança da informação, seginfo, security, desenvolvimento"
@@ -15,7 +15,7 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles/global.css" />
-    <title> {{ .Title}} </title>
+    <title> Vitor Almeida - Blog </title>
   </head>
   <body>
     <header class="header">
@@ -30,7 +30,22 @@
       </nav>
     </header>
     <main>
-      {{ .Content }}
+      <article class="blog-page">
+  <h2 class="blog-page__title">
+    <span class="blog-page__animation">Blog</span>
+  </h2>
+  
+<section class="post-short">
+  <h3 class="post-short__title">🌐 Por que resolvi criar um site pessoal</h3>
+  <p class="post-short__date">16/08/2023</p>
+  <p class="post-short__subtitle">E por que você também deveria</p>
+  <a class="post-short__link" href="/blog/por-que-criei-um-site.html"
+    >Leia o post</a
+  >
+</section>
+
+
+</article>
     </main>
     <footer class="footer">
       <h4>Página pessoal - Vitor Almeida</h4>

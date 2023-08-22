@@ -16,22 +16,20 @@ func main() {
 	postsPath := filepath.Join(cwd, "posts")
 	posts := ssg.GetPosts(postsPath)
 
-	path := "html/pages"
-	err = os.MkdirAll(path, os.ModePerm)
-	if err != nil {
-		log.Println(err)
-	}
-	blogPath := "html/blog"
-	err = os.MkdirAll(blogPath, os.ModePerm)
-	if err != nil {
-		log.Println(err)
-	}
+	createDestinationPaths()
 
-	ssg.GenerateBlogPage(posts)
-	ssg.GenerateIndexPage(posts)
+	pl := ssg.GeneratePostListing(posts)
+	ssg.GeneratePage(pl, "index", "Vitor Almeida", "Página pessoal de Vitor Almeida")
+	ssg.GeneratePage(pl, "blog", "Vitor Almeida - Blog", "Blog de Vitor Almeida")
+	ssg.GeneratePage("", "about", "Vitor Almeida - Sobre mim", "Página pessoal de Vitor Almeida")
+	ssg.GeneratePage("", "portfolio", "Vitor Almeida - Portfólio", "Portfólio de Vitor Almeida")
 	ssg.GeneratePostsPages(posts)
-	ssg.GenerateImmutablePage("Vitor Almeida - Sobre mim", "Página pessoal de Vitor Almeida", "about")
-	ssg.GenerateImmutablePage("Vitor Almeida - Portfólio", "Portfólio de Vitor Almeida", "portfolio")
-	os.Rename("styles", "html/styles")
-	os.Rename("public", "html/public")
+}
+
+func createDestinationPaths() {
+	blogPath := "src/blog"
+	err := os.Mkdir(blogPath, os.ModePerm)
+	if err != nil {
+		log.Println(err)
+	}
 }

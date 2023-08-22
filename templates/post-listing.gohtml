@@ -1,0 +1,10 @@
+{{range .}}
+<section class="post-short">
+  <h3 class="post-short__title">🌐 {{ .Title }}</h3>
+  <p class="post-short__date">{{ .Date }}</p>
+  <p class="post-short__subtitle">{{ .Description }}</p>
+  <a class="post-short__link" href="/blog/{{ .FileName }}.html"
+    >Leia o post</a
+  >
+</section>
+{{ end }}
