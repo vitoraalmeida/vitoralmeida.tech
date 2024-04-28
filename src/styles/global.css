@@ -51,7 +51,11 @@ main {
   justify-content: space-between;
   flex-wrap: wrap;
   align-items: center;
-  padding: 0.1rem 0;
+  padding: 0.4rem 0;
+  position: sticky;
+  top: 0;
+  width: 100%;
+  background: #060f11;
 }
 
 .header__logo {
