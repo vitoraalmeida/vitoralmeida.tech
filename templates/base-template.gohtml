@@ -18,7 +18,7 @@
     <title> {{ .Title}} </title>
   </head>
   <body>
-    <header class="header">
+    <header class="header" id="navbar">
       <h1 class="header__logo">
         <a class="header__logo-link" href="/">vitor almeida</a>
       </h1>
@@ -32,7 +32,7 @@
     <main>
       {{ .Content }}
     </main>
-    <footer class="footer">
+    <footer class="footer" id="footer">
       <h4>Página pessoal - Vitor Almeida</h4>
       <p class="footer-text">
         <em>Feito com HTML e CSS (e com um pouco de ódio)
@@ -45,4 +45,18 @@
       </p>
     </footer>
   </body>
+<script>
+var prevScrollpos = window.pageYOffset;
+window.onscroll = function() {
+  var currentScrollPos = window.pageYOffset;
+  if (prevScrollpos > currentScrollPos) {
+    document.getElementById("navbar").style.top = "0";
+    document.getElementById("footer").style.bottom = "0";
+  } else {
+    document.getElementById("navbar").style.top = "-50px";
+    document.getElementById("footer").style.bottom= "-50px";
+  }
+  prevScrollpos = currentScrollPos;
+} 
+</script>
 </html>

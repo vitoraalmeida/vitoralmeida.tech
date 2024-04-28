@@ -42,9 +42,6 @@ ul {
   list-style-type: none;
 }
 
-main {
-  flex: 1;
-}
 
 /* header */
 .header {
@@ -413,7 +410,7 @@ main {
   bottom: 0;
   width: 100%;
   background-color: #060f11;
-  margin-top: 40px;
+  margin-top: 2rem;
   text-align: center;
   border-top: 1px solid #00d992;
 }
