@@ -1,6 +1,6 @@
 ## A jornada até aqui
 
-Desde que resolvi largar uma graduação em Direito, em 2018, para começar a estudar sobre programação e tecnologia da informação comecei e parei o projeto de criar um site pessoal.
+Desde que resolvi largar uma graduação em Direito, em 2018, para começar a estudar sobre programação e tecnologia da informação, comecei e parei o projeto de criar um site pessoal.
 
 Inicialmente, a motivação era colocar em prática o que estava aprendendo sobre desenvolvimento _web_ e ter algo para mostrar em processos seletivos. Porém, não me dei muito bem com o lado front-end da força (ainda não é meu forte) e por não conseguir fazer as coisas da forma como idealizava (coloquei na cabeça que eu precisava escrever do zero), fiquei frustrado e deixei de lado.
 
