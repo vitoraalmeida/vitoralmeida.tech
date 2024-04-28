@@ -272,6 +272,7 @@ ul {
 /* contact-list */
 .contact-list {
   margin-top: 1rem;
+  margin-bottom: 2rem;
 }
 
 .contact-list__title {
