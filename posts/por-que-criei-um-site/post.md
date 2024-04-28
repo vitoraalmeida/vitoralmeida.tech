@@ -16,7 +16,7 @@ Posteriormente, trabalhando no PagBank, ajudei na criação de um curso de intro
 
 Além de ser uma boa forma de praticar o que aprendemos, fazer um site pessoal é uma vitrine interessante para alguém que trabalha com TI (ou até mesmo pessoas de outra área de atuação). Você pode expor projetos pessoais, mostrar suas habilidades de escrita e mostrar conhecimentos que talvez não estejam relacionados diretamente com a posição que você ocupa no trabalho.
 
-Fora o motivo mais "egoísta", ainda que alguém mais conhecido (e mais qualificado) já tenha escrito algo sobre algum assunto, cada um tem uma forma de ver as coisas, entende sobre outras óticas ou até mesmo escreve de uma forma que agrada mais a algumas pessoas. Consequentemente, o fato de já ter sido dito não anula o fato de que ainda não foi dito por você. Explicar do seu jeito pode ajudar outras pessoa a entender um assunto.
+Fora o motivo mais "egoísta", ainda que alguém mais conhecido (e mais qualificado) já tenha escrito algo sobre algum assunto, cada um tem uma forma de ver as coisas, entende sobre outras óticas ou até mesmo escreve de uma forma que agrada mais a algumas pessoas. Consequentemente, o fato de já ter sido dito não anula o fato de que ainda não foi dito por você. Explicar do seu jeito pode ajudar outras pessoas a entender um assunto.
 
 Por fim, a web está cada vez mais centralizada em grandes plataformas, concentrando todo conteúdo e com isso está ficando (ou já está) muito quadrada. Um sistema que é distribuído por natureza, composto por milhões de partes, está sendo monopolizado por 4 ou 5 plataformas.
 
