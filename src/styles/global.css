@@ -475,6 +475,7 @@ article.blog-post ul {
   margin-bottom: 2px;
 }
 
-article.blog-post pre code {
+pre > code {
+  display: block;
   margin-bottom: 2px;
 }
