@@ -73,3 +73,8 @@ A base dessa abordagem é a chamada [**Segurança por Obscuridade**](https://pt.
 >
 > -- <cite>Alfred Charles Hobbs</cite>
 
+Além de não ser uma medida efetiva, alterar a porta pela qual você acessa seu servidor SSH pode te confundir caso você trabalhe sozinho e tenha uma memória ruim ou caso trabalhe numa equipe maior. Onde você vai documentar qual porta está sendo usada? As pessoas que trabalham com você sabem dessa alteração e dessa documentação? Claro que nesse simples caso de uma porta SSH não é tão complicado de resolver, mas quando tratamos de serviços e ativos mais críticos, com mais pessoas envolvidas, segurança por obscuridade acaba gerando complexidades, dificuldades de entendimento pelos membros de um time e, além de tudo, não funciona.
+
+### Desabilitar o login remoto por usuário root
+
+
