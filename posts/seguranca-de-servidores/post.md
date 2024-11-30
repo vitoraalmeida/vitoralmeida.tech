@@ -10,7 +10,7 @@ Após tomar a decisão e alugar o servidor, surge a necessidade de protegê-lo c
 * Habilitar atualizações automáticas
 * Usar um firewall
 
-Mas será que tudo isso é necessário?
+Mas será que tudo isso é necessário e caso não façamos estaremos inseguros?
 
 ## Depende...
 
@@ -33,7 +33,7 @@ Além disso, a depender da qualificação do adversário, algumas medidas tomada
 
 Em resumo, como quase tudo em TI, podemos ligar o "senior mode" e dizer: depende. 
 
-> shut up and take my money!
+> <cite> palmas lentas </cite> 
 
 ## Sempre questione, ainda que seja amplamente aceito como verdade
 
@@ -50,16 +50,16 @@ No entanto, as portas alternativas utilizadas pela grande maioria das pessoas se
 ```
 $ shodan stats --facets port ssh
 Top 10 Results for Facet: port
-22                            19,811,983
-2222                             799,310
-1080                             166,397
-10001                            154,277
-60022                            149,733
-50022                            110,499
-50000                             83,115
-58222                             65,517
-3389                              60,378
-1337                              55,824
+22             19,811,983
+2222              799,310
+1080              166,397
+10001             154,277
+60022             149,733
+50022             110,499
+50000              83,115
+58222              65,517
+3389               60,378
+1337               55,824
 ```
 
 O [Shodan](https://www.shodan.io/) é uma ferramenta que mapeia os servidores públicos na Internet e consolida algumas informações sobre eles, como portas abertas, serviços executando em cada porta, qual tipo de dispositivo está em execução etc. Se registrando no site, você tem acesso a uma API Key e, através dela, podemos ter acesso a algumas informações. Podemos ver na saída do comando acima, que, como esperado, a maioria dos serviços SSH estão executando na porta 22. Já a segunda porta mais usada é a 2222, seguida de outras que são mais ou menos fáceis de lembrar.
@@ -79,8 +79,10 @@ Além de não ser uma medida efetiva, alterar a porta pela qual você acessa seu
 O arquivo de configuração do servidor SSH (`/etc/ssh/sshd_config`) traz o seguinte:
 
 > <cite>...</cite>
+>
 > <cite>\# To disable tunneled clear text passwords, change to no here! </cite>
 > <cite>PasswordAuthentication yes<\cite>
+>
 > <cite>...</cite>
 
 Ou seja, aparentemente, a senha que você envia durante a conexão com SSH é transmitida em texto claro dentro do "túnel" até chegar no servidor remoto. Então isso quer dizer que a sua senha está exposta para qualquer um que intercepte a conexão possa ver? Não! Pois, a conexão com o servidor SSH acontece utilizando um par de chaves criptográficas para mascarar os dados que tráfegam no estabelecimento da conexão com o servidor remoto. É a mesma coisa que acontece quando nos autenticamos na maioria dos sites que utilizam HTTPS. A nossa senha é encapsulada numa conexão SSL que trafega criptografada até chegar no servidor.
@@ -102,7 +104,5 @@ A mesma documentação do protocolo, agora na seção sobre a [autenticação co
 Usar senhas ainda é algo complicado, pois depende que sempre usemos senhas fortes e que tenhamos como armazená-las em lugares seguros. Então, de fato, pode ser que seja bom desabilitar a autenticação por senha e usar chaves, mas não é porque é inseguro em todo caso.
 
 ### Desabilitar o login por SSH com usuário root
-
-
 
 
