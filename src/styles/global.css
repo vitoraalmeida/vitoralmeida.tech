@@ -388,18 +388,18 @@ ul {
   content: "» ";
 }
 
-blog-post h3 {
+.blog-post h3 {
   color: #c8cacb;
   font-size: 1.3rem;
   margin-bottom: 0.7rem;
 }
 
-blog-post li:before  {
+.blog-post li:before  {
   color: #00d992;
   content: "» ";
 }
 
-blog-post ul {
+.blog-post ul {
   margin-bottom: 20px;
 }
 
