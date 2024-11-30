@@ -349,6 +349,28 @@ ul {
   content: "» ";
 }
 
+article.blog-post h3 {
+  color: #c8cacb;
+  font-size: 1.2rem;
+  padding-bottom: 7px;
+  margin-top: 1.4rem;
+  margin-bottom: 1px;
+}
+
+article.blog-post li:before  {
+  color: #00d992;
+  content: "» ";
+}
+
+article.blog-post ul {
+  margin-bottom: 20px;
+}
+
+pre > code {
+  display: block;
+  margin-bottom: 20px;
+}
+
 /*  table-of-contents */
 .table-of-contents {
   margin-bottom: 1.5rem;
@@ -466,16 +488,3 @@ ul {
 
 /* markdown */
 
-article.blog-post li:before  {
-  color: #00d992;
-  content: "» ";
-}
-
-article.blog-post ul {
-  margin-bottom: 2px;
-}
-
-pre > code {
-  display: block;
-  margin-bottom: 20px;
-}
