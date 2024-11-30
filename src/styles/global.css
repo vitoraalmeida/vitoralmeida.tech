@@ -462,3 +462,11 @@ ul {
   justify-content: center;
   margin: 10rem 0;
 }
+
+
+/* markdown */
+
+.blogpost > ul > li {
+  color: #00d992;
+  content: "» ";
+}

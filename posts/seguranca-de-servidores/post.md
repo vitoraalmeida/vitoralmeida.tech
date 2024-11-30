@@ -72,3 +72,4 @@ A base dessa abordagem é a chamada [**Segurança por Obscuridade**](https://pt.
 > Pessoas desonestas são muito profissionais e já sabem muito mais do que poderíamos ensiná-los
 >
 > -- <cite>Alfred Charles Hobbs</cite>
+
