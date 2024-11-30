@@ -466,7 +466,7 @@ ul {
 
 /* markdown */
 
-article.blogpost > li:before  {
+article.blogpost li:before  {
   color: #00d992;
   content: "» ";
 }
