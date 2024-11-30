@@ -55,6 +55,7 @@ func GeneratePostsPages(posts []Post) {
 
 	for _, post := range posts {
 		postPageContent = &bytes.Buffer{}
+
 		p := struct {
 			Title       string
 			Date        string
@@ -82,4 +83,3 @@ func GeneratePostsPages(posts []Post) {
 		postPage.generatePage(fmt.Sprintf("src/blog/%s.html", post.FileName))
 	}
 }
-
