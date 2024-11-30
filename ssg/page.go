@@ -8,9 +8,9 @@ import (
 )
 
 type Page struct {
-	Title string
+	Title       string
 	Description string
-	Content string
+	Content     string
 }
 
 func (p Page) generatePage(destination string) {
@@ -40,10 +40,10 @@ func GeneratePage(nested, pageName, title, description string) {
 		panic(err)
 	}
 
-	page := Page {
-		Title: title,
+	page := Page{
+		Title:       title,
 		Description: description,
-		Content: finalContent.String(),
+		Content:     finalContent.String(),
 	}
 	dest := fmt.Sprintf("src/%s.html", pageName)
 	page.generatePage(dest)
@@ -51,32 +51,33 @@ func GeneratePage(nested, pageName, title, description string) {
 
 func GeneratePostsPages(posts []Post) {
 	t, err := template.ParseFiles("templates/post.gohtml")
-	postPage := &bytes.Buffer{}
+	postPageContent := &bytes.Buffer{}
 
-	for _, post := range(posts) {
+	for _, post := range posts {
 		p := struct {
-			Title string
-			Date string
+			Title       string
+			Date        string
 			Description string
-			Content string
-		} {
-			Title: post.Title,
+			Content     string
+		}{
+			Title:       post.Title,
 			Description: post.Description,
-			Date: post.Date,
-			Content: string(post.Content),
+			Date:        post.Date,
+			Content:     string(post.Content),
 		}
 
-		err = t.Execute(postPage, p)
+		err = t.Execute(postPageContent, p)
 		if err != nil {
 			panic(err)
 		}
-		fmt.Print(postPage.String())
+		fmt.Print(postPageContent.String())
 
-		postPage := Page {
-			Title: post.Title,
+		postPage := Page{
+			Title:       post.Title,
 			Description: post.Description,
-			Content: postPage.String(),
+			Content:     postPageContent.String(),
 		}
 		postPage.generatePage(fmt.Sprintf("src/blog/%s.html", post.FileName))
 	}
 }
+
