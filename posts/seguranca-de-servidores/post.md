@@ -78,35 +78,24 @@ Além de não ser uma medida efetiva, alterar a porta pela qual você acessa seu
 
 O arquivo de configuração do servidor SSH (`/etc/ssh/sshd_config`) traz o seguinte:
 
-> ...
-  \# To disable tunneled clear text passwords, change to no here!
-  PasswordAuthentication yes
-  ...
+> <cite>...</cite>
+> <cite>\# To disable tunneled clear text passwords, change to no here! </cite>
+> <cite>PasswordAuthentication yes<\cite>
+> <cite>...</cite>
 
 Ou seja, aparentemente, a senha que você envia durante a conexão com SSH é transmitida em texto claro dentro do "túnel" até chegar no servidor remoto. Então isso quer dizer que a sua senha está exposta para qualquer um que intercepte a conexão possa ver? Não! Pois, a conexão com o servidor SSH acontece utilizando um par de chaves criptográficas para mascarar os dados que tráfegam no estabelecimento da conexão com o servidor remoto. É a mesma coisa que acontece quando nos autenticamos na maioria dos sites que utilizam HTTPS. A nossa senha é encapsulada numa conexão SSL que trafega criptografada até chegar no servidor.
 
 Não é perfeitamente seguro utilizar senhas ao se conectar por SSH, como a própria [documentação](https://datatracker.ietf.org/doc/html/rfc4251#section-9.4.5) afirma:
 
->  The password mechanism, as specified in the authentication protocol,
-   assumes that the server has not been compromised.  If the server has
-   been compromised, using password authentication will reveal a valid
-   username/password combination to the attacker, which may lead to
-   further compromises.
+>  <cite>The password mechanism, as specified in the authentication protocol, assumes that the server has not been compromised.  If the server has been compromised, using password authentication will reveal a valid username/password combination to the attacker, which may lead to further compromises. </cite>
 
->  This vulnerability can be mitigated by using an alternative form of
-   authentication.  For example, public key authentication makes no
-   assumptions about security on the server.
+>  <cite>This vulnerability can be mitigated by using an alternative form of authentication.  For example, public key authentication makes no assumptions about security on the server. </cite>
 
 O mecanismo de autenticação por senha assume que o servidor do SSH não foi comprometido, mas, nesse caso, já temos um problema e não há muito mais o que fazer (haha xD). A documentação afirma que podemos mitigar isso usando autenticação com chaves, mas...
 
->  The use of public key authentication assumes that the client host has
-   not been compromised.  It also assumes that the private key of the
-   server host has not been compromised.
+>  <cite>The use of public key authentication assumes that the client host has not been compromised.  It also assumes that the private key of the server host has not been compromised. </cite>
 
->  This risk can be mitigated by the use of passphrases on private keys;
-   however, this is not an enforceable policy.  The use of smartcards,
-   or other technology to make passphrases an enforceable policy is
-   suggested.
+>  <cite>This risk can be mitigated by the use of passphrases on private keys; however, this is not an enforceable policy.  The use of smartcards, or other technology to make passphrases an enforceable policy is suggested.</cite>
 
 A mesma documentação do protocolo, agora na seção sobre a [autenticação com chaves](https://datatracker.ietf.org/doc/html/rfc4251#section-9.4.4), traz que o método também não é perfeito, pois assume que o dispositivo cliente também não foi comprometido. Ou seja, não é o uso de senhas nessa conexão que é especialmente inseguro, mas depende de um conjunto de fatores.
 
