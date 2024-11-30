@@ -470,3 +470,11 @@ article.blog-post li:before  {
   color: #00d992;
   content: "» ";
 }
+
+article.blog-post ul {
+  margin-bottom: 2px;
+}
+
+article.blog-post pre code {
+  margin-bottom: 2px;
+}

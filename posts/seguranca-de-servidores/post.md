@@ -69,7 +69,7 @@ Podemos ver que para dificultar de fato que um atacante adivinhe em qual porta s
 
 A base dessa abordagem é a chamada [**Segurança por Obscuridade**](https://pt.wikipedia.org/wiki/Seguran%C3%A7a_por_obscurantismo), apostando em esconder informações confiando que é o suficiente para manter algo seguro. 
 
-> Pessoas desonestas são muito profissionais e já sabem muito mais do que poderíamos ensiná-los
+> <cite>Pessoas desonestas são muito profissionais e já sabem muito mais do que poderíamos ensiná-los</cite>
 >
 > -- <cite>Alfred Charles Hobbs</cite>
 
