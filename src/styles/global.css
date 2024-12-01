@@ -38,8 +38,12 @@ main {
     margin: 0 10px;
   }
 
+  main {
+    margin: 0 10px;
+  }
+
   .header {
-    margin: 0 0px;
+    margin: 0;
   }
 }
 
