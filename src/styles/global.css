@@ -403,6 +403,14 @@ ul {
   margin-bottom: 20px;
 }
 
+.blog-post img {
+  max-width: 90%;
+  height: auto;
+  margin-top: 1rem;
+  display: inline-block;
+  margin-bottom: 1rem;
+}
+
 pre > code {
   overflow: scroll;
   display: block;
