@@ -40,7 +40,6 @@ main {
 
   .header {
     margin: 0;
-    padding: 0.4rem 1rem;
   }
 }
 
@@ -59,7 +58,7 @@ ul {
   justify-content: space-between;
   flex-wrap: wrap;
   align-items: center;
-  padding: 0.4rem 0;
+  padding: 0.4rem 0.4rem;
   position: sticky;
   top: 0;
   width: 100%;
