@@ -104,7 +104,7 @@ Não é perfeitamente seguro utilizar senhas ao se conectar por SSH, como a pró
 
 >  <cite>This vulnerability can be mitigated by using an alternative form of authentication.  For example, public key authentication makes no assumptions about security on the server. </cite>
 
-O mecanismo de autenticação por senha assume que o servidor do SSH não foi comprometido, mas, nesse caso, já temos um problema e não há muito mais o que fazer (haha xD). A documentação afirma que podemos mitigar isso usando autenticação com chaves, mas...
+O mecanismo de autenticação por senha assume que o servidor do SSH não foi comprometido, mas, nesse caso, já temos um problema e não seria evitar o uso de senhas que teria resolvido (considerando que você não tenha escolhido '123456' como senha, né...). A documentação afirma que podemos mitigar isso usando autenticação com chaves, mas...
 
 >  <cite>The use of public key authentication assumes that the client host has not been compromised.  It also assumes that the private key of the server host has not been compromised. </cite>
 
