@@ -10,6 +10,7 @@
   line-height: 1.2;
 }
 
+
 body {
   background-color: #060f11;
   font-family: "Inconsolata", monospace;
@@ -36,6 +37,11 @@ body {
   .header {
     margin: 0;
   }
+}
+
+main {
+  margin: 0 auto;
+  max-width: 92ch;
 }
 
 a {
