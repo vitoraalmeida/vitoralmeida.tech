@@ -5,10 +5,10 @@ Quando eu estava colocando meu site pessoal no ar, decidi usar um VPS (Virtual P
 Após tomar a decisão e alugar o servidor, surge a necessidade de protegê-lo contra acessos indesejados. Pesquisando na web sobre as melhores práticas na segurança de servidores, as dicas mais comuns são:
 
 * Alterar a porta padrão do SSH
+* Usar um firewall
 * Desabilitar o uso de senhas para acesso SSH
 * Desabilitar o login por SSH com usuário root
 * Habilitar atualizações automáticas
-* Usar um firewall
 
 Mas será que tudo isso é necessário e caso não façamos estaremos inseguros?
 
@@ -74,6 +74,17 @@ A base dessa abordagem é a chamada [**Segurança por Obscuridade**](https://pt.
 
 Além de não ser uma medida efetiva, alterar a porta pela qual você acessa seu servidor SSH pode te confundir caso você trabalhe sozinho e tenha uma memória ruim ou caso trabalhe numa equipe maior. Onde você vai documentar qual porta está sendo usada? As pessoas que trabalham com você sabem dessa alteração e dessa documentação? Claro que nesse simples caso de uma porta SSH não é tão complicado de resolver, mas quando tratamos de serviços e ativos mais críticos, com mais pessoas envolvidas, segurança por obscuridade acaba gerando complexidades, dificuldades de entendimento pelos membros de um time e, além de tudo, não funciona.
 
+### Habilitar atualizações automáticas
+
+Um sistema desatualizado pode significar um sistema vulnerável. A partir do momento em que um software é publicado, ele está sujeito à crítica impiedosa dos hackers  . Principalmente, softwares que são amplamente usados, como Web Servers (ex.: Apache e Nginx) e sistemas de gerenciamento de conteúdo (ex.: Wordpress). Diariamente, testes de intrusão e análises de vulnerabilidades são executados em softwares como estes, de forma que utilizar uma versão antiga pode introduzir vulnerabilidades no seu sistema, pois a correção pode ter sido feita apenas nas versões mais novas.
+
+Uma das formas de garantir que o sistema esteja sempre com as versões mais atualizadas dos softwares é configurar para que ele seja atualizado automaticamente. Porém, existem atualizações que podem corromper o sistema por quebra de compatibilidade com a versão atual do sistema operacional, com conflitar com outros softwares ou por dependerem de outros pacotes em versões diferentes da que você possui atualmente. Isso pode acarretar em indisponibilidade do seu sistema.
+
+Para aplicações que não são críticas, com poucos usuários simultâneos, que não lidem com transações financeiras, pode não ser um problema. Caso contrário, a indisponibilidade pode significar danos financeiros e dano à imagem de uma organização. Portanto, em contextos desse tipo, atualizações do sistema devem ser planejadas, possuir estratégias para se recuperar de desastres e voltar ao estado anterior. 
+
+Já em contextos menos críticos, pode significar apenas uma pequena dor de cabeça, mas também é desagradável.
+
+
 ### Desabilitar o uso de senhas para acesso SSH
 
 O arquivo de configuração do servidor SSH (`/etc/ssh/sshd_config`) traz o seguinte:
@@ -105,4 +116,24 @@ Usar senhas ainda é algo complicado, pois depende que sempre usemos senhas fort
 
 ### Desabilitar o login por SSH com usuário root
 
+Quando usamos nosso computador pessoal, executamos diversos programas, fazemos downloads, acessamos websites, clicamos em links enviados por terceiros e tudo isso é perigoso de ser feito por usuários com privilégios elevados no sistema. Se acessarmos links ou programas maliciosos, um usuário privilegiado pode ser usado para corromper o sistema de formas imprevisíveis. Por isso, utilizamos contas de usuário normal para o dia a dia e temos uma outra com privilégios administrativos para manutenção do sistema.
 
+No entanto, num servidor, normalmente fazemos apenas atividades que exigem privilégios adminstrativos, como a ativação e execução de um serviço, atualização do sistema operacional, instalação e remoção de pacotes, aplicação de patches de segurança etc. Tudo isso exige permissão de administrador.
+
+A recomendação de desabilitar o login como usuário root, e criar um usuário comum para acessar o servidor, tem a premissa de impedir alguém de realizar ações destrutivas ou mal-intencionadas caso consiga acesso de forma indevida ao sistema. Mas, em se tratando de gerenciamento de um servidor, esse usuário comum que trabalha na manutenção do sistema precisa que sua conta possa executar algumas ações como adminstrador. Isso é feito, normalmente, adicionando o usuário no grupo `sudo`. Então, em momentos específicos, ele pode utilizar o comando `sudo` para elevar temporariamente seus privilégios e executar ações como se fosse o usuário root. 
+
+Há cenários que isso pode fazer total sentido, como quando trabalhamos numa equipe e temos diversas pessoas que possuem acesso ao servidor e trabalham na sua administração. Cada uma tem sua conta vinculada a uma identidade pessoal e, caso tenham permissões necessárias, podem realizar as atividades de manutenção. Assim, podemos saber quem foi a pessoa que executou determinadas ações no sistema através de logs. No entanto, em casos de um servidor pertencente a uma só pessoa, pode não fazer tanto sentido assim, já que apenas atividades administrativas são realizadas num servidor e apenas uma ou outra pessoa tem conhecimento das credenciais de acesso.
+
+Então, ter um usuário diferente que possui todas as permissões do usuário root quando quiser é, na prática, ter dois usuários root.
+
+### Usar um firewall
+
+Ok, quem não quer um muro flamejante queimando todo e qualquer intruso que tentar acessar seu sistema de forma indevida? O nome *firewall* pode dar a entender que basta utilizá-lo para tornar sua rede segura. No entanto, a depender do caso, ele pode apenas adicionar complexidade na manutenção do sistema e nem ajudar tanto.
+
+Se estamos usando um servidor para permitir acesso ao nosso site nas portas 80 e 443, e nada além disso, o que vai adiantar adicionar uma regra no firewall para permitir apenas o tráfego nessas portas? Se nos certificarmos de deixar apenas serviços desejados executando no sistema, já estamos permitindo exclusivamente o tráfego nas portas destes serviços. Seria como adicionar um muro flamejamente com apenas uma porta pela qual é seguro passar para apenas chegar em outro muro com uma outra porta disponível, no mesmo lugar.
+
+Já num caso em que tenhamos algum serviço exposto publicamente e, por algum motivo, quisermos que apenas certos IPs possam acessar esse serviço, aí sim podemos usar o firewall para que qualquer outro IP seja bloquado.
+
+## Então quer dizer que as recomendações não são úteis?
+
+Claro que não! Apenas quer dizer que devemos utilizar as ferramentas e estratégias de forma crítica, sabendo para quais casos de uso elas servem e sabendo suas vantagens e desvantagens. Eu mesmo utilizei algumas das recomendações para blindar a máquina que serve este site.
