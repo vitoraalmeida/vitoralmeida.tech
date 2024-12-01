@@ -23,6 +23,7 @@ func main() {
 	ssg.GeneratePage(pl, "blog", "Vitor Almeida - Blog", "Blog de Vitor Almeida")
 	ssg.GeneratePage("", "about", "Vitor Almeida - Sobre mim", "Página pessoal de Vitor Almeida")
 	ssg.GeneratePage("", "portfolio", "Vitor Almeida - Portfólio", "Portfólio de Vitor Almeida")
+	ssg.GeneratePage("", "404", "Vitor Almeida - Not found", "Fim da linha")
 	ssg.GeneratePostsPages(posts)
 }
 
@@ -38,4 +39,3 @@ func createDestinationPaths() {
 		log.Println(err)
 	}
 }
-
