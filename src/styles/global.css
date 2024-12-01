@@ -34,10 +34,6 @@ main {
 }
 
 @media (max-width: 660px) {
-  body {
-    margin: 0 10px;
-  }
-
   main {
     margin: 0 10px;
   }
