@@ -92,7 +92,7 @@ O arquivo de configuração do servidor SSH (`/etc/ssh/sshd_config`) traz o segu
 > <cite>...</cite>
 >
 > <cite>\# To disable tunneled clear text passwords, change to no here! </cite>
-> <cite>PasswordAuthentication yes<\cite>
+> <cite>PasswordAuthentication yes</cite>
 >
 > <cite>...</cite>
 
