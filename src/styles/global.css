@@ -15,10 +15,15 @@ body {
   font-family: "Inconsolata", monospace;
   color: #9fa0a1;
   margin: 0 auto; /* centraliza todo o conteúdo */
-  max-width: 80ch;
+  max-width: 100ch;
   height: fit-content;
   display: flex;
   flex-direction: column;
+}
+
+main {
+  max-width: 80ch;
+  margin: 0 auto;
 }
 
 
@@ -437,7 +442,7 @@ pre > code {
 /* footer */
 .footer {
   position: fixed;
-  max-width: 80ch;
+  max-width: 100ch;
   bottom: 0;
   width: 100%;
   background-color: #060f11;
