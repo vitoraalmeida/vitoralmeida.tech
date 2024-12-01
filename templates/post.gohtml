@@ -1,33 +1,35 @@
-<h2 id="top" class="blog-post-page-title">
-{{ .Title }}
-</h2>
+<section class="blog-post">
+    <h2 id="top" class="blog-post-page-title">
+    {{ .Title }}
+    </h2>
 
-<section class="post-meta">
-<p class="post-meta__subtitle">
-    <em>{{ .Description }}</em>
-</p>
-<p class="post-meta__date">Publicado em {{ .Date }}</p>
+    <section class="post-meta">
+    <p class="post-meta__subtitle">
+        <em>{{ .Description }}</em>
+    </p>
+    <p class="post-meta__date">Publicado em {{ .Date }}</p>
+    </section>
+
+    <article class="blog-post__article">
+        {{ .Content }}
+    </article>
+
+
+    <a href="#top">Voltar ao topo</a>
+
+    <script src="https://giscus.app/client.js"
+            data-repo="vitoraalmeida/vitoralmeida.net"
+            data-repo-id="R_kgDOKGa4Ng"
+            data-category="Ideas"
+            data-category-id="DIC_kwDOKGa4Ns4CkwVC"
+            data-mapping="title"
+            data-strict="0"
+            data-reactions-enabled="1"
+            data-emit-metadata="0"
+            data-input-position="top"
+            data-theme="preferred_color_scheme"
+            data-lang="pt"
+            crossorigin="anonymous"
+            async>
+    </script>
 </section>
-
-<article class="blog-post">
-    {{ .Content }}
-</article>
-
-
-<a href="#top">Voltar ao topo</a>
-
-<script src="https://giscus.app/client.js"
-        data-repo="vitoraalmeida/vitoralmeida.net"
-        data-repo-id="R_kgDOKGa4Ng"
-        data-category="Ideas"
-        data-category-id="DIC_kwDOKGa4Ns4CkwVC"
-        data-mapping="title"
-        data-strict="0"
-        data-reactions-enabled="1"
-        data-emit-metadata="0"
-        data-input-position="top"
-        data-theme="preferred_color_scheme"
-        data-lang="pt"
-        crossorigin="anonymous"
-        async>
-</script>
