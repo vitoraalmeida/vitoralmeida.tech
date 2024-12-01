@@ -57,7 +57,7 @@ window.onscroll = function() {
     document.getElementById("navbar").style.top = "-55px";
     document.getElementById("footer").style.bottom= "-50px";
   }
-  if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
+  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
     document.getElementById("navbar").style.top = "0";
     document.getElementById("footer").style.bottom = "0";
   }
