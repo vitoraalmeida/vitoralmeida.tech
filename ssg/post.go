@@ -1,7 +1,6 @@
 package ssg
 
 import (
-	"fmt"
 	"io/fs"
 	"log"
 	"os"
