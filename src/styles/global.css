@@ -37,6 +37,10 @@ main {
   body {
     margin: 0 10px;
   }
+
+  .header {
+    margin: 0 10px;
+  }
 }
 
 a {
