@@ -486,5 +486,7 @@ pre > code {
 }
 
 
-/* markdown */
-
+/* giscus = comentários*/
+.giscus {
+  margin-bottom: 2rem;
+}
