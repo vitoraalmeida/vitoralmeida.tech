@@ -273,7 +273,7 @@ ul {
 /* contact-list */
 .contact-list {
   margin-top: 1rem;
-  margin-bottom: 3rem;
+  padding-bottom: 4rem;
 }
 
 .contact-list__title {
@@ -498,5 +498,5 @@ pre > code {
 /* giscus = comentários*/
 .giscus {
   margin-top: 2rem;
-  margin-bottom: 3.5rem;
+  padding-bottom: 3.5rem;
 }
