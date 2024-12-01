@@ -103,7 +103,7 @@ ul {
 /*  intro */
 .intro {
   color: #9fa0a1;
-  margin-top: 1.4rem;
+  margin: 0 1rem;
 }
 
 .intro__title {
@@ -209,7 +209,7 @@ ul {
 
 /* about */
 .about {
-  margin-top: 1.4rem;
+  margin: 0 1rem;
 }
 
 .about__title {
@@ -313,7 +313,7 @@ ul {
 
 /* blog page */
 .blog {
-  margin-top: 1.4rem;
+  margin: 0 1rem;
 }
 
 .blog-page {
@@ -467,7 +467,7 @@ pre > code {
 
 /* portifolio */
 .portfolio {
-  margin-top: 1.4rem;
+  margin: 0 1rem;
 }
 
 .portfolio__title {
