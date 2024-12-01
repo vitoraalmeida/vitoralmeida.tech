@@ -32,7 +32,7 @@ Por exemplo, se identificamos que o agente é alguém muito qualificado e possui
 
 Além disso, a depender da qualificação do adversário, algumas medidas tomadas podem ser inefetivas, sendo apenas uma questão de tempo até serem superadas. Então, se para adotar tal medida foi necessário montar um esquema complexo de ser implementado e mantido, que pode não funcionar se uma pecinha do quebra-cabeça não funcionar direito, talvez não valha tanto o esforço, já que sabemos que em algum momento ela vai ser suplantada.
 
-Em resumo, como quase tudo em TI, podemos ligar o "senior mode" e dizer: depende. 
+Em resumo, como quase tudo em TI, podemos ligar o modo sênior, dizer "depende..." e receber os aplausos.
 
 ![palmas exageradas](/public/posts_images/clapping.gif)
 
@@ -126,6 +126,8 @@ Há cenários em que isso pode fazer total sentido, como quando trabalhamos numa
 
 Então, ter um usuário diferente que possui todas as permissões do usuário root quando quiser é, na prática, ter dois usuários root.
 
+![Meme mostrando um fantasma tentando assustar alguém dizendo "boo", mas não consegue. Então diz "sudo boo" e enfim assuta](/public/posts_images/sudo-meme.jpg)
+
 ### Usar um firewall
 
 Ok, quem não quer um muro flamejante queimando todo e qualquer intruso que tentar acessar seu sistema de forma indevida? O nome *firewall* pode dar a entender que basta utilizá-lo para tornar sua rede segura. No entanto, a depender do caso, ele pode apenas adicionar complexidade na manutenção do sistema e nem ajudar tanto.
@@ -136,4 +138,6 @@ Já num caso em que tenhamos algum serviço exposto publicamente e, por algum mo
 
 ## Que recomendação seguir, então?
 
-Não quero dizer que as medidas sugeridas sejam completamente ruins, mas apenas dizer que devemos utilizar as ferramentas e estratégias de forma crítica, sabendo para quais casos de uso elas servem e sabendo suas vantagens e desvantagens. Eu mesmo utilizei alguma(s) dessas recomendações para blindar a máquina que serve este site.
+Não quero dizer que as medidas sugeridas sejam completamente ruins em si, mas apenas dizer que devemos utilizar as ferramentas e estratégias de forma crítica, sabendo para quais casos de uso elas servem e sabendo suas vantagens e desvantagens. Eu mesmo utilizei alguma(s) dessas recomendações para blindar a máquina que serve este site. A única forma de ter um servidor com segurança infalível é: não tenha um servidor. Fora isso, podemos sempre fazer o melhor possível nas condições possíveis.
+
+![Meme que diz: "Não dá para ser hackeado se você não fornecer um computador a alguém"](/public/posts_images/nao-seja-hackeado.png)
