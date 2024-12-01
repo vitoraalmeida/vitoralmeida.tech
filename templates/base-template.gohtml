@@ -58,6 +58,10 @@ window.onscroll = function() {
     document.getElementById("footer").style.bottom= "-50px";
   }
   prevScrollpos = currentScrollPos;
+  if (window.innerHeight + window.pageYOffset >= document.body.offsetHeight) {
+    document.getElementById("navbar").style.top = "0";
+    document.getElementById("footer").style.bottom = "0";
+  }
 } 
 </script>
 </html>
