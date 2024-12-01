@@ -404,7 +404,7 @@ ul {
 }
 
 .blog-post img {
-  max-width: 90%;
+  max-width: 100%;
   height: auto;
   margin-top: 1rem;
   display: inline-block;
