@@ -1,9 +1,13 @@
 package ssg
 
 import (
+	"fmt"
+	"io/fs"
 	"log"
 	"os"
 	"path/filepath"
+	"sort"
+	"strings"
 
 	"github.com/BurntSushi/toml"
 	"github.com/russross/blackfriday"
@@ -54,13 +58,16 @@ func getPostsLocations(postsRootPath string) []postLocation {
 	if err != nil {
 		log.Fatal(err)
 	}
+	// os diretórios dos posts são criados com uma numeração correspondente a ordem em que foram
+	// escritos. Para mostrar no site na ordem de lançamento, invertemos a ordem de escrita
+	sortFileNameDescend(postsPaths)
 
 	var pls []postLocation
 
 	for _, post := range postsPaths {
 		postDir := filepath.Join(postsRootPath, post.Name())
 		var pl postLocation
-		pl.name = post.Name()
+		pl.name = strings.SplitN(post.Name(), "-", 2)[1]
 		pl.meta = filepath.Join(postDir, "meta.toml")
 		pl.content = filepath.Join(postDir, "post.md")
 		if imagesExists(filepath.Join(postsRootPath, post.Name())) {
@@ -101,3 +108,8 @@ func imagesExists(path string) bool {
 	return false
 }
 
+func sortFileNameDescend(files []fs.DirEntry) {
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].Name() > files[j].Name()
+	})
+}
