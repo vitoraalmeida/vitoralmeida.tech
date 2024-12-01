@@ -3,7 +3,10 @@ package ssg
 import (
 	"bytes"
 	"fmt"
+	"io"
+	"log"
 	"os"
+	"path/filepath"
 	"text/template"
 )
 
@@ -11,6 +14,7 @@ type Page struct {
 	Title       string
 	Description string
 	Content     string
+	Images      string
 }
 
 func (p Page) generatePage(destination string) {
@@ -73,13 +77,44 @@ func GeneratePostsPages(posts []Post) {
 			panic(err)
 		}
 
-		fmt.Print(postPageContent.String())
-
 		postPage := Page{
 			Title:       post.Title,
 			Description: post.Description,
 			Content:     postPageContent.String(),
 		}
 		postPage.generatePage(fmt.Sprintf("src/blog/%s.html", post.FileName))
+		copyPostImages(post)
+	}
+}
+
+func copyPostImages(post Post) {
+	dst := "src/public/posts_images"
+	if len(post.ImagesDir) == 0 {
+		fmt.Println("Post não tem imagens")
+		return
+	}
+	imagesPaths, err := os.ReadDir(post.ImagesDir)
+	if err != nil {
+		panic(err)
+	}
+	for _, path := range imagesPaths {
+		fin, err := os.Open(filepath.Join(post.ImagesDir, path.Name()))
+		if err != nil {
+			log.Fatal(err)
+		}
+
+		defer fin.Close()
+
+		fout, err := os.Create(filepath.Join(dst, path.Name()))
+		if err != nil {
+			log.Fatal(err)
+		}
+		defer fout.Close()
+
+		_, err = io.Copy(fout, fin)
+
+		if err != nil {
+			log.Fatal(err)
+		}
 	}
 }

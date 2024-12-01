@@ -32,4 +32,10 @@ func createDestinationPaths() {
 	if err != nil {
 		log.Println(err)
 	}
+	postsImagesDir := "src/public/posts_images"
+	err = os.Mkdir(postsImagesDir, os.ModePerm)
+	if err != nil {
+		log.Println(err)
+	}
 }
+
