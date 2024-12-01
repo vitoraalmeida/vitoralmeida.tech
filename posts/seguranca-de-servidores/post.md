@@ -34,9 +34,7 @@ Além disso, a depender da qualificação do adversário, algumas medidas tomada
 
 Em resumo, como quase tudo em TI, podemos ligar o "senior mode" e dizer: depende. 
 
-![palmas lentas](/public/posts_images/palmas_lentas.gif)
-
-> <cite> palmas lentas </cite> 
+![palmas exageradas](/public/posts_images/clapping.gif)
 
 ## Sempre questione, ainda que seja amplamente aceito como verdade
 
