@@ -47,9 +47,6 @@ ul {
   list-style-type: none;
 }
 
-strong {
-  color: #c8cacb;
-}
 
 
 /* header */
@@ -372,6 +369,11 @@ strong {
 .blog-post {
   margin: 1.4rem 10px;
 }
+
+.blog-post strong {
+  color: #c8cacb;
+}
+
 .blog-post__article {
   font-size: 1.2rem;
   letter-spacing: -0.09px;
