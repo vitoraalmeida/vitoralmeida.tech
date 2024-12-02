@@ -10,13 +10,13 @@ Após tomar a decisão de alugar o servidor, surge a necessidade de protegê-lo 
 * Desabilitar o login por SSH com usuário root
 * Habilitar atualizações automáticas
 
-Mas será que tudo isso é necessário e, se não fizermos, estaremos inseguros?
+Mas será que tudo isso é **necessário** e, se não fizermos, estaremos inseguros?
 
 ## Depende...
 
-Como um profissional da área de segurança da informação, aprendi a sempre levar em consideração o contexto do ativo (aquilo que tem valor para uma organização e que deve ser protegido) para determinar a melhor forma de deixá-lo seguro. Segurança absoluta não existe, então devemos sempre tentar fazer o melhor possível, de acordo com as necessidades, com os meios disponíveis, mantendo um bom nível de conveniência.
+Como um profissional da área de segurança da informação, aprendi a sempre levar em consideração o contexto do **ativo** (aquilo que tem valor para uma organização e que deve ser protegido) para determinar a melhor forma de deixá-lo seguro. Segurança absoluta não existe, então devemos sempre tentar fazer o melhor possível, de acordo com as necessidades, com os meios disponíveis, mantendo um bom nível de conveniência.
 
-Fazer uma modelagem de ameaças ajuda a tomar uma decisão, então devemos nos perguntar pelo menos:
+Fazer uma **modelagem de ameaças** ajuda a tomar uma decisão, então devemos nos perguntar pelo menos:
 
 * Contra quem estamos nos protegendo (agente)?
 * Com quais ações devemos nos preocupar?
@@ -32,7 +32,7 @@ Por exemplo, se identificamos que o agente é alguém muito qualificado e possui
 
 Além disso, a depender da qualificação do adversário, algumas medidas tomadas podem ser inefetivas, sendo apenas uma questão de tempo até serem superadas. Então, se para adotar tal medida foi necessário montar um esquema complexo de ser implementado e mantido, que pode não funcionar se uma pecinha do quebra-cabeça não funcionar direito, talvez não valha tanto o esforço, já que sabemos que em algum momento ela vai ser suplantada.
 
-Em resumo, como quase tudo em TI, podemos ligar o modo sênior, dizer "depende..." e receber os aplausos.
+Em resumo, como quase tudo em TI, podemos ligar o modo sênior e dizer "depende...".
 
 ![palmas exageradas](/public/posts_images/clapping.gif)
 
@@ -44,9 +44,9 @@ Dito isso, vamos refletir sobre as recomendações citadas no início do texto.
 
 ### Alterar a porta padrão do SSH
 
-A porta 22 é amplamente conhecida como a que é utilizada pelo SSH. Pensando nisso, com o objetivo de atrapalhar a coleta de informações de um possível atacante, recomenda-se que troquemos a porta em que nosso serviço escuta. Supostamente, um atacante executando um `nmap` (utilitário que, dentre outras coisas, escaneia quais portas estão abertas num sistema) buscando pelas portas mais comuns, não veria que temos um SSH rodando no nosso servidor.
+A porta 22 é amplamente conhecida como a que é utilizada pelo SSH. Pensando nisso, com o objetivo de atrapalhar a coleta de informações de um possível atacante, recomenda-se que troquemos a porta em que nosso serviço escuta. **Supostamente**, um atacante executando um `nmap` (utilitário que, dentre outras coisas, escaneia quais portas estão abertas num sistema) buscando pelas portas mais comuns, não veria que temos um SSH rodando no nosso servidor.
 
-No entanto, as portas alternativas utilizadas pela grande maioria das pessoas seguem um certo padrão.
+No entanto, as portas alternativas utilizadas pela grande maioria das pessoas seguem um certo **padrão**.
 
 ```
 $ shodan stats --facets port ssh
@@ -65,7 +65,7 @@ Top 10 Results for Facet: port
 
 O [Shodan](https://www.shodan.io/) é uma ferramenta que mapeia os servidores expostos publicamente na Internet e consolida algumas informações sobre eles, como portas abertas, serviços executando em cada porta, qual tipo de dispositivo que está em execução etc. Ao se registrar no site, você tem acesso a uma API Key e, através dela, podemos ter acesso a algumas informações. Podemos ver na saída do comando acima, que, como esperado, a maioria dos serviços SSH está executando na porta 22. Já a segunda porta mais usada é a 2222, seguida de outras que são mais ou menos fáceis de lembrar.
 
-Podemos ver que, para dificultar de fato que um atacante adivinhe em qual porta seu serviço SSH está executando, deveríamos escolher uma porta de forma aleatória. Ainda assim, não existem tantas portas disponíveis (65535) e basta executar o `nmap` habilitando o scan em todas as portas para que o serviço seja descoberto (ex: `nmap -sS -Pn -T5 -p- <ip> `).
+Podemos ver que, para dificultar de fato que um atacante adivinhe em qual porta seu serviço SSH está executando, deveríamos escolher uma porta de forma **aleatória**. Ainda assim, não existem tantas portas disponíveis (65535) e basta executar o `nmap` habilitando o scan em todas as portas para que o serviço seja descoberto (ex: `nmap -sS -Pn -T5 -p- <ip> `).
 
 A base dessa abordagem é a chamada [**Segurança por Obscuridade**](https://pt.wikipedia.org/wiki/Seguran%C3%A7a_por_obscurantismo), apostando em esconder informações e confiando que é o suficiente para manter algo seguro. 
 
@@ -79,13 +79,13 @@ Além de não ser uma medida efetiva, alterar a porta pela qual você acessa seu
 
 ### Habilitar atualizações automáticas
 
-Um sistema desatualizado pode significar um sistema vulnerável. A partir do momento em que um software é publicado, ele está sujeito à crítica impiedosa dos hackers 👻. Principalmente, softwares que são amplamente usados, como Web Servers (ex.: Apache e Nginx) e sistemas de gerenciamento de conteúdo (ex.: Wordpress). Diariamente, testes de intrusão e análises de vulnerabilidades são executados em softwares como estes, de forma que utilizar uma versão antiga pode introduzir vulnerabilidades no seu sistema, pois a correção pode ter sido feita apenas nas versões mais novas.
+Um sistema desatualizado pode significar um sistema vulnerável. A partir do momento em que um software é publicado, ele está sujeito à crítica impiedosa dos *hackers* 👻. Principalmente, softwares que são amplamente usados, como Web Servers (ex.: Apache e Nginx) e sistemas de gerenciamento de conteúdo (ex.: Wordpress). Diariamente, testes de intrusão e análises de vulnerabilidades são executados em softwares como estes, de forma que utilizar uma versão antiga pode introduzir vulnerabilidades no seu sistema, pois a correção pode ter sido feita apenas nas versões mais novas.
 
 Uma das formas de garantir que o sistema esteja sempre com as versões mais atualizadas dos softwares é configurar para que ele seja atualizado automaticamente. Porém, existem atualizações que podem corromper o sistema por quebra de compatibilidade com a versão atual do sistema operacional, por conflitarem com outros softwares ou por dependerem de outros pacotes em versões diferentes da que você possui atualmente. Isso pode acarretar em indisponibilidade do seu sistema.
 
 Para aplicações que não são críticas, com poucos usuários simultâneos, que não lidam com transações financeiras, pode não ser um problema. Caso contrário, a indisponibilidade pode significar danos financeiros e dano à imagem de uma organização. Portanto, em contextos desse tipo, atualizações do sistema devem ser planejadas, possuir estratégias para se recuperar de desastres e voltar ao estado anterior. 
 
-Já em contextos menos críticos, uma indisponibilidade pode significar apenas uma pequena dor de cabeça, mas também é desagradável. A depender do número de serviços que você expõe publicamente no seu servidor e da frequência com que você o acessa, pode ser mais simples executar as atualizações manualmente, escolhendo cada pacote. Não necessariamente, você precisa da versão mais atual de um software.
+Já em contextos menos críticos, uma indisponibilidade pode significar apenas uma pequena dor de cabeça, mas também é desagradável. A depender do número de serviços que você expõe publicamente no seu servidor e da frequência com que você o acessa, pode ser mais simples executar as atualizações manualmente, escolhendo cada pacote. **Não necessariamente**, você precisa da versão mais atual de um software.
 
 ### Desabilitar o uso de senhas para acesso SSH
 
@@ -98,7 +98,7 @@ O arquivo de configuração do servidor SSH (`/etc/ssh/sshd_config`) traz o segu
 >
 > <cite>...</cite>
 
-Ou seja, aparentemente, a senha que você envia durante a conexão com SSH é transmitida em texto claro dentro do "túnel" até chegar no servidor remoto. Então isso quer dizer que a sua senha está exposta para qualquer um que intercepte a conexão possa ver? Não! Pois, a conexão com o servidor SSH acontece utilizando um par de chaves criptográficas para mascarar os dados que trafegam no estabelecimento da conexão com o servidor remoto. É a mesma coisa que acontece quando nos autenticamos na maioria dos sites que utilizam HTTPS. A nossa senha é encapsulada numa conexão SSL que trafega criptografada até chegar no servidor.
+Ou seja, **aparentemente**, a senha que você envia durante a conexão com SSH é transmitida em texto claro dentro do "túnel" até chegar no servidor remoto. Então isso quer dizer que a sua senha está exposta para qualquer um que intercepte a conexão possa ver? Não! Pois, a conexão com o servidor SSH acontece utilizando um par de chaves criptográficas para mascarar os dados que trafegam no estabelecimento da conexão com o servidor remoto. É a mesma coisa que acontece quando nos autenticamos na maioria dos sites que utilizam HTTPS. A nossa senha é encapsulada numa conexão SSL que trafega criptografada até chegar no servidor.
 
 Não é perfeitamente seguro utilizar senhas ao se conectar por SSH, como a própria [documentação](https://datatracker.ietf.org/doc/html/rfc4251#section-9.4.5) afirma:
 
@@ -112,7 +112,7 @@ O mecanismo de autenticação por senha assume que o servidor do SSH não foi co
 
 >  <cite>This risk can be mitigated by the use of passphrases on private keys; however, this is not an enforceable policy.  The use of smartcards, or other technology to make passphrases an enforceable policy is suggested.</cite>
 
-A mesma documentação do protocolo, agora na seção sobre a [autenticação com chaves](https://datatracker.ietf.org/doc/html/rfc4251#section-9.4.4), traz que o método também não é perfeito, pois assume que o dispositivo cliente também não foi comprometido. Ou seja, não é o uso de senhas nessa conexão que é especialmente inseguro, mas depende de um conjunto de fatores.
+A mesma documentação do protocolo, agora na seção sobre a [autenticação com chaves](https://datatracker.ietf.org/doc/html/rfc4251#section-9.4.4), traz que o método também não é perfeito, pois assume que o dispositivo cliente também não foi comprometido. Ou seja, não é o uso de senhas nessa conexão que é especialmente inseguro, mas depende de um **conjunto de fatores**.
 
 Usar senhas ainda é algo complicado, pois depende que sempre usemos senhas fortes e que tenhamos como armazená-las em lugares seguros. Então, de fato, pode ser que seja bom desabilitar a autenticação por senha e usar chaves, mas não é porque é inseguro em todo caso.
 
@@ -125,16 +125,16 @@ Quando usamos nosso computador pessoal, executamos diversos programas, fazemos d
 
 No entanto, num servidor, normalmente fazemos apenas atividades que exigem privilégios administrativos, como a ativação e execução de um serviço, atualização do sistema operacional, instalação e remoção de pacotes, aplicação de patches de segurança etc. Tudo isso exige permissão de administrador.
 
-A recomendação de desabilitar o login como usuário root (e criar um usuário comum para acessar o servidor) tem a premissa de impedir alguém de realizar ações destrutivas ou mal-intencionadas caso consiga acesso de forma indevida ao sistema. Mas, em se tratando de gerenciamento de um servidor, esse usuário comum que trabalha na manutenção do sistema precisa que sua conta possa executar algumas ações como administrador. Isso é feito, normalmente, adicionando o usuário no grupo `sudo`. Então, em momentos específicos, ele pode utilizar o comando `sudo` para elevar temporariamente seus privilégios e executar ações como se fosse o usuário root. 
+A recomendação de desabilitar o login como usuário root (e criar um usuário comum para acessar o servidor) tem a premissa de impedir alguém de realizar ações destrutivas ou mal-intencionadas caso consiga acesso de forma indevida ao sistema. Mas, em se tratando de gerenciamento de um servidor, esse usuário comum que trabalha na manutenção do sistema precisa que sua conta possa executar algumas ações como administrador. Isso é feito, normalmente, adicionando o usuário no grupo **sudo**. Então, em momentos específicos, ele pode utilizar o comando `sudo` para elevar temporariamente seus privilégios e executar ações como se fosse o usuário root. 
 
 Há cenários em que isso pode fazer total sentido, como quando trabalhamos numa equipe e temos diversas pessoas que possuem acesso ao servidor e trabalham na sua administração. Cada uma tem sua conta vinculada a uma identidade pessoal e, caso tenha as permissões necessárias, poderá realizar as atividades de manutenção. Assim, podemos saber quem foi a pessoa que executou determinadas ações no sistema através de logs. No entanto, em casos de um servidor pertencente a uma só pessoa, pode não fazer tanto sentido assim, já que apenas atividades administrativas são realizadas num servidor e apenas uma ou outra pessoa tem conhecimento das credenciais de acesso.
 
-Então, ter um usuário diferente que possui todas as permissões do usuário root quando quiser é, na prática, ter dois usuários root.
+Então, ter um usuário diferente que possui todas as permissões do usuário root quando quiser é, na prática, ter **dois usuários root**.
 
 
 ### Usar um firewall
 
-Ok, quem não quer um muro flamejante queimando todo e qualquer intruso que tentar acessar seu sistema de forma indevida? O nome *firewall* pode dar a entender que basta utilizá-lo para tornar sua rede segura. No entanto, a depender do caso, ele pode apenas adicionar complexidade na manutenção do sistema e nem ajudar tanto.
+Ok, quem não quer um **muro flamejante** queimando todo e qualquer intruso que tentar acessar seu sistema de forma indevida? O nome *firewall* pode dar a entender que basta utilizá-lo para tornar sua rede segura. No entanto, a depender do caso, ele pode apenas adicionar complexidade na manutenção do sistema e nem ajudar tanto.
 
 Se estamos usando um servidor para permitir acesso ao nosso site nas portas 80 e 443, e nada além disso, o que vai adiantar adicionar uma regra no firewall para permitir apenas o tráfego nessas portas? Se nos certificarmos de deixar apenas serviços desejados executando no sistema, já estamos permitindo exclusivamente o tráfego nas portas destes serviços. Seria como adicionar um muro flamejante com apenas uma porta pela qual é seguro passar, para apenas chegar em outro muro com uma outra porta disponível, no mesmo lugar.
 
@@ -142,6 +142,6 @@ Já num caso em que tenhamos algum serviço exposto publicamente e, por algum mo
 
 ## Que recomendação seguir, então?
 
-Não quero dizer que as medidas sugeridas sejam completamente ruins em si, mas apenas dizer que devemos utilizar as ferramentas e estratégias de forma crítica, sabendo para quais casos de uso elas servem e sabendo suas vantagens e desvantagens. Eu mesmo utilizei alguma(s) dessas recomendações para blindar a máquina que serve este site. A única forma de ter um servidor com segurança infalível é: não tenha um servidor. Fora isso, podemos sempre fazer o melhor possível nas condições possíveis.
+Não quero dizer que as medidas sugeridas sejam completamente ruins em si, mas apenas dizer que devemos utilizar as ferramentas e estratégias de **forma crítica**, sabendo para quais casos de uso elas servem e sabendo suas vantagens e desvantagens. Eu mesmo utilizei alguma(s) dessas recomendações para blindar a máquina que serve este site. A única forma de ter um servidor com segurança infalível é: não tenha um servidor. Fora isso, podemos sempre fazer **o melhor possível nas condições possíveis**.
 
 ![Meme que diz: "Não dá para ser hackeado se você não fornecer um computador a alguém"](/public/posts_images/nao-seja-hackeado.png)
