@@ -1,3 +1,5 @@
+![Canivete suiço com funções demais: overengineering](/public/posts_images/overengineering.png)
+
 ## Motivação
 
 Quando eu estava colocando meu site pessoal no ar, decidi usar um VPS (Virtual Private Server), pois me proporcionaria flexibilidade e customização para atender minhas necessidades. Para servir um simples site estático, pode ser uma escolha ruim, pois existem formas mais baratas e diretas para isso, como o [github pages](https://pages.github.com/). Porém, também gostaria de poder ter um servidor remoto para fins de estudos e poder servir mais projetos pessoais ao mesmo tempo.
