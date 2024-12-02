@@ -47,6 +47,10 @@ ul {
   list-style-type: none;
 }
 
+strong {
+  color: #c8cacb;
+}
+
 
 /* header */
 .header {
