@@ -75,6 +75,8 @@ A base dessa abordagem é a chamada [**Segurança por Obscuridade**](https://pt.
 
 Além de não ser uma medida efetiva, alterar a porta pela qual você acessa seu servidor SSH pode te confundir caso você trabalhe sozinho e tenha uma memória ruim ou caso trabalhe numa equipe maior. Onde você vai documentar qual porta está sendo usada? As pessoas que trabalham com você sabem dessa alteração e dessa documentação? Claro que nesse simples caso de uma porta SSH não é tão complicado de resolver, mas quando tratamos de serviços e ativos mais críticos, com mais pessoas envolvidas, a segurança por obscuridade acaba gerando complexidades, dificuldades de entendimento pelos membros de um time e, além de tudo, não funciona.
 
+![Meme sobre segurança por obscuridade. Uma torrada no centro de um labirinto e um pombo. A torrada é o ativo, o labirinto é a medida obscura e o pombo o hacker](/public/posts_images/security-obscurity.jpg)
+
 ### Habilitar atualizações automáticas
 
 Um sistema desatualizado pode significar um sistema vulnerável. A partir do momento em que um software é publicado, ele está sujeito à crítica impiedosa dos hackers 👻. Principalmente, softwares que são amplamente usados, como Web Servers (ex.: Apache e Nginx) e sistemas de gerenciamento de conteúdo (ex.: Wordpress). Diariamente, testes de intrusão e análises de vulnerabilidades são executados em softwares como estes, de forma que utilizar uma versão antiga pode introduzir vulnerabilidades no seu sistema, pois a correção pode ter sido feita apenas nas versões mais novas.
@@ -116,6 +118,9 @@ Usar senhas ainda é algo complicado, pois depende que sempre usemos senhas fort
 
 ### Desabilitar o login por SSH com usuário root
 
+
+![Meme mostrando um fantasma tentando assustar alguém dizendo "boo", mas não consegue. Então diz "sudo boo" e enfim assuta](/public/posts_images/sudo-meme.jpg)
+
 Quando usamos nosso computador pessoal, executamos diversos programas, fazemos downloads, acessamos websites, clicamos em links enviados por terceiros e tudo isso é perigoso de ser feito por usuários com privilégios elevados no sistema. Se acessarmos links ou programas maliciosos, um usuário privilegiado pode ser usado para corromper o sistema de formas imprevisíveis. Por isso, utilizamos contas de usuário normal para o dia a dia e temos uma outra com privilégios administrativos para manutenção do sistema.
 
 No entanto, num servidor, normalmente fazemos apenas atividades que exigem privilégios administrativos, como a ativação e execução de um serviço, atualização do sistema operacional, instalação e remoção de pacotes, aplicação de patches de segurança etc. Tudo isso exige permissão de administrador.
@@ -126,7 +131,6 @@ Há cenários em que isso pode fazer total sentido, como quando trabalhamos numa
 
 Então, ter um usuário diferente que possui todas as permissões do usuário root quando quiser é, na prática, ter dois usuários root.
 
-![Meme mostrando um fantasma tentando assustar alguém dizendo "boo", mas não consegue. Então diz "sudo boo" e enfim assuta](/public/posts_images/sudo-meme.jpg)
 
 ### Usar um firewall
 
