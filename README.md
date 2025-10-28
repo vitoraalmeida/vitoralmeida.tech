@@ -1,2 +1,2 @@
-# vitoralmeida.net
+# vitoralmeida.tech
 Site pessoal
