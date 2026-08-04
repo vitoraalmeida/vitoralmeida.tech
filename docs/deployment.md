@@ -123,3 +123,52 @@ curl --fail --location --silent --show-error https://vitoralmeida.tech/
 
 Registre no histórico operacional o commit publicado, o commit restaurado e o
 resultado do health check.
+
+## 7. Racional da arquitetura
+
+O deployment foi estruturado para que o conteúdo validado pela integração
+contínua seja exatamente o conteúdo publicado em produção. O GitHub Actions
+gera `dist/` uma única vez, cria um pacote imutável e envia esse artefato para a
+VPS. O servidor não clona o repositório, não instala a toolchain de Go e não
+executa um novo build, evitando diferenças entre os ambientes de CI e produção.
+
+A publicação acontece somente depois que o pacote foi completamente extraído
+e validado em um diretório temporário. Enquanto isso, o Nginx continua servindo
+a release anterior. A nova versão entra em produção por meio da troca atômica
+do symlink `current`, impedindo que usuários recebam uma combinação de arquivos
+antigos e novos durante o deployment.
+
+Cada release é identificada pelo SHA do commit:
+
+```text
+releases/<commit-sha>/
+```
+
+Essa organização permite identificar a versão ativa, preservar releases
+anteriores e executar rollback sem reconstruir o site. Depois da troca do
+symlink, o script realiza um health check público. Se a validação falhar,
+`current` é restaurado para o alvo anterior e a release defeituosa é removida.
+
+O checksum SHA-256 confirma que o pacote recebido corresponde ao pacote
+produzido pelo workflow. A validação dos caminhos e tipos de arquivos do
+arquivo compactado impede que a extração escreva fora do diretório da release.
+O lock adquirido com `flock` impede que dois deployments alterem o estado da
+aplicação simultaneamente.
+
+O acesso remoto segue o princípio de privilégio mínimo. O GitHub Actions usa o
+usuário exclusivo `site-deploy`, que não possui acesso a `sudo` e pode modificar
+somente a árvore da aplicação. Alterações no Nginx e em outras configurações do
+sistema continuam sendo responsabilidades administrativas separadas.
+
+As responsabilidades também são divididas entre os componentes:
+
+- o GitHub Actions executa testes, validação, build, empacotamento e transporte;
+- `deploy-static.sh` valida o pacote, controla o lock, cria a release, ativa a
+  versão, executa o health check, realiza rollback e remove arquivos antigos;
+- o Nginx serve exclusivamente o conteúdo apontado por `current`.
+
+Manter a lógica operacional em um script versionado torna o processo mais
+fácil de testar, executar manualmente e diagnosticar do que distribuir uma
+sequência extensa de comandos remotos dentro do workflow. O mesmo commit pode
+ser reenviado com segurança, pois releases existentes são validadas e
+reutilizadas sem corromper o estado da aplicação.
