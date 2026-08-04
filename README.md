@@ -1,171 +1,135 @@
 # vitoralmeida.tech
 
-Gerador de site estático desenvolvido em Go para meu site pessoal. 
+Gerador estático do site pessoal de Vitor Almeida. Posts em Markdown,
+metadados TOML, templates HTML e arquivos estáticos são transformados pelo
+`sitegen` no artefato canônico `dist/`.
 
-O conteúdo dos posts é escrito em Markdown, os metadados ficam em TOML e a
-apresentação é composta por templates HTML e CSS. Ao executar o gerador, os
-arquivos prontos para publicação são gravados em `src/`.
+## Requisitos
 
-## Tecnologias
-
-- [Go 1.21](https://go.dev/)
-- [`text/template`](https://pkg.go.dev/text/template), da biblioteca padrão
-- [Blackfriday](https://github.com/russross/blackfriday), para converter
-  Markdown em HTML
-- [BurntSushi/toml](https://github.com/BurntSushi/toml), para ler os metadados
-  dos posts
-- HTML e CSS
-- [Giscus](https://giscus.app/), para os comentários dos posts
-
-## Como o gerador funciona
-
-O ponto de entrada é `main.go`. A geração segue este fluxo:
-
-1. Lê os diretórios existentes em `posts/`.
-2. Carrega o arquivo `meta.toml` e converte o `post.md` de cada publicação para
-   HTML.
-3. Ordena os posts pelo nome do diretório, em ordem decrescente.
-4. Monta a listagem usada na página inicial e no blog.
-5. Combina os templates de página com `templates/base-template.gohtml`.
-6. Gera as páginas HTML em `src/` e copia as imagens dos posts para
-   `src/public/posts_images/`.
-
-As páginas geradas são:
-
-```text
-src/
-├── index.html
-├── about.html
-├── blog.html
-├── portfolio.html
-├── 404.html
-└── blog/
-    └── <slug-do-post>.html
-```
-
+- Go 1.26 ou versão compatível;
+- GNU Make;
+- Python 3, opcionalmente, para servir o resultado localmente.
 
 ## Estrutura do projeto
 
 ```text
 .
-├── main.go                  # Orquestra a geração do site
-├── ssg/
-│   ├── page.go              # Renderiza páginas, posts e copia imagens
-│   ├── post.go              # Lê, ordena e converte os posts
-│   └── post-listing.go      # Monta a listagem de publicações
-├── templates/
-│   ├── base-template.gohtml # Estrutura HTML comum a todas as páginas
-│   └── *.gohtml             # Conteúdo das páginas e dos posts
-├── posts/
-│   └── NN-slug/
-│       ├── meta.toml
-│       ├── post.md
-│       └── images/          # Opcional
-└── src/                     # Arquivos estáticos e saída do gerador
+├── cmd/sitegen/       # CLI do gerador
+├── internal/sitegen/  # carregamento, validação, renderização e build
+├── content/posts/     # posts e assets próprios de cada post
+├── templates/         # templates HTML
+├── static/            # arquivos copiados sem transformação
+├── dist/              # artefato gerado; não versionado
+├── docs/              # documentação operacional
+├── scripts/           # scripts de deployment
+└── Makefile           # contrato comum de desenvolvimento e CI
 ```
 
-## Executando localmente
+`dist/` contém somente arquivos gerados. Nenhum conteúdo mantido manualmente
+deve ser colocado nele.
 
-### Requisitos
+## Como criar um post
 
-- Go 1.21 ou uma versão compatível
-
-Na raiz do repositório, execute:
-
-```bash
-go run .
-```
-
-O próprio comando baixa as dependências declaradas em `go.mod`, quando
-necessário, e gera o site em `src/`.
-
-Para visualizar o resultado, sirva esse diretório com um servidor HTTP local.
-Por exemplo, caso tenha Python 3 instalado:
-
-```bash
-python3 -m http.server 8000 --directory src
-```
-
-Depois, acesse `http://localhost:8000`.
-
-> O gerador usa caminhos relativos ao diretório atual e, portanto, deve ser
-> executado a partir da raiz do repositório.
-
-## Criando um post
-
-Crie um diretório dentro de `posts/` com um prefixo numérico, seguido de hífen e
-do slug que será usado na URL:
+Crie um diretório numerado em `content/posts/`. O nome deve usar letras
+minúsculas, números e hífens:
 
 ```text
-posts/03-meu-novo-post/
+content/posts/03-meu-novo-post/
+├── meta.toml
+├── post.md
+└── assets/
+    └── diagram.png
 ```
 
-O prefixo define a posição da publicação. Como a ordenação é lexicográfica e
-decrescente, recomenda-se manter os números com a mesma quantidade de dígitos.
-O exemplo acima será publicado em:
+O prefixo numérico define a ordenação; os maiores aparecem primeiro. A parte
+depois do primeiro hífen é o slug, portanto o exemplo será publicado em
+`/blog/meu-novo-post.html`.
 
-```text
-/blog/meu-novo-post.html
-```
-
-Adicione um `meta.toml`:
+`meta.toml` deve conter título, descrição e data no formato `DD/MM/YYYY`:
 
 ```toml
 title = "Título do post"
 description = "Uma breve descrição"
-date = "30/07/2026"
+date = "04/08/2026"
 ```
 
-Escreva o conteúdo em `post.md`:
+Escreva o conteúdo em `post.md`. Assets pertencem ao próprio post e devem ser
+referenciados pelo slug para evitar colisões com outros posts:
 
 ```markdown
-## Primeiro tópico
-
-Conteúdo do post em Markdown.
+![Diagrama](/public/posts/meu-novo-post/diagram.png)
 ```
 
-Se o post tiver imagens, coloque-as no diretório opcional `images/`:
+Durante o build, `assets/diagram.png` será copiado para
+`dist/public/posts/meu-novo-post/diagram.png`.
+
+## Como validar o conteúdo
+
+```bash
+make check
+```
+
+A validação não escreve em `dist/`. Ela verifica diretórios de entrada,
+templates obrigatórios, nomes e slugs, metadados, datas, assets referenciados e
+destinos duplicados.
+
+## Como executar os testes
+
+```bash
+make test
+```
+
+Os testes unitários e de integração protegem o contrato completo do gerador.
+Quando uma alteração intencional modificar o HTML aprovado nos golden tests,
+revise a diferença e atualize os arquivos explicitamente:
+
+```bash
+go test ./... -update
+```
+
+## Como gerar o site
+
+```bash
+make build
+make verify
+```
+
+`make build` recria `dist/`; `make verify` confirma os arquivos obrigatórios.
+O gerador constrói a saída em um diretório temporário e somente substitui seu
+destino após renderização, cópia e validação completas.
+
+A CLI também pode ser executada diretamente com caminhos explícitos:
+
+```bash
+go run ./cmd/sitegen build \
+  --content ./content \
+  --templates ./templates \
+  --static ./static \
+  --output ./dist
+```
+
+## Como visualizar localmente
+
+```bash
+make build
+python3 -m http.server 8080 --directory dist
+```
+
+Abra `http://localhost:8080`. O servidor simples do Python espera os caminhos
+com `.html`; resolução sem extensão e a página 404 personalizada dependem das
+regras do servidor de produção.
+
+## Como funciona o deployment
+
+O contrato de publicação é sempre o mesmo:
 
 ```text
-posts/03-meu-novo-post/images/exemplo.png
+content + templates + static → sitegen → dist/ → release imutável → Nginx
 ```
 
-No Markdown, referencie a imagem pelo caminho público:
-
-```markdown
-![Descrição da imagem](/public/posts_images/exemplo.png)
-```
-
-Todos os arquivos de imagem são copiados para o mesmo diretório de destino.
-Por isso, os nomes precisam ser únicos entre todos os posts para evitar que uma
-imagem sobrescreva outra durante a geração.
-
-## Alterando páginas e layout
-
-- O conteúdo das páginas fica em `templates/index.gohtml`,
-  `templates/about.gohtml`, `templates/blog.gohtml`,
-  `templates/portfolio.gohtml` e `templates/404.gohtml`.
-- A estrutura comum, os metadados, a navegação, o rodapé e os scripts globais
-  ficam em `templates/base-template.gohtml`.
-- A apresentação de um post e a listagem de posts ficam, respectivamente, em
-  `templates/post.gohtml` e `templates/post-listing.gohtml`.
-- Os estilos globais ficam em `src/styles/global.css`.
-- Títulos e descrições HTML das páginas são definidos nas chamadas a
-  `ssg.GeneratePage` em `main.go`.
-
-Após qualquer alteração nos templates, posts ou metadados, execute novamente
-`go run .`.
-
-
-## Comportamentos a considerar
-
-- O gerador espera que cada item de `posts/` seja um diretório no formato
-  `NN-slug`, contendo obrigatoriamente `meta.toml` e `post.md`.
-- A data é exibida exatamente como informada no TOML; ela não participa da
-  ordenação.
-- A geração cria ou sobrescreve os arquivos correspondentes, mas não limpa
-  páginas e imagens antigas. Ao renomear ou excluir um post, pode ser necessário
-  remover manualmente os artefatos obsoletos de `src/blog/` e
-  `src/public/posts_images/`.
-- O HTML produzido a partir do Markdown e dos templates é inserido diretamente
-  na página base. O conteúdo do repositório deve ser considerado confiável.
+A integração contínua executa `make test`, `make check`, `make build` e
+`make verify`. No deployment, o conteúdo exato de `dist/` é empacotado, tem seu
+checksum validado na VPS e vira uma release identificada pelo commit. O symlink
+`current` é trocado atomicamente; uma falha no health check restaura a release
+anterior. A infraestrutura e as credenciais necessárias estão documentadas em
+`docs/deployment.md`.
