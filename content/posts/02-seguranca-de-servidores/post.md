@@ -1,4 +1,4 @@
-![Canivete suiço com funções demais: overengineering](/public/posts_images/overengineering.png)
+![Canivete suiço com funções demais: overengineering](/public/posts/seguranca-de-servidores/overengineering.png)
 
 ## Motivação
 
@@ -36,7 +36,7 @@ Além disso, a depender da qualificação do adversário, algumas medidas tomada
 
 Em resumo, como quase tudo em TI, podemos ligar o modo sênior e dizer "depende...".
 
-![palmas exageradas](/public/posts_images/clapping.gif)
+![palmas exageradas](/public/posts/seguranca-de-servidores/clapping.gif)
 
 ## Sempre questione, ainda que seja amplamente aceito como verdade
 
@@ -77,7 +77,7 @@ A base dessa abordagem é a chamada [**Segurança por Obscuridade**](https://pt.
 
 Além de não ser uma medida efetiva, alterar a porta pela qual você acessa seu servidor SSH pode te confundir caso você trabalhe sozinho e tenha uma memória ruim ou caso trabalhe numa equipe maior. Onde você vai documentar qual porta está sendo usada? As pessoas que trabalham com você sabem dessa alteração e dessa documentação? Claro que nesse simples caso de uma porta SSH não é tão complicado de resolver, mas quando tratamos de serviços e ativos mais críticos, com mais pessoas envolvidas, a segurança por obscuridade acaba gerando complexidades, dificuldades de entendimento pelos membros de um time e, além de tudo, não funciona.
 
-![Meme sobre segurança por obscuridade. Uma torrada no centro de um labirinto e um pombo. A torrada é o ativo, o labirinto é a medida obscura e o pombo o hacker](/public/posts_images/security-obscurity.jpg)
+![Meme sobre segurança por obscuridade. Uma torrada no centro de um labirinto e um pombo. A torrada é o ativo, o labirinto é a medida obscura e o pombo o hacker](/public/posts/seguranca-de-servidores/security-obscurity.jpg)
 
 ### Habilitar atualizações automáticas
 
@@ -121,7 +121,7 @@ Usar senhas ainda é algo complicado, pois depende que sempre usemos senhas fort
 ### Desabilitar o login por SSH com usuário root
 
 
-![Meme mostrando um fantasma tentando assustar alguém dizendo "boo", mas não consegue. Então diz "sudo boo" e enfim assuta](/public/posts_images/sudo-meme.jpg)
+![Meme mostrando um fantasma tentando assustar alguém dizendo "boo", mas não consegue. Então diz "sudo boo" e enfim assuta](/public/posts/seguranca-de-servidores/sudo-meme.jpg)
 
 Quando usamos nosso computador pessoal, executamos diversos programas, fazemos downloads, acessamos websites, clicamos em links enviados por terceiros e tudo isso é perigoso de ser feito por usuários com privilégios elevados no sistema. Se acessarmos links ou programas maliciosos, um usuário privilegiado pode ser usado para corromper o sistema de formas imprevisíveis. Por isso, utilizamos contas de usuário normal para o dia a dia e temos uma outra com privilégios administrativos para manutenção do sistema.
 
@@ -146,4 +146,4 @@ Já num caso em que tenhamos algum serviço exposto publicamente e, por algum mo
 
 Não quero dizer que as medidas sugeridas sejam completamente ruins em si, mas apenas dizer que devemos utilizar as ferramentas e estratégias de **forma crítica**, sabendo para quais casos de uso elas servem e sabendo suas vantagens e desvantagens. Eu mesmo utilizei alguma(s) dessas recomendações para blindar a máquina que serve este site. A única forma de ter um servidor com segurança infalível é: não tenha um servidor. Fora isso, podemos sempre fazer **o melhor possível nas condições possíveis**.
 
-![Meme que diz: "Não dá para ser hackeado se você não fornecer um computador a alguém"](/public/posts_images/nao-seja-hackeado.png)
+![Meme que diz: "Não dá para ser hackeado se você não fornecer um computador a alguém"](/public/posts/seguranca-de-servidores/nao-seja-hackeado.png)

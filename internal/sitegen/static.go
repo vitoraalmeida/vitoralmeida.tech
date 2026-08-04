@@ -15,6 +15,19 @@ func CopyStatic(source, destination string) error {
 	return nil
 }
 
+func copyPostAssets(posts []Post, output string) error {
+	for _, post := range posts {
+		if post.AssetsDir == "" {
+			continue
+		}
+		destination := filepath.Join(output, "public", "posts", post.Slug)
+		if err := copyDirectoryContents(post.AssetsDir, destination); err != nil {
+			return fmt.Errorf("copy assets for post %q: %w", post.Slug, err)
+		}
+	}
+	return nil
+}
+
 func copyDirectoryContents(source, destination string) error {
 	return filepath.WalkDir(source, func(path string, entry fs.DirEntry, walkErr error) error {
 		if walkErr != nil {

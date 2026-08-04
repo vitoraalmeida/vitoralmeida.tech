@@ -21,12 +21,14 @@ func main() {
 
 func run(args []string) error {
 	if len(args) == 0 {
-		return errors.New("expected a command: build or version")
+		return errors.New("expected a command: build, check, or version")
 	}
 
 	switch args[0] {
 	case "build":
-		return runBuild(args[1:])
+		return runConfiguredCommand("build", args[1:], sitegen.Build)
+	case "check":
+		return runConfiguredCommand("check", args[1:], sitegen.Check)
 	case "version":
 		fmt.Println(version)
 		return nil
@@ -35,8 +37,8 @@ func run(args []string) error {
 	}
 }
 
-func runBuild(args []string) error {
-	flags := flag.NewFlagSet("build", flag.ContinueOnError)
+func runConfiguredCommand(command string, args []string, execute func(sitegen.Config) error) error {
+	flags := flag.NewFlagSet(command, flag.ContinueOnError)
 	config := sitegen.Config{}
 	flags.StringVar(&config.ContentDir, "content", "./content", "content directory")
 	flags.StringVar(&config.TemplatesDir, "templates", "./templates", "templates directory")
@@ -49,5 +51,5 @@ func runBuild(args []string) error {
 		return fmt.Errorf("unexpected positional arguments: %v", flags.Args())
 	}
 
-	return sitegen.Build(config)
+	return execute(config)
 }

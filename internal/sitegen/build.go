@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 type Config struct {
@@ -19,11 +20,7 @@ func Build(config Config) error {
 	if err != nil {
 		return err
 	}
-	if err := validateInputs(config); err != nil {
-		return err
-	}
-
-	posts, err := LoadPosts(filepath.Join(config.ContentDir, "posts"))
+	posts, err := check(config)
 	if err != nil {
 		return err
 	}
@@ -44,6 +41,9 @@ func Build(config Config) error {
 	if err := CopyStatic(config.StaticDir, temporary); err != nil {
 		return err
 	}
+	if err := copyPostAssets(posts, temporary); err != nil {
+		return err
+	}
 	if err := validateOutput(temporary); err != nil {
 		return err
 	}
@@ -52,6 +52,15 @@ func Build(config Config) error {
 	}
 
 	return nil
+}
+
+func Check(config Config) error {
+	config, err := normalizeConfig(config)
+	if err != nil {
+		return err
+	}
+	_, err = check(config)
+	return err
 }
 
 func normalizeConfig(config Config) (Config, error) {
@@ -91,7 +100,22 @@ func validateInputs(config Config) error {
 			return fmt.Errorf("validate %s directory %q: not a directory", name, path)
 		}
 	}
+	for name, input := range map[string]string{
+		"content": config.ContentDir, "templates": config.TemplatesDir, "static": config.StaticDir,
+	} {
+		if pathContains(input, config.OutputDir) || pathContains(config.OutputDir, input) {
+			return fmt.Errorf("output directory %q must not overlap %s directory %q", config.OutputDir, name, input)
+		}
+	}
 	return nil
+}
+
+func pathContains(parent, child string) bool {
+	relative, err := filepath.Rel(parent, child)
+	if err != nil || filepath.IsAbs(relative) {
+		return false
+	}
+	return relative == "." || (relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)))
 }
 
 func replaceOutput(source, destination string) error {

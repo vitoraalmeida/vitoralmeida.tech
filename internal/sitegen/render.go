@@ -3,15 +3,15 @@ package sitegen
 import (
 	"bytes"
 	"fmt"
+	"html/template"
 	"os"
 	"path/filepath"
-	"text/template"
 )
 
 type Page struct {
 	Title       string
 	Description string
-	Content     string
+	Content     template.HTML
 }
 
 func renderSite(templatesDir, output string, posts []Post) error {
@@ -21,7 +21,8 @@ func renderSite(templatesDir, output string, posts []Post) error {
 	}
 
 	pages := []struct {
-		name, title, description, nested string
+		name, title, description string
+		nested                   template.HTML
 	}{
 		{"index", "Vitor Almeida", "Página pessoal de Vitor Almeida", listing},
 		{"blog", "Vitor Almeida - Blog", "Blog de Vitor Almeida", listing},
@@ -47,8 +48,9 @@ func renderSite(templatesDir, output string, posts []Post) error {
 	}
 	for _, post := range posts {
 		content, err := renderTemplate(filepath.Join(templatesDir, "post.gohtml"), struct {
-			Title, Date, Description, Content string
-		}{post.Title, post.Date, post.Description, string(post.Content)})
+			Title, Date, Description string
+			Content                  template.HTML
+		}{post.Title, post.Date, post.Description, post.Content})
 		if err != nil {
 			return err
 		}
@@ -57,16 +59,11 @@ func renderSite(templatesDir, output string, posts []Post) error {
 		}, filepath.Join(blogDir, post.Slug+".html")); err != nil {
 			return err
 		}
-		if post.ImagesDir != "" {
-			if err := copyDirectoryContents(post.ImagesDir, filepath.Join(output, "public", "posts_images")); err != nil {
-				return fmt.Errorf("copy images for post %q: %w", post.Slug, err)
-			}
-		}
 	}
 	return nil
 }
 
-func renderTemplate(path string, data any) (string, error) {
+func renderTemplate(path string, data any) (template.HTML, error) {
 	tmpl, err := template.ParseFiles(path)
 	if err != nil {
 		return "", fmt.Errorf("parse template %q: %w", path, err)
@@ -75,7 +72,7 @@ func renderTemplate(path string, data any) (string, error) {
 	if err := tmpl.Execute(&output, data); err != nil {
 		return "", fmt.Errorf("execute template %q: %w", path, err)
 	}
-	return output.String(), nil
+	return template.HTML(output.String()), nil // Repository templates are trusted HTML.
 }
 
 func RenderPage(baseTemplate string, page Page, destination string) error {

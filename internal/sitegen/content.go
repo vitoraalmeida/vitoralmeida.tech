@@ -2,6 +2,7 @@ package sitegen
 
 import (
 	"fmt"
+	"html/template"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -16,9 +17,11 @@ type Post struct {
 	Title       string
 	Date        string
 	Description string
-	Content     []byte
+	Content     template.HTML
+	Markdown    []byte
 	Slug        string
-	ImagesDir   string
+	AssetsDir   string
+	SourceDir   string
 }
 
 type postMeta struct {
@@ -66,20 +69,22 @@ func loadPost(postsRoot string, entry fs.DirEntry) (Post, error) {
 		return Post{}, fmt.Errorf("load post %q content: %w", entry.Name(), err)
 	}
 
-	imagesDir := filepath.Join(postDir, "images")
-	if _, err := os.Stat(imagesDir); errorsIsNotExist(err) {
-		imagesDir = ""
+	assetsDir := filepath.Join(postDir, "assets")
+	if _, err := os.Stat(assetsDir); errorsIsNotExist(err) {
+		assetsDir = ""
 	} else if err != nil {
-		return Post{}, fmt.Errorf("inspect post %q images: %w", entry.Name(), err)
+		return Post{}, fmt.Errorf("inspect post %q assets: %w", entry.Name(), err)
 	}
 
 	return Post{
 		Title:       metadata.Title,
 		Date:        metadata.Date,
 		Description: metadata.Description,
-		Content:     blackfriday.MarkdownCommon(markdown),
+		Content:     template.HTML(blackfriday.MarkdownCommon(markdown)), // Markdown files are trusted repository content.
+		Markdown:    markdown,
 		Slug:        parts[1],
-		ImagesDir:   imagesDir,
+		AssetsDir:   assetsDir,
+		SourceDir:   postDir,
 	}, nil
 }
 
