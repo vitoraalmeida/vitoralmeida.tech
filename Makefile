@@ -11,16 +11,14 @@ check:
 		--static ./static
 
 clean:
-	rm -rf dist .tmp
+	rm -rf dist
 
-build: clean
-	mkdir -p .tmp
+build:
 	go run ./cmd/sitegen build \
 		--content ./content \
 		--templates ./templates \
 		--static ./static \
-		--output .tmp/site
-	mv .tmp/site dist
+		--output ./dist
 
 verify:
 	test -f dist/index.html
