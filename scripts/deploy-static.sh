@@ -80,6 +80,8 @@ done < <(tar -tvzf "$package")
 
 temporary=$(mktemp -d "$releases/.deploy-$commit.XXXXXX")
 tar -xzf "$package" --no-same-owner --no-same-permissions -C "$temporary"
+find "$temporary" -type d -exec chmod 755 {} +
+find "$temporary" -type f -exec chmod 644 {} +
 
 for required in index.html 404.html styles/global.css robots.txt; do
   [[ -f $temporary/$required ]] || {
