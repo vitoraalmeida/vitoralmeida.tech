@@ -1,5 +1,7 @@
 dist/
 .tmp/
+__pycache__/
+*.pyc
 src/*.html
 src/blog
 src/public/posts_images/

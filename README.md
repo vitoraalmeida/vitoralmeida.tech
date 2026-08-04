@@ -18,7 +18,8 @@ make verify
 
 - Go 1.26 ou versão compatível;
 - GNU Make;
-- Python 3, opcionalmente, para servir o resultado localmente.
+- Python 3.11 ou versão compatível, para testar o deployment e, opcionalmente,
+  servir o resultado localmente.
 
 ## Estrutura do projeto
 
@@ -212,7 +213,7 @@ health check público
 
 O job de build produz o pacote uma única vez e o armazena como artifact do
 workflow. O job de deployment baixa esse artifact e envia o pacote, o checksum
-e `scripts/deploy-static.sh` para a VPS. Assim, o conteúdo publicado é o mesmo
+e `scripts/deploy_static.py` para a VPS. Assim, o conteúdo publicado é o mesmo
 conteúdo produzido e validado pelo job de build.
 
 Deployments usam o environment `production` e são serializados pelo grupo de
@@ -246,7 +247,7 @@ A VPS mantém a seguinte estrutura:
 └── .deploy.lock
 ```
 
-O script de deployment:
+O script Python de deployment:
 
 1. adquire um lock com `flock`;
 2. valida o checksum e os caminhos do pacote;

@@ -96,7 +96,7 @@ jobs:
             -o StrictHostKeyChecking=yes \
             artifact/site-${GITHUB_SHA}.tar.gz \
             artifact/site-${GITHUB_SHA}.tar.gz.sha256 \
-            scripts/deploy-static.sh \
+            scripts/deploy_static.py \
             "$DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/incoming/"
 
       - name: Activate release
@@ -107,7 +107,7 @@ jobs:
             -o BatchMode=yes \
             -o StrictHostKeyChecking=yes \
             "$DEPLOY_USER@$DEPLOY_HOST" \
-            "APP_ROOT='$APP_ROOT' HEALTHCHECK_URL='https://vitoralmeida.tech/' bash '$APP_ROOT/incoming/deploy-static.sh' '$GITHUB_SHA'"
+            "command -v python3 >/dev/null && APP_ROOT='$APP_ROOT' HEALTHCHECK_URL='https://vitoralmeida.tech/' python3 '$APP_ROOT/incoming/deploy_static.py' '$GITHUB_SHA'"
 
       - name: Verify public site
         run: curl --fail --location --silent --show-error --retry 3 https://vitoralmeida.tech/

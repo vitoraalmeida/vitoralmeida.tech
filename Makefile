@@ -2,6 +2,7 @@
 
 test:
 	go test ./...
+	python3 -m unittest scripts/test_deploy_static.py
 
 check:
 	go run ./cmd/sitegen check \

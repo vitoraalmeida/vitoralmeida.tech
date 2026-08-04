@@ -20,7 +20,9 @@ sudo -u site-deploy touch /srv/www/vitoralmeida.tech/.deploy.lock
 
 Instale somente a chave SSH usada pelo environment `production` em
 `/home/site-deploy/.ssh/authorized_keys`. O usuário não precisa modificar Nginx
-nem executar o gerador na VPS.
+nem executar o gerador na VPS. A VPS precisa ter Python 3.11 ou versão
+compatível disponível para
+executar o script de deployment.
 
 ## 2. Release inicial
 
@@ -67,7 +69,7 @@ A Action envia para `incoming/`:
 ```text
 site-<commit>.tar.gz
 site-<commit>.tar.gz.sha256
-deploy-static.sh
+deploy_static.py
 ```
 
 O pacote contém diretamente o conteúdo de `dist/`, não o diretório `dist` em
@@ -76,7 +78,7 @@ si. O deployment é executado como `site-deploy`:
 ```bash
 APP_ROOT=/srv/www/vitoralmeida.tech \
 HEALTHCHECK_URL=https://vitoralmeida.tech/ \
-bash /srv/www/vitoralmeida.tech/incoming/deploy-static.sh <commit>
+python3 /srv/www/vitoralmeida.tech/incoming/deploy_static.py <commit>
 ```
 
 Variáveis opcionais:
@@ -163,7 +165,7 @@ sistema continuam sendo responsabilidades administrativas separadas.
 As responsabilidades também são divididas entre os componentes:
 
 - o GitHub Actions executa testes, validação, build, empacotamento e transporte;
-- `deploy-static.sh` valida o pacote, controla o lock, cria a release, ativa a
+- `deploy_static.py` valida o pacote, controla o lock, cria a release, ativa a
   versão, executa o health check, realiza rollback e remove arquivos antigos;
 - o Nginx serve exclusivamente o conteúdo apontado por `current`.
 
