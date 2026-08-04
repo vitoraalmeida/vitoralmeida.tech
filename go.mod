@@ -1,4 +1,4 @@
-module github.com/vitoraalmeida/ssg
+module github.com/vitoraalmeida/vitoralmeida.tech
 
 go 1.21.0
 
