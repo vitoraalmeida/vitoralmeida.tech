@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Deploy an immutable static-site release with health-check rollback."""
+"""Publica releases imutáveis de um site estático com rollback automático."""
 
 from __future__ import annotations
 
@@ -28,7 +28,7 @@ SHA256_PATTERN = re.compile(r"^[0-9a-fA-F]{64}$")
 
 
 class DeploymentError(RuntimeError):
-    """A safe, expected deployment failure."""
+    """Representa uma falha operacional esperada e segura do deployment."""
 
 
 @dataclass(frozen=True)
@@ -51,6 +51,7 @@ class DeploymentPaths:
 
 
 def parse_args(arguments: list[str]) -> str:
+    """Lê e valida o SHA para impedir que entradas inseguras formem caminhos."""
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("commit", help="Git commit SHA identifying the release")
     commit = parser.parse_args(arguments).commit
@@ -60,6 +61,7 @@ def parse_args(arguments: list[str]) -> str:
 
 
 def load_config(environment: dict[str, str]) -> Config:
+    """Converte o ambiente em configuração validada para evitar defaults dispersos."""
     app_root = Path(environment.get("APP_ROOT", str(DEFAULT_APP_ROOT))).resolve()
     healthcheck_url = environment.get("HEALTHCHECK_URL", DEFAULT_HEALTHCHECK_URL)
     raw_keep_releases = environment.get("KEEP_RELEASES", str(DEFAULT_KEEP_RELEASES))
@@ -73,6 +75,7 @@ def load_config(environment: dict[str, str]) -> Config:
 
 
 def build_paths(config: Config, commit: str) -> DeploymentPaths:
+    """Deriva os caminhos do commit para manter um único contrato de filesystem."""
     incoming = config.app_root / "incoming"
     releases = config.app_root / "releases"
     package_name = f"site-{commit}.tar.gz"
@@ -90,12 +93,14 @@ def build_paths(config: Config, commit: str) -> DeploymentPaths:
 
 @contextmanager
 def deployment_lock(path: Path) -> Iterator[None]:
+    """Serializa deployments para que execuções concorrentes não alterem o symlink."""
     with path.open("a", encoding="utf-8") as lock_file:
         fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
         yield
 
 
 def require_inputs(paths: DeploymentPaths) -> None:
+    """Confirma os uploads obrigatórios para produzir erros claros antes da leitura."""
     if not paths.package.is_file():
         raise DeploymentError(f"package not found: {paths.package}")
     if not paths.checksum.is_file():
@@ -103,6 +108,7 @@ def require_inputs(paths: DeploymentPaths) -> None:
 
 
 def validate_checksum(paths: DeploymentPaths) -> None:
+    """Valida formato, nome e SHA-256 para rejeitar pacotes trocados ou corrompidos."""
     try:
         lines = paths.checksum.read_text(encoding="utf-8").splitlines()
     except OSError as error:
@@ -130,6 +136,7 @@ def validate_checksum(paths: DeploymentPaths) -> None:
 
 
 def safe_member_parts(member: tarfile.TarInfo) -> tuple[str, ...]:
+    """Normaliza uma entrada do archive e bloqueia escapes e tipos perigosos."""
     normalized = member.name
     while normalized.startswith("./"):
         normalized = normalized[2:]
@@ -145,6 +152,7 @@ def safe_member_parts(member: tarfile.TarInfo) -> tuple[str, ...]:
 
 
 def validate_archive(package: Path) -> list[tuple[tarfile.TarInfo, tuple[str, ...]]]:
+    """Inspeciona todo o archive antes da extração para evitar escrita insegura."""
     try:
         with tarfile.open(package, "r:gz") as archive:
             members = [(member, safe_member_parts(member)) for member in archive.getmembers()]
@@ -166,6 +174,7 @@ def extract_archive(
     destination: Path,
     members: list[tuple[tarfile.TarInfo, tuple[str, ...]]],
 ) -> None:
+    """Extrai somente entradas aprovadas e aplica permissões legíveis pelo Nginx."""
     try:
         with tarfile.open(package, "r:gz") as archive:
             for member, parts in members:
@@ -194,6 +203,7 @@ def extract_archive(
 
 
 def validate_release(release: Path) -> None:
+    """Exige os artefatos mínimos para impedir a ativação de um site incompleto."""
     for relative_path in REQUIRED_FILES:
         required = release / relative_path
         if not required.is_file():
@@ -201,6 +211,7 @@ def validate_release(release: Path) -> None:
 
 
 def promote_release(temporary: Path, release: Path) -> tuple[Path, bool]:
+    """Promove a extração ou reutiliza uma release válida para garantir idempotência."""
     if release.exists():
         if not release.is_dir():
             raise DeploymentError(f"release path is not a directory: {release}")
@@ -213,6 +224,7 @@ def promote_release(temporary: Path, release: Path) -> tuple[Path, bool]:
 
 
 def atomic_symlink(target: str, link: Path, temporary_name: str) -> None:
+    """Substitui um symlink por rename para nunca expor um estado intermediário."""
     temporary_link = link.parent / temporary_name
     temporary_link.unlink(missing_ok=True)
     temporary_link.symlink_to(target)
@@ -220,6 +232,7 @@ def atomic_symlink(target: str, link: Path, temporary_name: str) -> None:
 
 
 def activate_release(paths: DeploymentPaths, commit: str) -> str | None:
+    """Ativa o commit e devolve o alvo anterior necessário para eventual rollback."""
     if paths.current.exists() and not paths.current.is_symlink():
         raise DeploymentError(f"current path is not a symlink: {paths.current}")
     previous_target = os.readlink(paths.current) if paths.current.is_symlink() else None
@@ -228,6 +241,7 @@ def activate_release(paths: DeploymentPaths, commit: str) -> str | None:
 
 
 def health_check(url: str) -> None:
+    """Valida a URL pública para confirmar arquivos, Nginx, TLS e roteamento."""
     request = urllib.request.Request(url, headers={"User-Agent": "vitoralmeida-deploy/1"})
     try:
         with urllib.request.urlopen(request, timeout=20) as response:
@@ -240,6 +254,7 @@ def health_check(url: str) -> None:
 
 
 def rollback(paths: DeploymentPaths, previous_target: str | None, release_created: bool) -> None:
+    """Restaura a versão anterior e remove apenas a release defeituosa recém-criada."""
     if previous_target is None:
         paths.current.unlink(missing_ok=True)
     else:
@@ -249,6 +264,7 @@ def rollback(paths: DeploymentPaths, previous_target: str | None, release_create
 
 
 def prune_releases(paths: DeploymentPaths, keep_releases: int) -> None:
+    """Limita o uso de disco sem remover a release atualmente servida pelo Nginx."""
     current_target = os.readlink(paths.current)
     active_release = Path(current_target).name
     releases = sorted(
@@ -262,11 +278,13 @@ def prune_releases(paths: DeploymentPaths, keep_releases: int) -> None:
 
 
 def cleanup_inputs(paths: DeploymentPaths) -> None:
+    """Remove uploads transitórios para que incoming fique vazio entre deployments."""
     for uploaded_file in (paths.package, paths.checksum, paths.uploaded_script):
         uploaded_file.unlink(missing_ok=True)
 
 
 def deploy(config: Config, paths: DeploymentPaths, commit: str) -> None:
+    """Orquestra validação, publicação e rollback dentro de uma seção exclusiva."""
     paths.incoming.mkdir(parents=True, exist_ok=True)
     paths.releases.mkdir(parents=True, exist_ok=True)
     temporary: Path | None = None
@@ -297,6 +315,7 @@ def deploy(config: Config, paths: DeploymentPaths, commit: str) -> None:
 
 
 def main(arguments: list[str] | None = None) -> int:
+    """Traduz a CLI em um deployment e retorna códigos adequados para a automação."""
     commit = parse_args(sys.argv[1:] if arguments is None else arguments)
     try:
         config = load_config(dict(os.environ))

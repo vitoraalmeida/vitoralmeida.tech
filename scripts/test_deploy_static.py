@@ -14,7 +14,10 @@ SCRIPT = Path(__file__).with_name("deploy_static.py")
 
 
 class DeployStaticTest(unittest.TestCase):
+    """Protege o contrato externo do script usando deployments isolados reais."""
+
     def setUp(self) -> None:
+        """Cria uma árvore descartável para que cada teste não compartilhe estado."""
         self.temporary = tempfile.TemporaryDirectory()
         self.addCleanup(self.temporary.cleanup)
         self.root = Path(self.temporary.name)
@@ -31,6 +34,7 @@ class DeployStaticTest(unittest.TestCase):
         unsafe_path: str | None = None,
         symbolic_link: bool = False,
     ) -> None:
+        """Produz pacote e checksum controlados para exercitar validações específicas."""
         package = self.root / "incoming" / f"site-{commit}.tar.gz"
         files = {
             "index.html": b"index",
@@ -60,6 +64,7 @@ class DeployStaticTest(unittest.TestCase):
         (self.root / "incoming" / "deploy_static.py").write_text("uploaded", encoding="utf-8")
 
     def run_deploy(self, commit: str, healthcheck_url: str) -> subprocess.CompletedProcess[str]:
+        """Executa a CLI como processo para testar o mesmo limite usado na produção."""
         environment = os.environ.copy()
         environment.update(
             APP_ROOT=str(self.root),
@@ -75,6 +80,7 @@ class DeployStaticTest(unittest.TestCase):
         )
 
     def test_success_and_idempotent_redeployment(self) -> None:
+        """Garante publicação completa e repetição segura do mesmo commit."""
         commit = "1" * 40
         self.create_package(commit)
         result = self.run_deploy(commit, (self.root / "current" / "index.html").as_uri())
@@ -89,6 +95,7 @@ class DeployStaticTest(unittest.TestCase):
         self.assertEqual(os.readlink(self.root / "current"), f"releases/{commit}")
 
     def test_health_check_failure_rolls_back(self) -> None:
+        """Garante que uma versão reprovada nunca permaneça apontada por current."""
         commit = "2" * 40
         self.create_package(commit)
         result = self.run_deploy(commit, "http://127.0.0.1:1/")
@@ -98,6 +105,7 @@ class DeployStaticTest(unittest.TestCase):
         self.assertFalse((self.root / "releases" / commit).exists())
 
     def test_checksum_mismatch_is_rejected(self) -> None:
+        """Garante que conteúdo diferente do artifact aprovado não seja extraído."""
         commit = "3" * 40
         self.create_package(commit)
         checksum = self.root / "incoming" / f"site-{commit}.tar.gz.sha256"
@@ -108,6 +116,7 @@ class DeployStaticTest(unittest.TestCase):
         self.assertEqual(os.readlink(self.root / "current"), "releases/bootstrap")
 
     def test_unsafe_archive_path_is_rejected(self) -> None:
+        """Garante que uma entrada com path traversal não escreva fora da release."""
         commit = "4" * 40
         self.create_package(commit, unsafe_path="../outside.txt")
         result = self.run_deploy(commit, (self.root / "current" / "index.html").as_uri())
@@ -117,6 +126,7 @@ class DeployStaticTest(unittest.TestCase):
         self.assertEqual(os.readlink(self.root / "current"), "releases/bootstrap")
 
     def test_symbolic_link_is_rejected(self) -> None:
+        """Garante que links no archive não contornem o isolamento da extração."""
         commit = "5" * 40
         self.create_package(commit, symbolic_link=True)
         result = self.run_deploy(commit, (self.root / "current" / "index.html").as_uri())
