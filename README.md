@@ -1,6 +1,6 @@
 # vitoralmeida.tech
 
-Gerador estático do site pessoal de Vitor Almeida. O projeto transforma posts
+Gerador estático do meu site pessoal. O projeto transforma posts
 em Markdown, metadados TOML, templates HTML e arquivos estáticos em um artefato
 publicável no diretório `dist/`.
 
