@@ -261,6 +261,8 @@ O script Python de deployment:
 O Nginx usa `/srv/www/vitoralmeida.tech/current` como document root, portanto a
 troca de versão não exige reload do serviço.
 
-Detalhes de preparação da VPS, credenciais e rollback manual estão em
-[`docs/deployment.md`](docs/deployment.md). O registro de validação do fluxo está
-em [`docs/deployment-validation.md`](docs/deployment-validation.md).
+O passo a passo para preparar uma VPS nova está em
+[`docs/vps-setup.md`](docs/vps-setup.md). O contrato de deployment, as
+credenciais e o rollback manual estão em
+[`docs/deployment.md`](docs/deployment.md). O registro de validação do fluxo
+está em [`docs/deployment-validation.md`](docs/deployment-validation.md).

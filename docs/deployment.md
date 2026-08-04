@@ -5,6 +5,10 @@ deployment. Os comandos de infraestrutura devem ser revisados e executados na
 VPS por um administrador; criar os arquivos no repositório não configura o
 servidor automaticamente.
 
+Para preparar uma VPS nova do zero, siga primeiro
+[`vps-setup.md`](vps-setup.md). Este documento permanece como referência do
+contrato de deployment, da operação recorrente e do rollback.
+
 ## 1. Usuário e diretórios
 
 Crie um usuário exclusivo, sem acesso geral a `sudo`, e a raiz da aplicação:
