@@ -194,30 +194,35 @@ para `main` e também pode ser iniciado manualmente pelo GitHub Actions.
 O processo de publicação é:
 
 ```text
-checkout
-   ↓
+job build                         job deploy
+─────────                         ──────────
 testes e validação
-   ↓
+        ↓
 build de dist/
-   ↓
-site-<commit>.tar.gz + SHA-256
-   ↓
-upload por SSH
-   ↓
-release imutável na VPS
-   ↓
-troca atômica de current
-   ↓
-health check público
+        ↓
+site-<commit>.tar.gz + SHA-256 → download do artifact
+                                      ↓
+                                upload por SSH
+                                      ↓
+                                validação na VPS
+                                      ↓
+                                release imutável
+                                      ↓
+                                troca de current
+                                      ↓
+                                health checks
 ```
 
-O job de build produz o pacote uma única vez e o armazena como artifact do
-workflow. O job de deployment baixa esse artifact e envia o pacote, o checksum
-e `scripts/deploy_static.py` para a VPS. Assim, o conteúdo publicado é o mesmo
-conteúdo produzido e validado pelo job de build.
+O job `build` executa o mesmo contrato usado localmente, empacota diretamente o
+conteúdo de `dist/` e armazena o pacote e o checksum como um artifact por 14
+dias. O job `deploy` só começa depois do sucesso do build; ele baixa esse mesmo
+artifact e envia o pacote, o checksum e `scripts/deploy_static.py` para a VPS.
+Assim, produção recebe exatamente o conteúdo produzido e aprovado no CI, sem
+reconstruí-lo no servidor.
 
 Deployments usam o environment `production` e são serializados pelo grupo de
-concorrência `production-vitoralmeida-tech`.
+concorrência `production-vitoralmeida-tech`. Uma execução em andamento não é
+cancelada quando outra é iniciada.
 
 ## Configuração do environment de produção
 
@@ -242,27 +247,33 @@ A VPS mantém a seguinte estrutura:
 /srv/www/vitoralmeida.tech/
 ├── incoming/
 ├── releases/
-│   └── <commit>/
-├── current -> releases/<commit>
+│   ├── bootstrap/
+│   ├── <commit-anterior>/
+│   └── <commit-ativo>/
+├── current -> releases/<commit-ativo>
 └── .deploy.lock
 ```
 
 O script Python de deployment:
 
-1. adquire um lock com `flock`;
-2. valida o checksum e os caminhos do pacote;
-3. extrai e verifica a release em um diretório temporário;
-4. move a release para `releases/<commit>`;
-5. troca o symlink `current` atomicamente;
-6. executa o health check;
-7. restaura a release anterior em caso de falha;
-8. remove arquivos temporários e releases antigas.
+1. adquire um lock para impedir execuções simultâneas na VPS;
+2. valida o SHA-256, o conteúdo e os caminhos do pacote;
+3. rejeita symlinks, tipos especiais e caminhos que escapem da release;
+4. extrai e verifica os arquivos obrigatórios em um diretório temporário;
+5. cria ou reutiliza `releases/<commit>` de maneira idempotente;
+6. troca o symlink `current` atomicamente;
+7. executa um health check público e restaura a versão anterior se ele falhar;
+8. remove uploads temporários e releases antigas não ativas.
 
 O Nginx usa `/srv/www/vitoralmeida.tech/current` como document root, portanto a
 troca de versão não exige reload do serviço.
 
+O rollback automático cobre falhas detectadas pelo health check executado
+dentro do script. O workflow faz ainda uma verificação pública final com
+`curl`, depois que o script termina; uma falha nessa última etapa sinaliza o job
+como reprovado, mas exige inspeção ou rollback manual.
+
 O passo a passo para preparar uma VPS nova está em
-[`docs/vps-setup.md`](docs/vps-setup.md). O contrato de deployment, as
-credenciais e o rollback manual estão em
-[`docs/deployment.md`](docs/deployment.md). O registro de validação do fluxo
-está em [`docs/deployment-validation.md`](docs/deployment-validation.md).
+[`docs/vps-setup.md`](docs/vps-setup.md). O fluxo completo, seu contrato,
+procedimentos de inspeção e rollback estão em
+[`docs/deployment.md`](docs/deployment.md).
