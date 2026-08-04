@@ -46,9 +46,10 @@ O workflow é iniciado:
 - automaticamente, a cada push na branch `main`;
 - manualmente, por `workflow_dispatch` no GitHub Actions.
 
-O grupo de concorrência `production-vitoralmeida-tech` impede que duas
-execuções alterem a produção simultaneamente. `cancel-in-progress: false`
-garante que um deployment em andamento não seja interrompido por outro.
+O grupo de concorrência `production-vitoralmeida-tech` faz os deployments
+rodarem um de cada vez no GitHub Actions. Se uma execução já estiver publicando,
+a próxima aguarda; `cancel-in-progress: false` garante que o deployment em
+andamento não seja interrompido pelo novo.
 
 ## 2. Job de build
 
@@ -153,7 +154,8 @@ Cada item tem uma responsabilidade:
 - `releases/<commit-sha>/`: guarda uma versão identificável e imutável do site;
 - `bootstrap/`: preserva o conteúdo que existia antes do primeiro deployment;
 - `current`: aponta para a release que o Nginx deve servir;
-- `.deploy.lock`: serializa execuções do script dentro da VPS.
+- `.deploy.lock`: impede que duas instâncias do script alterem a VPS ao mesmo
+  tempo, inclusive quando uma delas é iniciada manualmente.
 
 O Nginx usa `/srv/www/vitoralmeida.tech/current` como document root. Como
 `current` é um symlink, a troca de release não exige alterar nem recarregar o
@@ -291,7 +293,8 @@ O desenho atual oferece:
 - publicação sem estado parcialmente extraído;
 - troca atômica da versão servida;
 - rollback automático quando o health check interno falha;
-- serialização no GitHub Actions e na VPS;
+- execução sequencial dos deployments no GitHub Actions e bloqueio de scripts
+  simultâneos na VPS;
 - acesso remoto com privilégio mínimo;
 - repetição segura do mesmo commit.
 

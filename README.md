@@ -220,9 +220,9 @@ artifact e envia o pacote, o checksum e `scripts/deploy_static.py` para a VPS.
 Assim, produção recebe exatamente o conteúdo produzido e aprovado no CI, sem
 reconstruí-lo no servidor.
 
-Deployments usam o environment `production` e são serializados pelo grupo de
-concorrência `production-vitoralmeida-tech`. Uma execução em andamento não é
-cancelada quando outra é iniciada.
+Deployments usam o environment `production` e rodam um de cada vez por meio do
+grupo de concorrência `production-vitoralmeida-tech`. Se uma execução já estiver
+publicando, a próxima aguarda sem cancelar a que está em andamento.
 
 ## Configuração do environment de produção
 
