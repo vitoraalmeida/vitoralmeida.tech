@@ -15,6 +15,8 @@ type Config struct {
 	OutputDir    string
 }
 
+// Build gera e valida o site fora do destino final para que uma falha não
+// exponha uma saída incompleta nem substitua o último build válido.
 func Build(config Config) error {
 	config, err := normalizeConfig(config)
 	if err != nil {
@@ -54,6 +56,8 @@ func Build(config Config) error {
 	return nil
 }
 
+// Check executa as mesmas validações de entrada do build sem gerar arquivos,
+// permitindo detectar problemas de conteúdo rapidamente no desenvolvimento e CI.
 func Check(config Config) error {
 	config, err := normalizeConfig(config)
 	if err != nil {
@@ -63,6 +67,9 @@ func Check(config Config) error {
 	return err
 }
 
+// normalizeConfig transforma todos os caminhos em valores absolutos e limpos
+// para que validações e comparações não dependam do diretório de trabalho nem
+// de representações diferentes do mesmo caminho.
 func normalizeConfig(config Config) (Config, error) {
 	fields := []struct {
 		name  string
@@ -86,6 +93,9 @@ func normalizeConfig(config Config) (Config, error) {
 	return config, nil
 }
 
+// validateInputs confirma que as fontes são diretórios utilizáveis e que não
+// se sobrepõem à saída, evitando apagar fontes ou copiar arquivos gerados de
+// volta para o próprio build.
 func validateInputs(config Config) error {
 	for name, path := range map[string]string{
 		"content":   config.ContentDir,
@@ -110,6 +120,8 @@ func validateInputs(config Config) error {
 	return nil
 }
 
+// pathContains determina se child é igual a parent ou está dentro dele usando
+// caminhos relativos, centralizando a regra usada para detectar sobreposições.
 func pathContains(parent, child string) bool {
 	relative, err := filepath.Rel(parent, child)
 	if err != nil || filepath.IsAbs(relative) {
@@ -118,6 +130,8 @@ func pathContains(parent, child string) bool {
 	return relative == "." || (relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)))
 }
 
+// replaceOutput publica o build pronto por renames e mantém temporariamente a
+// saída anterior para poder restaurá-la caso a promoção da nova saída falhe.
 func replaceOutput(source, destination string) error {
 	backup := destination + ".previous"
 	if err := os.RemoveAll(backup); err != nil {
@@ -146,6 +160,9 @@ func replaceOutput(source, destination string) error {
 	return nil
 }
 
+// validateOutput exige os arquivos mínimos que caracterizam um site completo
+// antes da publicação, impedindo que uma geração aparentemente bem-sucedida
+// substitua a saída válida por um artefato essencialmente incompleto.
 func validateOutput(output string) error {
 	for _, name := range []string{"index.html", "404.html"} {
 		info, err := os.Stat(filepath.Join(output, name))
