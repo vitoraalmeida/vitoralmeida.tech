@@ -1,0 +1,110 @@
+name: Deploy production
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-vitoralmeida-tech
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+
+      - name: Test and validate
+        run: |
+          make test
+          make check
+
+      - name: Build and verify
+        run: |
+          make build
+          make verify
+
+      - name: Package immutable site artifact
+        id: package
+        shell: bash
+        run: |
+          package="site-${GITHUB_SHA}.tar.gz"
+          tar -czf "$package" -C dist .
+          sha256sum "$package" > "$package.sha256"
+          echo "name=$package" >> "$GITHUB_OUTPUT"
+
+      - name: Upload site artifact
+        uses: actions/upload-artifact@v7
+        with:
+          name: site-${{ github.sha }}
+          path: |
+            ${{ steps.package.outputs.name }}
+            ${{ steps.package.outputs.name }}.sha256
+          if-no-files-found: error
+          retention-days: 14
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: production
+      url: https://vitoralmeida.tech
+    env:
+      DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
+      DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
+      DEPLOY_USER: ${{ vars.DEPLOY_USER }}
+      APP_ROOT: /srv/www/vitoralmeida.tech
+    steps:
+      - name: Check out deployment script
+        uses: actions/checkout@v6
+
+      - name: Download site artifact
+        uses: actions/download-artifact@v8
+        with:
+          name: site-${{ github.sha }}
+          path: artifact
+
+      - name: Configure SSH
+        shell: bash
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -d -m 700 ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts
+
+      - name: Upload release inputs
+        shell: bash
+        run: |
+          scp -P "$DEPLOY_PORT" \
+            -i ~/.ssh/deploy_key \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            artifact/site-${GITHUB_SHA}.tar.gz \
+            artifact/site-${GITHUB_SHA}.tar.gz.sha256 \
+            scripts/deploy-static.sh \
+            "$DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/incoming/"
+
+      - name: Activate release
+        shell: bash
+        run: |
+          ssh -p "$DEPLOY_PORT" \
+            -i ~/.ssh/deploy_key \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "$DEPLOY_USER@$DEPLOY_HOST" \
+            "APP_ROOT='$APP_ROOT' HEALTHCHECK_URL='https://vitoralmeida.tech/' bash '$APP_ROOT/incoming/deploy-static.sh' '$GITHUB_SHA'"
+
+      - name: Verify public site
+        run: curl --fail --location --silent --show-error --retry 3 https://vitoralmeida.tech/
