@@ -265,17 +265,6 @@ ul {
   content: "» ";
 }
 
-.about-description__container {
-  display: flex;
-  justify-content: center;
-}
-
-.about-description__img {
-  margin-top: 1rem;
-  display: inline-block;
-  margin-bottom: 1rem;
-}
-
 /* contact-list */
 .contact-list {
   margin-top: 1rem;
