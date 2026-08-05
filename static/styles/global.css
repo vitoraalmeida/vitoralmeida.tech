@@ -652,8 +652,28 @@ ul {
 }
 
 .footer-text {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.25rem 0.6rem;
   font-size: 0.9rem;
   margin-top: 1px;
+}
+
+.footer-text > * + *::before {
+  content: "|";
+  margin-right: 0.6rem;
+  color: var(--color-text-muted);
+}
+
+.footer__status {
+  color: var(--color-accent);
+}
+
+.footer__status::before {
+  content: "●";
+  margin-right: 0.35rem;
+  font-size: 0.7em;
 }
 
 /* portfolio */
