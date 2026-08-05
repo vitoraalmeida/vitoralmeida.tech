@@ -173,27 +173,41 @@ ul {
   font-size: 1.5em;
 }
 
-.animation {
+.animation,
+.about__animation,
+.blog-page__animation,
+.portfolio__animation {
   display: inline-block;
   overflow: hidden; /* Ensures the content is not revealed until the animation */
   border-right: 3px solid var(--color-accent); /* The typewriter cursor */
   white-space: nowrap; /* Keeps the content on a single line */
-  animation: typing 1.5s steps(13, end), blink-caret 0.8s infinite;
-  width: 16ch;
+  animation:
+    typing var(--typing-duration) steps(var(--typing-steps), end),
+    blink-caret 0.8s infinite;
+  width: var(--typing-resting-width);
 }
 
-.animation::before {
+.animation::before,
+.about__animation::before,
+.blog-page__animation::before,
+.portfolio__animation::before {
   color: var(--color-accent);
   content: "» ";
 }
 
-/* The typing effect */
+.animation {
+  --typing-duration: 1.5s;
+  --typing-steps: 13;
+  --typing-width: 15ch;
+  --typing-resting-width: 16ch;
+}
+
 @keyframes typing {
   from {
     width: 0;
   }
   to {
-    width: 15ch;
+    width: var(--typing-width);
   }
 }
 
@@ -281,27 +295,10 @@ ul {
 }
 
 .about__animation {
-  display: inline-block;
-  overflow: hidden; /* Ensures the content is not revealed until the animation */
-  border-right: 3px solid var(--color-accent); /* The typewriter cursor */
-  white-space: nowrap; /* Keeps the content on a single line */
-  animation: about-typing 1s steps(11, end), blink-caret 0.8s infinite;
-  width: 12ch;
-}
-
-.about__animation::before {
-  color: var(--color-accent);
-  content: "» ";
-}
-
-/* The typing effect */
-@keyframes about-typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 12ch;
-  }
+  --typing-duration: 1s;
+  --typing-steps: 11;
+  --typing-width: 12ch;
+  --typing-resting-width: 12ch;
 }
 
 /*  about description */
@@ -377,28 +374,11 @@ ul {
   margin-bottom: 1px;
   font-size: 1.5em;
 }
-.blog-page__animation::before {
-  color: var(--color-accent);
-  content: "» ";
-}
-
 .blog-page__animation {
-  display: inline-block;
-  overflow: hidden; /* Ensures the content is not revealed until the animation */
-  border-right: 3px solid var(--color-accent); /* The typewriter cursor */
-  white-space: nowrap; /* Keeps the content on a single line */
-  animation: blog-typing 1s steps(6, end), blink-caret 0.8s infinite;
-  width: 7ch;
-}
-
-/* The typing effect */
-@keyframes blog-typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 7ch;
-  }
+  --typing-duration: 1s;
+  --typing-steps: 6;
+  --typing-width: 7ch;
+  --typing-resting-width: 7ch;
 }
 
 
@@ -715,27 +695,10 @@ ul {
 }
 
 .portfolio__animation {
-  display: inline-block;
-  overflow: hidden; /* Ensures the content is not revealed until the animation */
-  border-right: 3px solid var(--color-accent); /* The typewriter cursor */
-  white-space: nowrap; /* Keeps the content on a single line */
-  animation: portfolio-typing 1s steps(11, end), blink-caret 0.8s infinite;
-  width: 12ch;
-}
-
-.portfolio__animation::before {
-  color: var(--color-accent);
-  content: "» ";
-}
-
-/* The typing effect */
-@keyframes portfolio-typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 12ch;
-  }
+  --typing-duration: 1s;
+  --typing-steps: 11;
+  --typing-width: 12ch;
+  --typing-resting-width: 12ch;
 }
 
 /* utility class */
