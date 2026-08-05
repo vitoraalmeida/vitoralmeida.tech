@@ -12,6 +12,14 @@
   --page-padding: clamp(0.75rem, 3vw, 1.5rem);
 }
 
+@font-face {
+  font-family: "Inconsolata";
+  font-style: normal;
+  font-weight: 400 700;
+  font-display: swap;
+  src: url("/fonts/inconsolata-latin.woff2") format("woff2");
+}
+
 *,
 *::before,
 *::after {
