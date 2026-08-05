@@ -762,6 +762,10 @@ ul {
 }
 
 @media (min-width: 661px) {
+  .header {
+    padding-block: 0.6rem;
+  }
+
   .table-of-contents__summary {
     display: none;
   }
