@@ -139,7 +139,7 @@ ul {
   display: flex;
   flex-wrap: nowrap;
   gap: 0.6rem;
-  font-size: 1.1rem;
+  font-size: 1.2rem;
   white-space: nowrap;
 }
 
@@ -738,7 +738,7 @@ ul {
   .header__menu {
     flex-shrink: 1;
     gap: clamp(0.25rem, 1.5vw, 0.6rem);
-    font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+    font-size: clamp(0.95rem, 3.5vw, 1.2rem);
     letter-spacing: -0.02rem;
   }
 
