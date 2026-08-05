@@ -123,7 +123,7 @@ ul {
 }
 
 .header__logo {
-  font-size: 1.2rem;
+  font-size: 1.3rem;
   font-weight: 700;
   letter-spacing: -0.04rem;
   color: var(--color-text-strong);
@@ -139,6 +139,7 @@ ul {
   display: flex;
   flex-wrap: nowrap;
   gap: 0.6rem;
+  font-size: 1.1rem;
   white-space: nowrap;
 }
 
@@ -729,13 +730,14 @@ ul {
 
   .header__logo {
     flex-shrink: 0;
-    font-size: clamp(1rem, 4.5vw, 1.2rem);
+    font-size: clamp(1.05rem, 4vw, 1.3rem);
   }
 
   .header__menu {
     flex-shrink: 1;
     gap: clamp(0.25rem, 1.5vw, 0.6rem);
-    font-size: clamp(0.78rem, 3.5vw, 1rem);
+    font-size: clamp(0.9rem, 3.5vw, 1.1rem);
+    letter-spacing: -0.02rem;
   }
 
   .post-navigation {
