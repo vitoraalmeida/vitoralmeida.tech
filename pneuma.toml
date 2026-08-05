@@ -1,0 +1,21 @@
+schema_version = 1
+
+[application]
+name = "personal-site"
+
+[source]
+repository = "https://github.com/vitoraalmeida/vitoralmeida.tech"
+branch = "main"
+
+[build]
+containerfile = "Containerfile"
+context = "."
+
+[runtime]
+container_port = 8080
+healthcheck_path = "/healthz"
+expected_status = 200
+
+[exposure]
+default_visibility = "public"
+domain = "vitoralmeida.tech"
