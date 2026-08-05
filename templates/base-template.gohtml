@@ -57,20 +57,37 @@
       </p>
     </footer>
     <script>
-      var prevScrollpos = window.pageYOffset;
-      window.onscroll = function() {
-        var currentScrollPos = window.pageYOffset;
-        if (prevScrollpos > currentScrollPos) {
-          document.getElementById("navbar").style.top = "0";
-        } else {
-          document.getElementById("navbar").style.top =
-            `-${document.getElementById("navbar").offsetHeight}px`;
-        }
-        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-          document.getElementById("navbar").style.top = "0";
-        }
-        prevScrollpos = currentScrollPos;
-      }
+      (() => {
+        const navbar = document.getElementById("navbar");
+        let previousScrollPosition = window.scrollY;
+        let updateRequested = false;
+
+        const updateNavbar = () => {
+          const currentScrollPosition = window.scrollY;
+          const reachedPageEnd =
+            window.innerHeight + currentScrollPosition >=
+            document.documentElement.scrollHeight - 1;
+
+          navbar.style.top =
+            currentScrollPosition < previousScrollPosition || reachedPageEnd
+              ? "0"
+              : `-${navbar.offsetHeight}px`;
+
+          previousScrollPosition = currentScrollPosition;
+          updateRequested = false;
+        };
+
+        window.addEventListener(
+          "scroll",
+          () => {
+            if (!updateRequested) {
+              updateRequested = true;
+              window.requestAnimationFrame(updateNavbar);
+            }
+          },
+          { passive: true }
+        );
+      })();
     </script>
   </body>
 </html>
