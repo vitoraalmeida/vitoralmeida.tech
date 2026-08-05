@@ -438,7 +438,9 @@ ul {
 
 /* blog post */
 .blog-post {
-  margin: 1.4rem 0;
+  width: 100%;
+  max-width: var(--article-width);
+  margin: 1.4rem auto;
 }
 
 .blog-post strong {
@@ -762,10 +764,6 @@ ul {
 }
 
 @media (min-width: 661px) {
-  .header {
-    padding-block: 0.6rem;
-  }
-
   .table-of-contents__summary {
     display: none;
   }
