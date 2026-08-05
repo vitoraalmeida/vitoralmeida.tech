@@ -1,6 +1,16 @@
+:root {
+  --color-background: #060f11;
+  --color-text: #9fa0a1;
+  --color-text-strong: #c8cacb;
+  --color-text-muted: #808080;
+  --color-accent: #00d992;
+  --page-width: 100ch;
+  --content-width: 92ch;
+}
+
 *,
-*:before,
-*:after {
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -12,35 +22,23 @@
 
 
 body {
-  background-color: #060f11;
+  background-color: var(--color-background);
   font-family: "Inconsolata", monospace;
-  color: #9fa0a1;
+  color: var(--color-text);
   margin: 0 auto; /* centraliza todo o conteúdo */
-  max-width: 100ch;
+  max-width: var(--page-width);
   height: fit-content;
   display: flex;
   flex-direction: column;
 }
 
 
-@media (max-width: 720px) {
-  body {
-    margin: 0 auto;
-  }
-}
-
-@media (max-width: 660px) {
-  .header {
-    margin: 0;
-  }
-}
-
 main {
-  max-width: 92ch;
+  max-width: var(--content-width);
 }
 
 a {
-  color: #00d992;
+  color: var(--color-accent);
 }
 
 ul {
@@ -59,10 +57,10 @@ ul {
   position: sticky;
   top: 0;
   width: 100%;
-  background: #060f11;
+  background: var(--color-background);
   z-index: 100;
-  box-shadow: 0px 0px 6px 0px rgba(0, 0, 0, 0.5);
-  border-bottom: 1px solid #00d992;
+  box-shadow: 0 0 6px 0 rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid var(--color-accent);
 }
 
 .header__logo {
@@ -70,21 +68,21 @@ ul {
   letter-spacing: -0.08rem;
 }
 
-.header__logo:before {
+.header__logo::before {
   content: "[";
   margin-right: -0.4rem;
-  color: #c8cacb;
+  color: var(--color-text-strong);
 }
 
-.header__logo:after {
+.header__logo::after {
   content: "]";
   margin-left: -0.4rem;
-  color: #c8cacb;
+  color: var(--color-text-strong);
 }
 
 .header__logo-link {
   text-decoration: none;
-  color: #00d992;
+  color: var(--color-accent);
 }
 
 .header__menu {
@@ -93,18 +91,18 @@ ul {
 }
 
 .header__link {
-  color: #c8cacb;
-  text-decoration-color: #00d992;
+  color: var(--color-text-strong);
+  text-decoration-color: var(--color-accent);
 }
 
 /*  intro */
 .intro {
-  color: #9fa0a1;
+  color: var(--color-text);
   margin: 1.4rem 10px;
 }
 
 .intro__title {
-  color: #c8cacb;
+  color: var(--color-text-strong);
   padding-bottom: 2px;
   margin-bottom: 1rem;
   display: inline-block;
@@ -113,14 +111,14 @@ ul {
 .animation {
   display: inline-block;
   overflow: hidden; /* Ensures the content is not revealed until the animation */
-  border-right: 3px solid #00d992; /* The typwriter cursor */
+  border-right: 3px solid var(--color-accent); /* The typewriter cursor */
   white-space: nowrap; /* Keeps the content on a single line */
   animation: typing 1.5s steps(13, end), blink-caret 0.8s infinite;
   width: 16ch;
 }
 
-.animation:before {
-  color: #00d992;
+.animation::before {
+  color: var(--color-accent);
   content: "» ";
 }
 
@@ -141,7 +139,7 @@ ul {
     border-color: transparent;
   }
   50% {
-    border-right: 8px solid #00d992;
+    border-right: 8px solid var(--color-accent);
   }
 }
 
@@ -156,16 +154,16 @@ ul {
 }
 
 .post-listing__title {
-  color: #c8cacb;
-  border-bottom: 2px dashed #00d992;
+  color: var(--color-text-strong);
+  border-bottom: 2px dashed var(--color-accent);
   display: inline-block;
   padding-bottom: 2px;
   margin-bottom: 0.8rem;
   font-size: 1.4rem;
 }
 
-.post-listing__title:before {
-  color: #00d992;
+.post-listing__title::before {
+  color: var(--color-accent);
   content: "» ";
 }
 
@@ -181,19 +179,19 @@ ul {
 
 .post-short__title {
   font-size: 1.3rem;
-  color: #c8cacb;
+  color: var(--color-text-strong);
 }
 
 .post-short__date {
   font-size: 0.9rem;
-  color: #808080;
+  color: var(--color-text-muted);
   margin-bottom: 4px;
 }
 
 .post-short__link {
   font-size: 1rem;
   margin-right: 10px;
-  margin-top: 0px;
+  margin-top: 0;
   display: block;
   text-align: right;
 }
@@ -210,7 +208,7 @@ ul {
 }
 
 .about__title {
-  color: #c8cacb;
+  color: var(--color-text-strong);
   padding-bottom: 2px;
   margin-bottom: 0.3rem;
   display: inline-block;
@@ -219,14 +217,14 @@ ul {
 .about__animation {
   display: inline-block;
   overflow: hidden; /* Ensures the content is not revealed until the animation */
-  border-right: 3px solid #00d992; /* The typwriter cursor */
+  border-right: 3px solid var(--color-accent); /* The typewriter cursor */
   white-space: nowrap; /* Keeps the content on a single line */
   animation: about-typing 1s steps(11, end), blink-caret 0.8s infinite;
   width: 12ch;
 }
 
-.about__animation:before {
-  color: #00d992;
+.about__animation::before {
+  color: var(--color-accent);
   content: "» ";
 }
 
@@ -252,16 +250,16 @@ ul {
 }
 
 .about-description__title {
-  color: #c8cacb;
-  border-bottom: 2px dashed #00d992;
+  color: var(--color-text-strong);
+  border-bottom: 2px dashed var(--color-accent);
   display: inline-block;
   padding-bottom: 2px;
   font-size: 1.3rem;
   margin-bottom: 1rem;
 }
 
-.about-description__title:before {
-  color: #00d992;
+.about-description__title::before {
+  color: var(--color-accent);
   content: "» ";
 }
 
@@ -272,28 +270,28 @@ ul {
 }
 
 .contact-list__title {
-  color: #c8cacb;
-  border-bottom: 2px dashed #00d992;
+  color: var(--color-text-strong);
+  border-bottom: 2px dashed var(--color-accent);
   display: inline-block;
   padding-bottom: 2px;
   font-size: 1.3rem;
   margin-bottom: 1rem;
 }
 
-.contact-list__title:before {
-  color: #00d992;
+.contact-list__title::before {
+  color: var(--color-accent);
   content: "» ";
 }
 
 .contact-list__link {
-  color: #c8cacb;
+  color: var(--color-text-strong);
   text-decoration: underline;
-  text-decoration-color: #00d992;
+  text-decoration-color: var(--color-accent);
   margin-left: 1rem;
 }
 
-.contact-list__link:before {
-  color: #00d992;
+.contact-list__link::before {
+  color: var(--color-accent);
   content: "» ";
 }
 
@@ -307,20 +305,20 @@ ul {
 }
 
 .blog-page__title {
-  color: #c8cacb;
+  color: var(--color-text-strong);
   display: inline-block;
   padding-bottom: 2px;
   margin-bottom: 1px;
 }
 .blog-page__animation::before {
-  color: #00d992;
+  color: var(--color-accent);
   content: "» ";
 }
 
 .blog-page__animation {
   display: inline-block;
   overflow: hidden; /* Ensures the content is not revealed until the animation */
-  border-right: 3px solid #00d992; /* The typwriter cursor */
+  border-right: 3px solid var(--color-accent); /* The typewriter cursor */
   white-space: nowrap; /* Keeps the content on a single line */
   animation: blog-typing 1s steps(6, end), blink-caret 0.8s infinite;
   width: 7ch;
@@ -343,14 +341,14 @@ ul {
 }
 
 .table-of-contents__link {
-  color: #c8cacb;
+  color: var(--color-text-strong);
   text-decoration: underline;
-  text-decoration-color: #00d992;
+  text-decoration-color: var(--color-accent);
   margin-left: 1rem;
 }
 
-.table-of-contents__link:before {
-  color: #00d992;
+.table-of-contents__link::before {
+  color: var(--color-accent);
   content: "» ";
 }
 
@@ -360,13 +358,13 @@ ul {
 }
 
 .blog-post strong {
-  color: #c8cacb;
+  color: var(--color-text-strong);
 }
 
 .blog-post__article {
   font-size: 1.2rem;
   letter-spacing: -0.09px;
-  color: #9fa0a1;
+  color: var(--color-text);
 }
 
 .blog-post__article p {
@@ -374,36 +372,36 @@ ul {
 }
 
 .blog-post__article h2 {
-  color: #c8cacb;
+  color: var(--color-text-strong);
   font-size: 1.4rem;
   margin-bottom: 0.7rem;
 }
 
-.blog-post__article h2:before {
-  color: #00d992;
+.blog-post__article h2::before {
+  color: var(--color-accent);
   content: "» ";
 }
 
 .blog-post-page-title {
-  color: #c8cacb;
+  color: var(--color-text-strong);
   font-size: 1.5rem;
   padding-bottom: 7px;
   margin-top: 1.4rem;
   margin-bottom: 1px;
 }
-.blog-post-page-title:before {
-  color: #00d992;
+.blog-post-page-title::before {
+  color: var(--color-accent);
   content: "» ";
 }
 
 .blog-post__article h3 {
-  color: #c8cacb;
+  color: var(--color-text-strong);
   font-size: 1.3rem;
   margin-bottom: 0.7rem;
 }
 
-.blog-post__article li:before  {
-  color: #00d992;
+.blog-post__article li::before {
+  color: var(--color-accent);
   content: "» ";
 }
 
@@ -431,7 +429,7 @@ pre > code {
 }
 
 .post-meta__date {
-  color: #808080;
+  color: var(--color-text-muted);
   font-size: 1rem;
   margin-top: 1.1rem;
 }
@@ -444,14 +442,14 @@ pre > code {
 /* footer */
 .footer {
   position: fixed;
-  max-width: 100ch;
+  max-width: var(--page-width);
   bottom: 0;
   width: 100%;
-  background-color: #060f11;
+  background-color: var(--color-background);
   margin-top: 4rem;
   padding-bottom: 0.3rem;
   text-align: center;
-  border-top: 1px solid #00d992;
+  border-top: 1px solid var(--color-accent);
 }
 
 .footer-text {
@@ -459,33 +457,33 @@ pre > code {
   margin-top: 1px;
 }
 
-/* portifolio */
+/* portfolio */
 .portfolio {
   margin: 1.4rem 10px;
 }
 
 .portfolio__title {
-  color: #c8cacb;
+  color: var(--color-text-strong);
   padding-bottom: 2px;
   margin-bottom: 1px;
 }
 
-.portifolio__animation {
+.portfolio__animation {
   display: inline-block;
   overflow: hidden; /* Ensures the content is not revealed until the animation */
-  border-right: 3px solid #00d992; /* The typwriter cursor */
+  border-right: 3px solid var(--color-accent); /* The typewriter cursor */
   white-space: nowrap; /* Keeps the content on a single line */
-  animation: portifolio-typing 1s steps(11, end), blink-caret 0.8s infinite;
+  animation: portfolio-typing 1s steps(11, end), blink-caret 0.8s infinite;
   width: 12ch;
 }
 
-.portifolio__animation:before {
-  color: #00d992;
+.portfolio__animation::before {
+  color: var(--color-accent);
   content: "» ";
 }
 
 /* The typing effect */
-@keyframes portifolio-typing {
+@keyframes portfolio-typing {
   from {
     width: 0;
   }

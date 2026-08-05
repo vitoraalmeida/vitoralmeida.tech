@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="author" content="Vitor Almeida" />
-    <meta name="Description" content="{{ .Description}}" />
+    <meta name="description" content="{{ .Description }}" />
     <meta
       name="keywords"
       content="sites, web, internet, blog, tecnologia, segurança da informação, seginfo, security, desenvolvimento"
@@ -16,8 +16,8 @@
       rel="stylesheet"
     />
     <link rel="stylesheet" href="/styles/global.css" />
-    <link rel="icon" type="image/x-icon" href="/favicon.png">
-    <title> {{ .Title}} </title>
+    <link rel="icon" type="image/png" href="/favicon.png" />
+    <title> {{ .Title }} </title>
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-956T7Y8NQX"></script>
     <script>
@@ -33,13 +33,13 @@
       <h1 class="header__logo">
         <a class="header__logo-link" href="/">vitor almeida</a>
       </h1>
-      <nav class="header__menu">
+      <nav class="header__menu" aria-label="Navegação principal">
         <a class="header__link" href="/about.html">/Sobre</a>
         <a class="header__link" href="/blog.html">/Blog</a>
         <a class="header__link" href="/portfolio.html">/Projetos</a>
       </nav>
     </header>
-    <main>
+    <main id="main-content">
       {{ .Content }}
     </main>
     <footer class="footer" id="footer">
@@ -49,27 +49,28 @@
         <a
             href="https://www.github.com/vitoraalmeida/vitoralmeida.tech"
             target="_blank"
+            rel="noopener"
             >Veja o código</a>
         </em>
       </p>
     </footer>
+    <script>
+      var prevScrollpos = window.pageYOffset;
+      window.onscroll = function() {
+        var currentScrollPos = window.pageYOffset;
+        if (prevScrollpos > currentScrollPos) {
+          document.getElementById("navbar").style.top = "0";
+          document.getElementById("footer").style.bottom = "0";
+        } else {
+          document.getElementById("navbar").style.top = "-55px";
+          document.getElementById("footer").style.bottom = "-50px";
+        }
+        if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
+          document.getElementById("navbar").style.top = "0";
+          document.getElementById("footer").style.bottom = "0";
+        }
+        prevScrollpos = currentScrollPos;
+      }
+    </script>
   </body>
-<script>
-var prevScrollpos = window.pageYOffset;
-window.onscroll = function() {
-  var currentScrollPos = window.pageYOffset;
-  if (prevScrollpos > currentScrollPos) {
-    document.getElementById("navbar").style.top = "0";
-    document.getElementById("footer").style.bottom = "0";
-  } else {
-    document.getElementById("navbar").style.top = "-55px";
-    document.getElementById("footer").style.bottom= "-50px";
-  }
-  if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
-    document.getElementById("navbar").style.top = "0";
-    document.getElementById("footer").style.bottom = "0";
-  }
-  prevScrollpos = currentScrollPos;
-} 
-</script>
 </html>
