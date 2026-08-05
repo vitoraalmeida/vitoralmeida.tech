@@ -11,25 +11,28 @@
     </section>
 
     {{ with .TableOfContents }}
-    <nav class="table-of-contents" aria-labelledby="table-of-contents-title">
-        <h2 class="table-of-contents__title" id="table-of-contents-title">Neste artigo</h2>
-        <ol class="table-of-contents__list">
-            {{ range . }}
-            <li class="table-of-contents__item">
-                <a class="table-of-contents__link" href="#{{ .ID }}">{{ .Title }}</a>
-                {{ with .Children }}
-                <ol class="table-of-contents__list table-of-contents__list--nested">
-                    {{ range . }}
-                    <li class="table-of-contents__item">
-                        <a class="table-of-contents__link" href="#{{ .ID }}">{{ .Title }}</a>
-                    </li>
+    <details class="table-of-contents" open>
+        <summary class="table-of-contents__summary">Neste artigo</summary>
+        <nav class="table-of-contents__navigation" aria-labelledby="table-of-contents-title">
+            <h2 class="table-of-contents__title" id="table-of-contents-title">Neste artigo</h2>
+            <ol class="table-of-contents__list">
+                {{ range . }}
+                <li class="table-of-contents__item">
+                    <a class="table-of-contents__link" href="#{{ .ID }}">{{ .Title }}</a>
+                    {{ with .Children }}
+                    <ol class="table-of-contents__list table-of-contents__list--nested">
+                        {{ range . }}
+                        <li class="table-of-contents__item">
+                            <a class="table-of-contents__link" href="#{{ .ID }}">{{ .Title }}</a>
+                        </li>
+                        {{ end }}
+                    </ol>
                     {{ end }}
-                </ol>
+                </li>
                 {{ end }}
-            </li>
-            {{ end }}
-        </ol>
-    </nav>
+            </ol>
+        </nav>
+    </details>
     {{ end }}
 
     <article class="blog-post__article">

@@ -136,7 +136,9 @@ func renderMarkdown(markdown []byte) (template.HTML, []TOCItem) {
 		return `<figure class="article-figure">` + matches[1] +
 			`<figcaption class="article-figure__caption">` + matches[2] + `</figcaption></figure>`
 	})
-	return template.HTML(rendered), buildTableOfContents(rendered) // Repository Markdown and generated figure markup are trusted HTML.
+	tableOfContents := buildTableOfContents(rendered)
+	rendered = addHeadingPermalinks(rendered)
+	return template.HTML(rendered), tableOfContents // Repository Markdown and generated article markup are trusted HTML.
 }
 
 func buildTableOfContents(rendered string) []TOCItem {
@@ -158,6 +160,17 @@ func buildTableOfContents(rendered string) []TOCItem {
 		items = append(items, item)
 	}
 	return items
+}
+
+func addHeadingPermalinks(rendered string) string {
+	return headingPattern.ReplaceAllStringFunc(rendered, func(heading string) string {
+		matches := headingPattern.FindStringSubmatch(heading)
+		level, id, content := matches[1], matches[2], matches[3]
+		title := html.UnescapeString(htmlTagPattern.ReplaceAllString(content, ""))
+		return `<h` + level + ` id="` + id + `">` + content +
+			`<a class="heading-permalink" href="#` + id + `" aria-label="Link permanente para ` +
+			template.HTMLEscapeString(title) + `">#</a></h` + level + `>`
+	})
 }
 
 func errorsIsNotExist(err error) bool {

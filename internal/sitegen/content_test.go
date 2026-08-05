@@ -36,9 +36,9 @@ func TestLoadPostsOrdersAndBuildsSlug(t *testing.T) {
 func TestRenderMarkdownBuildsNestedTableOfContents(t *testing.T) {
 	content, tableOfContents := renderMarkdown([]byte("## First heading\n\n### Detail\n\n## First heading\n"))
 	for _, fragment := range []string{
-		`<h2 id="first-heading">First heading</h2>`,
-		`<h3 id="detail">Detail</h3>`,
-		`<h2 id="first-heading-1">First heading</h2>`,
+		`<h2 id="first-heading">First heading<a class="heading-permalink" href="#first-heading" aria-label="Link permanente para First heading">#</a></h2>`,
+		`<h3 id="detail">Detail<a class="heading-permalink" href="#detail" aria-label="Link permanente para Detail">#</a></h3>`,
+		`<h2 id="first-heading-1">First heading<a class="heading-permalink" href="#first-heading-1" aria-label="Link permanente para First heading">#</a></h2>`,
 	} {
 		if !strings.Contains(string(content), fragment) {
 			t.Errorf("renderMarkdown() content missing %q:\n%s", fragment, content)
