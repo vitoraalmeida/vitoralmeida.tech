@@ -20,6 +20,10 @@
   src: url("/fonts/inconsolata-latin.woff2") format("woff2");
 }
 
+html {
+  scrollbar-gutter: stable both-edges;
+}
+
 *,
 *::before,
 *::after {
