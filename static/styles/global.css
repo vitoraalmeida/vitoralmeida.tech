@@ -108,19 +108,9 @@ ul {
 .header__logo {
   font-size: 1.2rem;
   font-weight: 700;
-  letter-spacing: -0.08rem;
-}
-
-.header__logo::before {
-  content: "[";
-  margin-right: -0.4rem;
+  letter-spacing: -0.04rem;
   color: var(--color-text-strong);
-}
-
-.header__logo::after {
-  content: "]";
-  margin-left: -0.4rem;
-  color: var(--color-text-strong);
+  white-space: nowrap;
 }
 
 .header__logo-link {
