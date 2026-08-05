@@ -29,14 +29,15 @@
     </script>
   </head>
   <body>
+    <a class="skip-link" href="#main-content">Ir para o conteúdo</a>
     <header class="header" id="navbar">
-      <h1 class="header__logo">
-        <a class="header__logo-link" href="/">vitor almeida</a>
-      </h1>
+      <div class="header__logo">
+        <a class="header__logo-link" href="/"{{ if eq .ActiveSection "home" }} aria-current="page"{{ end }}>vitor almeida</a>
+      </div>
       <nav class="header__menu" aria-label="Navegação principal">
-        <a class="header__link" href="/about.html">/Sobre</a>
-        <a class="header__link" href="/blog.html">/Blog</a>
-        <a class="header__link" href="/portfolio.html">/Projetos</a>
+        <a class="header__link" href="/about.html"{{ if eq .ActiveSection "about" }} aria-current="page"{{ end }}>/Sobre</a>
+        <a class="header__link" href="/blog.html"{{ if eq .ActiveSection "blog" }} aria-current="page"{{ end }}>/Blog</a>
+        <a class="header__link" href="/portfolio.html"{{ if eq .ActiveSection "portfolio" }} aria-current="page"{{ end }}>/Projetos</a>
       </nav>
     </header>
     <main id="main-content">
@@ -60,14 +61,12 @@
         var currentScrollPos = window.pageYOffset;
         if (prevScrollpos > currentScrollPos) {
           document.getElementById("navbar").style.top = "0";
-          document.getElementById("footer").style.bottom = "0";
         } else {
-          document.getElementById("navbar").style.top = "-55px";
-          document.getElementById("footer").style.bottom = "-50px";
+          document.getElementById("navbar").style.top =
+            `-${document.getElementById("navbar").offsetHeight}px`;
         }
         if ((window.innerHeight + window.scrollY) >= document.body.offsetHeight) {
           document.getElementById("navbar").style.top = "0";
-          document.getElementById("footer").style.bottom = "0";
         }
         prevScrollpos = currentScrollPos;
       }

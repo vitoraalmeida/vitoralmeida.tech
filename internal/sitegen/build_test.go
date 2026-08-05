@@ -39,6 +39,15 @@ func TestBuildProducesExpectedSite(t *testing.T) {
 	for _, name := range []string{"index.html", "blog/hello.html"} {
 		assertGolden(t, name, readTestFile(t, filepath.Join(output, filepath.FromSlash(name))))
 	}
+
+	newestPost := readTestFile(t, filepath.Join(output, "blog", "second-post.html"))
+	if !strings.Contains(newestPost, `href="/blog/hello.html">Older: Hello &lt;world&gt;</a>`) {
+		t.Errorf("newest post missing older-post navigation: %s", newestPost)
+	}
+	oldestPost := readTestFile(t, filepath.Join(output, "blog", "hello.html"))
+	if !strings.Contains(oldestPost, `href="/blog/second-post.html">Newer: Second post</a>`) {
+		t.Errorf("oldest post missing newer-post navigation: %s", oldestPost)
+	}
 }
 
 func TestBuildFailurePreservesExistingOutput(t *testing.T) {

@@ -1,1 +1,1 @@
-<!doctype html><html><head><title>{{.Title}}</title><meta name="description" content="{{.Description}}"></head><body><main>{{.Content}}</main></body></html>
+<!doctype html><html><head><title>{{.Title}}</title><meta name="description" content="{{.Description}}"></head><body><nav><a href="/"{{if eq .ActiveSection "home"}} aria-current="page"{{end}}>Home</a><a href="/blog.html"{{if eq .ActiveSection "blog"}} aria-current="page"{{end}}>Blog</a></nav><main>{{.Content}}</main></body></html>

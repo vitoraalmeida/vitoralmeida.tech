@@ -7,13 +7,51 @@
     <h2 class="post-meta__subtitle">
         <em>{{ .Description }}</em>
     </h2>
-    <p class="post-meta__date">Publicado em <time>{{ .Date }}</time></p>
+    <p class="post-meta__date">Publicado em <time datetime="{{ .DateISO }}">{{ .Date }}</time></p>
     </section>
+
+    {{ with .TableOfContents }}
+    <nav class="table-of-contents" aria-labelledby="table-of-contents-title">
+        <h2 class="table-of-contents__title" id="table-of-contents-title">Neste artigo</h2>
+        <ol class="table-of-contents__list">
+            {{ range . }}
+            <li class="table-of-contents__item">
+                <a class="table-of-contents__link" href="#{{ .ID }}">{{ .Title }}</a>
+                {{ with .Children }}
+                <ol class="table-of-contents__list table-of-contents__list--nested">
+                    {{ range . }}
+                    <li class="table-of-contents__item">
+                        <a class="table-of-contents__link" href="#{{ .ID }}">{{ .Title }}</a>
+                    </li>
+                    {{ end }}
+                </ol>
+                {{ end }}
+            </li>
+            {{ end }}
+        </ol>
+    </nav>
+    {{ end }}
 
     <article class="blog-post__article">
         {{ .Content }}
     </article>
 
+    {{ if or .Older .Newer }}
+    <nav class="post-navigation" aria-label="Navegação entre artigos">
+        {{ if .Older }}
+        <a class="post-navigation__link post-navigation__link--older" href="/blog/{{ .Older.Slug }}.html">
+            <span class="post-navigation__direction">← Mais antigo</span>
+            <span>{{ .Older.Title }}</span>
+        </a>
+        {{ end }}
+        {{ if .Newer }}
+        <a class="post-navigation__link post-navigation__link--newer" href="/blog/{{ .Newer.Slug }}.html">
+            <span class="post-navigation__direction">Mais recente →</span>
+            <span>{{ .Newer.Title }}</span>
+        </a>
+        {{ end }}
+    </nav>
+    {{ end }}
 
     <a href="#top">Voltar ao topo</a>
 

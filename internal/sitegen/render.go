@@ -9,9 +9,26 @@ import (
 )
 
 type Page struct {
-	Title       string
-	Description string
-	Content     template.HTML
+	Title         string
+	Description   string
+	ActiveSection string
+	Content       template.HTML
+}
+
+type PostLink struct {
+	Title string
+	Slug  string
+}
+
+type PostPage struct {
+	Title           string
+	Date            string
+	DateISO         string
+	Description     string
+	Content         template.HTML
+	TableOfContents []TOCItem
+	Older           *PostLink
+	Newer           *PostLink
 }
 
 func renderSite(templatesDir, output string, posts []Post) error {
@@ -21,14 +38,14 @@ func renderSite(templatesDir, output string, posts []Post) error {
 	}
 
 	pages := []struct {
-		name, title, description string
-		nested                   template.HTML
+		name, title, description, activeSection string
+		nested                                  template.HTML
 	}{
-		{"index", "Vitor Almeida", "Página pessoal de Vitor Almeida", listing},
-		{"blog", "Vitor Almeida - Blog", "Blog de Vitor Almeida", listing},
-		{"about", "Vitor Almeida - Sobre mim", "Página pessoal de Vitor Almeida", ""},
-		{"portfolio", "Vitor Almeida - Portfólio", "Portfólio de Vitor Almeida", ""},
-		{"404", "Vitor Almeida - Not found", "Fim da linha", ""},
+		{"index", "Vitor Almeida", "Página pessoal de Vitor Almeida", "home", listing},
+		{"blog", "Vitor Almeida - Blog", "Blog de Vitor Almeida", "blog", listing},
+		{"about", "Vitor Almeida - Sobre mim", "Página pessoal de Vitor Almeida", "about", ""},
+		{"portfolio", "Vitor Almeida - Portfólio", "Portfólio de Vitor Almeida", "portfolio", ""},
+		{"404", "Vitor Almeida - Not found", "Fim da linha", "", ""},
 	}
 	for _, page := range pages {
 		content, err := renderTemplate(filepath.Join(templatesDir, page.name+".gohtml"), page.nested)
@@ -36,7 +53,7 @@ func renderSite(templatesDir, output string, posts []Post) error {
 			return err
 		}
 		if err := RenderPage(filepath.Join(templatesDir, "base-template.gohtml"), Page{
-			Title: page.title, Description: page.description, Content: content,
+			Title: page.title, Description: page.description, ActiveSection: page.activeSection, Content: content,
 		}, filepath.Join(output, page.name+".html")); err != nil {
 			return err
 		}
@@ -46,16 +63,28 @@ func renderSite(templatesDir, output string, posts []Post) error {
 	if err := os.MkdirAll(blogDir, 0o755); err != nil {
 		return fmt.Errorf("create posts output directory: %w", err)
 	}
-	for _, post := range posts {
-		content, err := renderTemplate(filepath.Join(templatesDir, "post.gohtml"), struct {
-			Title, Date, Description string
-			Content                  template.HTML
-		}{post.Title, post.Date, post.Description, post.Content})
+	for index, post := range posts {
+		postPage := PostPage{
+			Title:           post.Title,
+			Date:            post.Date,
+			DateISO:         post.DateISO,
+			Description:     post.Description,
+			Content:         post.Content,
+			TableOfContents: post.TableOfContents,
+		}
+		if index+1 < len(posts) {
+			postPage.Older = &PostLink{Title: posts[index+1].Title, Slug: posts[index+1].Slug}
+		}
+		if index > 0 {
+			postPage.Newer = &PostLink{Title: posts[index-1].Title, Slug: posts[index-1].Slug}
+		}
+
+		content, err := renderTemplate(filepath.Join(templatesDir, "post.gohtml"), postPage)
 		if err != nil {
 			return err
 		}
 		if err := RenderPage(filepath.Join(templatesDir, "base-template.gohtml"), Page{
-			Title: post.Title, Description: post.Description, Content: content,
+			Title: post.Title, Description: post.Description, ActiveSection: "blog", Content: content,
 		}, filepath.Join(blogDir, post.Slug+".html")); err != nil {
 			return err
 		}

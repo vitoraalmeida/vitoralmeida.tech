@@ -1,1 +1,1 @@
-<article><h1>{{.Title}}</h1><p>{{.Description}}</p><time>{{.Date}}</time>{{.Content}}</article>
+<article><h1>{{.Title}}</h1><p>{{.Description}}</p><time datetime="{{.DateISO}}">{{.Date}}</time>{{.Content}}</article>{{if .Older}}<a href="/blog/{{.Older.Slug}}.html">Older: {{.Older.Title}}</a>{{end}}{{if .Newer}}<a href="/blog/{{.Newer.Slug}}.html">Newer: {{.Newer.Title}}</a>{{end}}

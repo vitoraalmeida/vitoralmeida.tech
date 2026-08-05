@@ -2,27 +2,44 @@ package sitegen
 
 import (
 	"fmt"
+	"html"
 	"html/template"
 	"io/fs"
 	"os"
 	"path/filepath"
+	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/BurntSushi/toml"
 	"github.com/russross/blackfriday"
 )
 
 type Post struct {
-	Title       string
-	Date        string
-	Description string
-	Content     template.HTML
-	Markdown    []byte
-	Slug        string
-	AssetsDir   string
-	SourceDir   string
+	Title           string
+	Date            string
+	DateISO         string
+	Description     string
+	Content         template.HTML
+	TableOfContents []TOCItem
+	Markdown        []byte
+	Slug            string
+	AssetsDir       string
+	SourceDir       string
 }
+
+type TOCItem struct {
+	ID       string
+	Title    string
+	Children []TOCItem
+}
+
+var (
+	standaloneImageParagraphPattern = regexp.MustCompile(`<p>(<img src="[^"]*" alt="([^"]*)"(?: title="[^"]*")? />)</p>`)
+	headingPattern                  = regexp.MustCompile(`(?s)<h([23]) id="([^"]+)">(.*?)</h[23]>`)
+	htmlTagPattern                  = regexp.MustCompile(`<[^>]+>`)
+)
 
 type postMeta struct {
 	Title       string `toml:"title"`
@@ -76,16 +93,71 @@ func loadPost(postsRoot string, entry fs.DirEntry) (Post, error) {
 		return Post{}, fmt.Errorf("inspect post %q assets: %w", entry.Name(), err)
 	}
 
+	dateISO := ""
+	if date, err := time.Parse("02/01/2006", metadata.Date); err == nil {
+		dateISO = date.Format("2006-01-02")
+	}
+	content, tableOfContents := renderMarkdown(markdown)
+
 	return Post{
-		Title:       metadata.Title,
-		Date:        metadata.Date,
-		Description: metadata.Description,
-		Content:     template.HTML(blackfriday.MarkdownCommon(markdown)), // Markdown files are trusted repository content.
-		Markdown:    markdown,
-		Slug:        parts[1],
-		AssetsDir:   assetsDir,
-		SourceDir:   postDir,
+		Title:           metadata.Title,
+		Date:            metadata.Date,
+		DateISO:         dateISO,
+		Description:     metadata.Description,
+		Content:         content,
+		TableOfContents: tableOfContents,
+		Markdown:        markdown,
+		Slug:            parts[1],
+		AssetsDir:       assetsDir,
+		SourceDir:       postDir,
 	}, nil
+}
+
+func renderMarkdown(markdown []byte) (template.HTML, []TOCItem) {
+	htmlFlags := blackfriday.HTML_USE_XHTML |
+		blackfriday.HTML_USE_SMARTYPANTS |
+		blackfriday.HTML_SMARTYPANTS_FRACTIONS |
+		blackfriday.HTML_SMARTYPANTS_DASHES |
+		blackfriday.HTML_SMARTYPANTS_LATEX_DASHES
+	extensions := blackfriday.EXTENSION_NO_INTRA_EMPHASIS |
+		blackfriday.EXTENSION_TABLES |
+		blackfriday.EXTENSION_FENCED_CODE |
+		blackfriday.EXTENSION_AUTOLINK |
+		blackfriday.EXTENSION_STRIKETHROUGH |
+		blackfriday.EXTENSION_SPACE_HEADERS |
+		blackfriday.EXTENSION_HEADER_IDS |
+		blackfriday.EXTENSION_AUTO_HEADER_IDS |
+		blackfriday.EXTENSION_BACKSLASH_LINE_BREAK |
+		blackfriday.EXTENSION_DEFINITION_LISTS
+	renderer := blackfriday.HtmlRenderer(htmlFlags, "", "")
+	rendered := string(blackfriday.MarkdownOptions(markdown, renderer, blackfriday.Options{Extensions: extensions}))
+	rendered = standaloneImageParagraphPattern.ReplaceAllStringFunc(rendered, func(paragraph string) string {
+		matches := standaloneImageParagraphPattern.FindStringSubmatch(paragraph)
+		return `<figure class="article-figure">` + matches[1] +
+			`<figcaption class="article-figure__caption">` + matches[2] + `</figcaption></figure>`
+	})
+	return template.HTML(rendered), buildTableOfContents(rendered) // Repository Markdown and generated figure markup are trusted HTML.
+}
+
+func buildTableOfContents(rendered string) []TOCItem {
+	headings := headingPattern.FindAllStringSubmatch(rendered, -1)
+	if len(headings) < 3 {
+		return nil
+	}
+
+	items := make([]TOCItem, 0, len(headings))
+	for _, heading := range headings {
+		item := TOCItem{
+			ID:    heading[2],
+			Title: html.UnescapeString(htmlTagPattern.ReplaceAllString(heading[3], "")),
+		}
+		if heading[1] == "3" && len(items) > 0 {
+			items[len(items)-1].Children = append(items[len(items)-1].Children, item)
+			continue
+		}
+		items = append(items, item)
+	}
+	return items
 }
 
 func errorsIsNotExist(err error) bool {
