@@ -718,6 +718,9 @@ ul {
 @media (max-width: 660px) {
   .header {
     gap: 0.4rem;
+    width: calc(100% + var(--page-padding) + var(--page-padding));
+    margin-inline: calc(0px - var(--page-padding));
+    padding-inline: var(--page-padding);
   }
 
   .header__logo {
