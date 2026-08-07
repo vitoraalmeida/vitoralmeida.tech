@@ -1,7 +1,7 @@
 schema_version = 1
 
 [application]
-name = "personal-site"
+name = "vitoralmeida-tech"
 
 [source]
 repository = "https://github.com/vitoraalmeida/vitoralmeida.tech"
