@@ -27,5 +27,7 @@ verify:
 	test -f dist/blog.html
 	test -f dist/portfolio.html
 	test -f dist/styles/global.css
-	test -f dist/fonts/inconsolata-latin.woff2
+	test -f dist/fonts/ibm-plex-mono.woff2
+	test -f dist/fonts/space-mono-regular.woff2
+	test -f dist/fonts/space-mono-bold.woff2
 	test -f dist/robots.txt

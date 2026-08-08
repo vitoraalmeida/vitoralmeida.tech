@@ -10,14 +10,34 @@
   --content-width: 92ch;
   --article-width: 70ch;
   --page-padding: clamp(0.75rem, 3vw, 1.5rem);
+
+  /* typography */
+  --font-body: "IBM Plex Mono", monospace;
+  --font-display: "Space Mono", monospace;
 }
 
 @font-face {
-  font-family: "Inconsolata";
+  font-family: "IBM Plex Mono";
   font-style: normal;
-  font-weight: 400 700;
+  font-weight: 100 700;
   font-display: swap;
-  src: url("/fonts/inconsolata-latin.woff2") format("woff2");
+  src: url("/fonts/ibm-plex-mono.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/space-mono-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/space-mono-bold.woff2") format("woff2");
 }
 
 html {
@@ -39,7 +59,8 @@ html {
 
 body {
   background-color: var(--color-background);
-  font-family: "Inconsolata", monospace;
+  font-family: var(--font-body);
+  font-variant-ligatures: none;
   color: var(--color-text);
   margin: 0 auto; /* centraliza todo o conteúdo */
   padding-inline: var(--page-padding);
@@ -71,6 +92,19 @@ h2,
 h3,
 a {
   overflow-wrap: anywhere;
+}
+
+h1,
+h2,
+h3,
+.header__logo,
+.intro__title,
+.about__title,
+.blog-page__title,
+.blog-post-page-title,
+.portfolio__title,
+.footer__status {
+  font-family: var(--font-display);
 }
 
 ul {
@@ -129,7 +163,7 @@ ul {
 .header__logo {
   font-size: 1.3rem;
   font-weight: 700;
-  letter-spacing: -0.04rem;
+  letter-spacing: 0;
   color: var(--color-text-strong);
   white-space: nowrap;
 }
