@@ -190,6 +190,7 @@ inicial:
 server {
     listen 80;
     listen [::]:80;
+    absolute_redirect off;
 
     server_name SEU_DOMINIO www.SEU_DOMINIO;
     root /srv/www/SEU_DOMINIO/current;

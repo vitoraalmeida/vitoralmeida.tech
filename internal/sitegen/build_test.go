@@ -41,11 +41,11 @@ func TestBuildProducesExpectedSite(t *testing.T) {
 	}
 
 	newestPost := readTestFile(t, filepath.Join(output, "blog", "second-post.html"))
-	if !strings.Contains(newestPost, `href="/blog/hello.html">Older: Hello &lt;world&gt;</a>`) {
+	if !strings.Contains(newestPost, `href="/blog/hello">Older: Hello &lt;world&gt;</a>`) {
 		t.Errorf("newest post missing older-post navigation: %s", newestPost)
 	}
 	oldestPost := readTestFile(t, filepath.Join(output, "blog", "hello.html"))
-	if !strings.Contains(oldestPost, `href="/blog/second-post.html">Newer: Second post</a>`) {
+	if !strings.Contains(oldestPost, `href="/blog/second-post">Newer: Second post</a>`) {
 		t.Errorf("oldest post missing newer-post navigation: %s", oldestPost)
 	}
 }

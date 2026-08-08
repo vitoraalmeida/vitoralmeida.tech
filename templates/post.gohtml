@@ -42,13 +42,13 @@
     {{ if or .Older .Newer }}
     <nav class="post-navigation" aria-label="Navegação entre artigos">
         {{ if .Older }}
-        <a class="post-navigation__link post-navigation__link--older" href="/blog/{{ .Older.Slug }}.html">
+        <a class="post-navigation__link post-navigation__link--older" href="/blog/{{ .Older.Slug }}">
             <span class="post-navigation__direction">← Mais antigo</span>
             <span>{{ .Older.Title }}</span>
         </a>
         {{ end }}
         {{ if .Newer }}
-        <a class="post-navigation__link post-navigation__link--newer" href="/blog/{{ .Newer.Slug }}.html">
+        <a class="post-navigation__link post-navigation__link--newer" href="/blog/{{ .Newer.Slug }}">
             <span class="post-navigation__direction">Mais recente →</span>
             <span>{{ .Newer.Title }}</span>
         </a>
