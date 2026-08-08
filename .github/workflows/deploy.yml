@@ -1,21 +1,25 @@
-name: Deploy production
+name: Publish staging OCI image
 
 on:
   workflow_dispatch:
   push:
     branches:
-      - main
+      - staging
 
 permissions:
   contents: read
+  packages: write
 
 concurrency:
-  group: production-vitoralmeida-tech
-  cancel-in-progress: false
+  group: staging-vitoralmeida-tech
+  cancel-in-progress: true
 
 jobs:
-  build:
+  publish:
     runs-on: ubuntu-latest
+    outputs:
+      image: ${{ steps.push.outputs.image }}
+      digest: ${{ steps.push.outputs.digest }}
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
@@ -26,88 +30,74 @@ jobs:
           go-version-file: go.mod
           cache-dependency-path: go.sum
 
-      - name: Test and validate
-        run: |
-          make test
-          make check
+      - name: Run tests
+        run: make test
 
-      - name: Build and verify
-        run: |
-          make build
-          make verify
+      - name: Validate content
+        run: make check
 
-      - name: Package immutable site artifact
-        id: package
+      - name: Build site
+        run: make build
+
+      - name: Verify site artifact
+        run: make verify
+
+      - name: Build OCI image
+        run: |
+          podman build \
+            -t "ghcr.io/vitoraalmeida/vitoralmeida.tech:${{ github.sha }}" \
+            .
+
+      - name: Smoke test image
+        run: |
+          container=$(podman run -d \
+            -p 18080:8080 \
+            "ghcr.io/vitoraalmeida/vitoralmeida.tech:${{ github.sha }}")
+          trap 'podman rm -f "$container" >/dev/null 2>&1 || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:18080/healthz >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "healthz did not return 200 within 30s"
+          exit 1
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push image to GHCR
+        id: push
         shell: bash
         run: |
-          package="site-${GITHUB_SHA}.tar.gz"
-          tar -czf "$package" -C dist .
-          sha256sum "$package" > "$package.sha256"
-          echo "name=$package" >> "$GITHUB_OUTPUT"
+          image="ghcr.io/vitoraalmeida/vitoralmeida.tech:${{ github.sha }}"
+          podman push "$image"
+          podman tag "$image" "ghcr.io/vitoraalmeida/vitoralmeida.tech:staging"
+          podman push "ghcr.io/vitoraalmeida/vitoralmeida.tech:staging"
 
-      - name: Upload site artifact
-        uses: actions/upload-artifact@v7
-        with:
-          name: site-${{ github.sha }}
-          path: |
-            ${{ steps.package.outputs.name }}
-            ${{ steps.package.outputs.name }}.sha256
-          if-no-files-found: error
-          retention-days: 14
+          digest="$(podman inspect --format '{{index .RepoDigests 0}}' "$image")"
+          digest="${digest#*@}"
 
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment:
-      name: production
-      url: https://vitoralmeida.tech
-    env:
-      DEPLOY_HOST: ${{ vars.DEPLOY_HOST }}
-      DEPLOY_PORT: ${{ vars.DEPLOY_PORT }}
-      DEPLOY_USER: ${{ vars.DEPLOY_USER }}
-      APP_ROOT: /srv/www/vitoralmeida.tech
-    steps:
-      - name: Check out deployment script
-        uses: actions/checkout@v6
+          echo "image=$image" >> "$GITHUB_OUTPUT"
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
 
-      - name: Download site artifact
-        uses: actions/download-artifact@v8
-        with:
-          name: site-${{ github.sha }}
-          path: artifact
-
-      - name: Configure SSH
+      - name: Print deployment instructions
         shell: bash
         env:
-          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
-          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+          IMAGE: ${{ steps.push.outputs.image }}
+          DIGEST: ${{ steps.push.outputs.digest }}
         run: |
-          install -d -m 700 ~/.ssh
-          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
-          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
-          chmod 600 ~/.ssh/deploy_key ~/.ssh/known_hosts
-
-      - name: Upload release inputs
-        shell: bash
-        run: |
-          scp -P "$DEPLOY_PORT" \
-            -i ~/.ssh/deploy_key \
-            -o BatchMode=yes \
-            -o StrictHostKeyChecking=yes \
-            artifact/site-${GITHUB_SHA}.tar.gz \
-            artifact/site-${GITHUB_SHA}.tar.gz.sha256 \
-            scripts/deploy_static.py \
-            "$DEPLOY_USER@$DEPLOY_HOST:$APP_ROOT/incoming/"
-
-      - name: Activate release
-        shell: bash
-        run: |
-          ssh -p "$DEPLOY_PORT" \
-            -i ~/.ssh/deploy_key \
-            -o BatchMode=yes \
-            -o StrictHostKeyChecking=yes \
-            "$DEPLOY_USER@$DEPLOY_HOST" \
-            "command -v python3 >/dev/null && APP_ROOT='$APP_ROOT' HEALTHCHECK_URL='https://vitoralmeida.tech/' python3 '$APP_ROOT/incoming/deploy_static.py' '$GITHUB_SHA'"
-
-      - name: Verify public site
-        run: curl --fail --location --silent --show-error --retry 3 https://vitoralmeida.tech/
+          {
+            echo "## Staging image published"
+            echo ""
+            echo "Deploy this exact immutable reference:"
+            echo ""
+            echo '```'
+            echo "pneuma --verbose app deploy vitoralmeida-tech-staging \\"
+            echo "  --image ${IMAGE}@${DIGEST}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
