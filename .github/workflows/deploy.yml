@@ -75,12 +75,11 @@ jobs:
         shell: bash
         run: |
           image="ghcr.io/vitoraalmeida/vitoralmeida.tech:${{ github.sha }}"
-          podman push "$image"
+          podman push --digestfile=digest.txt "$image"
           podman tag "$image" "ghcr.io/vitoraalmeida/vitoralmeida.tech:staging"
           podman push "ghcr.io/vitoraalmeida/vitoralmeida.tech:staging"
 
-          digest="$(podman inspect --format '{{index .RepoDigests 0}}' "$image")"
-          digest="${digest#*@}"
+          digest="$(cat digest.txt)"
 
           echo "image=$image" >> "$GITHUB_OUTPUT"
           echo "digest=$digest" >> "$GITHUB_OUTPUT"
