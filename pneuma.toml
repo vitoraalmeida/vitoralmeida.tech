@@ -1,11 +1,18 @@
-schema_version = 1
+schema_version = 2
+
+[system]
+name = "personal-website"
 
 [application]
-name = "vitoralmeida-tech-prod"
+name = "vitoralmeida-tech-staging"
+
+[delivery]
+type = "oci"
+image = "ghcr.io/vitoraalmeida/vitoralmeida.tech"
 
 [source]
 repository = "https://github.com/vitoraalmeida/vitoralmeida.tech"
-branch = "main"
+branch = "staging"
 
 [build]
 containerfile = "Containerfile"
@@ -18,4 +25,4 @@ expected_status = 200
 
 [exposure]
 default_visibility = "public"
-domain = "vitoralmeida.tech"
+domain = "staging.vitoralmeida.tech"

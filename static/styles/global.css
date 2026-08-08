@@ -10,14 +10,34 @@
   --content-width: 92ch;
   --article-width: 70ch;
   --page-padding: clamp(0.75rem, 3vw, 1.5rem);
+
+  /* typography */
+  --font-body: "IBM Plex Mono", monospace;
+  --font-display: "Space Mono", monospace;
 }
 
 @font-face {
-  font-family: "Inconsolata";
+  font-family: "IBM Plex Mono";
   font-style: normal;
-  font-weight: 400 700;
+  font-weight: 100 700;
   font-display: swap;
-  src: url("/fonts/inconsolata-latin.woff2") format("woff2");
+  src: url("/fonts/ibm-plex-mono.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/space-mono-regular.woff2") format("woff2");
+}
+
+@font-face {
+  font-family: "Space Mono";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/fonts/space-mono-bold.woff2") format("woff2");
 }
 
 html {
@@ -39,7 +59,8 @@ html {
 
 body {
   background-color: var(--color-background);
-  font-family: "Inconsolata", monospace;
+  font-family: var(--font-body);
+  font-variant-ligatures: none;
   color: var(--color-text);
   margin: 0 auto; /* centraliza todo o conteúdo */
   padding-inline: var(--page-padding);
@@ -71,6 +92,19 @@ h2,
 h3,
 a {
   overflow-wrap: anywhere;
+}
+
+h1,
+h2,
+h3,
+.header__logo,
+.intro__title,
+.about__title,
+.blog-page__title,
+.blog-post-page-title,
+.portfolio__title,
+.footer__status {
+  font-family: var(--font-display);
 }
 
 ul {
@@ -127,9 +161,9 @@ ul {
 }
 
 .header__logo {
-  font-size: 1.3rem;
+  font-size: 1.04rem;
   font-weight: 700;
-  letter-spacing: -0.04rem;
+  letter-spacing: 0;
   color: var(--color-text-strong);
   white-space: nowrap;
 }
@@ -143,7 +177,7 @@ ul {
   display: flex;
   flex-wrap: nowrap;
   gap: 0.6rem;
-  font-size: 1.1rem;
+  font-size: 0.88rem;
   white-space: nowrap;
 }
 
@@ -175,7 +209,7 @@ ul {
   padding-bottom: 2px;
   margin-bottom: 1rem;
   display: inline-block;
-  font-size: 1.5em;
+  font-size: 1.215em;
 }
 
 .animation,
@@ -228,7 +262,7 @@ ul {
 }
 
 .intro__description {
-  font-size: 1.2rem;
+  font-size: 0.972rem;
   letter-spacing: -0.09px;
 }
 
@@ -243,7 +277,7 @@ ul {
   display: inline-block;
   padding-bottom: 2px;
   margin-bottom: 0.8rem;
-  font-size: 1.4rem;
+  font-size: 1.134rem;
 }
 
 .post-listing__title::before {
@@ -262,18 +296,18 @@ ul {
 }
 
 .post-short__title {
-  font-size: 1.3rem;
+  font-size: 1.053rem;
   color: var(--color-text-strong);
 }
 
 .post-short__date {
-  font-size: 0.9rem;
+  font-size: 0.729rem;
   color: var(--color-text-muted);
   margin-bottom: 4px;
 }
 
 .post-short__link {
-  font-size: 1rem;
+  font-size: 0.81rem;
   margin-right: 10px;
   margin-top: 0;
   display: block;
@@ -281,7 +315,7 @@ ul {
 }
 
 .post-short__subtitle {
-  font-size: 1.2rem;
+  font-size: 0.972rem;
   letter-spacing: -0.09px;
   margin-top: 4px;
 }
@@ -296,7 +330,7 @@ ul {
   padding-bottom: 2px;
   margin-bottom: 0.3rem;
   display: inline-block;
-  font-size: 1.5em;
+  font-size: 1.215em;
 }
 
 .about__animation {
@@ -312,7 +346,7 @@ ul {
 }
 
 .about-description > p {
-  font-size: 1.2rem;
+  font-size: 0.972rem;
   margin-bottom: 1rem;
   letter-spacing: -0.09px;
 }
@@ -322,7 +356,7 @@ ul {
   border-bottom: 2px dashed var(--color-accent);
   display: inline-block;
   padding-bottom: 2px;
-  font-size: 1.3rem;
+  font-size: 1.053rem;
   margin-bottom: 1rem;
 }
 
@@ -342,7 +376,7 @@ ul {
   border-bottom: 2px dashed var(--color-accent);
   display: inline-block;
   padding-bottom: 2px;
-  font-size: 1.3rem;
+  font-size: 1.053rem;
   margin-bottom: 1rem;
 }
 
@@ -377,7 +411,7 @@ ul {
   display: inline-block;
   padding-bottom: 2px;
   margin-bottom: 1px;
-  font-size: 1.5em;
+  font-size: 1.215em;
 }
 .blog-page__animation {
   --typing-duration: 1s;
@@ -400,12 +434,12 @@ ul {
 .table-of-contents__title {
   margin-bottom: 0.75rem;
   color: var(--color-text-strong);
-  font-size: 1.1rem;
+  font-size: 0.891rem;
 }
 
 .table-of-contents__summary {
   color: var(--color-text-strong);
-  font-size: 1.1rem;
+  font-size: 0.891rem;
   font-weight: 700;
   cursor: pointer;
 }
@@ -453,7 +487,7 @@ ul {
 
 .blog-post__article {
   max-width: var(--article-width);
-  font-size: 1.125rem;
+  font-size: 0.91125rem;
   line-height: 1.6;
   letter-spacing: -0.09px;
   color: var(--color-text);
@@ -469,7 +503,7 @@ ul {
 
 .blog-post__article h2 {
   color: var(--color-text-strong);
-  font-size: 1.4rem;
+  font-size: 1.134rem;
   margin-top: 2rem;
   margin-bottom: 0.8rem;
 }
@@ -481,7 +515,7 @@ ul {
 
 .blog-post-page-title {
   color: var(--color-text-strong);
-  font-size: 1.5rem;
+  font-size: 1.215rem;
   padding-bottom: 7px;
   margin-top: 1.4rem;
   margin-bottom: 1px;
@@ -493,7 +527,7 @@ ul {
 
 .blog-post__article h3 {
   color: var(--color-text-strong);
-  font-size: 1.3rem;
+  font-size: 1.053rem;
   margin-top: 1.5rem;
   margin-bottom: 0.7rem;
 }
@@ -566,7 +600,7 @@ ul {
 .article-figure__caption {
   margin-top: 0.55rem;
   color: var(--color-text-muted);
-  font-size: 0.9rem;
+  font-size: 0.729rem;
   line-height: 1.4;
   text-align: center;
 }
@@ -608,13 +642,13 @@ ul {
 
 .post-meta__date {
   color: var(--color-text-muted);
-  font-size: 1rem;
+  font-size: 0.81rem;
   margin-top: 1.1rem;
 }
 
 .post-meta__subtitle {
   margin-top: 0.1rem;
-  font-size: 1.3rem;
+  font-size: 1.053rem;
 }
 
 /* adjacent posts */
@@ -650,7 +684,7 @@ ul {
 .post-navigation__direction {
   margin-bottom: 0.35rem;
   color: var(--color-text-muted);
-  font-size: 0.9rem;
+  font-size: 0.729rem;
   text-decoration: none;
 }
 
@@ -669,7 +703,7 @@ ul {
   flex-wrap: wrap;
   justify-content: center;
   gap: 0.25rem 0.6rem;
-  font-size: 0.9rem;
+  font-size: 0.729rem;
   margin-top: 1px;
 }
 
@@ -698,7 +732,7 @@ ul {
   color: var(--color-text-strong);
   padding-bottom: 2px;
   margin-bottom: 1px;
-  font-size: 1.5em;
+  font-size: 1.215em;
 }
 
 .portfolio__animation {
