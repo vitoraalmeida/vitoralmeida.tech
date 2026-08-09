@@ -3,10 +3,12 @@ package sitegen
 import (
 	"bytes"
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"html/template"
 	"os"
 	"path/filepath"
+	"time"
 )
 
 const siteBaseURL = "https://vitoralmeida.tech"
@@ -17,6 +19,9 @@ type Page struct {
 	ActiveSection  string
 	Content        template.HTML
 	Canonical      string
+	Type           string
+	DateISO        string
+	OGImage        string
 	StructuredData template.HTML
 }
 
@@ -58,12 +63,15 @@ func renderSite(templatesDir, output string, posts []Post) error {
 			return err
 		}
 		canonical := ""
+		ogImage := ""
 		if page.canonical != "" {
 			canonical = siteBaseURL + page.canonical
+			ogImage = siteBaseURL + "/og-image.png"
 		}
 		if err := RenderPage(filepath.Join(templatesDir, "base-template.gohtml"), Page{
 			Title: page.title, Description: page.description, ActiveSection: page.activeSection, Content: content,
-			Canonical: canonical, StructuredData: pageStructuredData(page.kind, page.title, page.description, canonical, ""),
+			Canonical: canonical, Type: page.kind, OGImage: ogImage,
+			StructuredData: pageStructuredData(page.kind, page.title, page.description, canonical, ""),
 		}, filepath.Join(output, page.name+".html")); err != nil {
 			return err
 		}
@@ -96,10 +104,14 @@ func renderSite(templatesDir, output string, posts []Post) error {
 		canonical := siteBaseURL + "/blog/" + post.Slug
 		if err := RenderPage(filepath.Join(templatesDir, "base-template.gohtml"), Page{
 			Title: post.Title, Description: post.Description, ActiveSection: "blog", Content: content,
-			Canonical: canonical, StructuredData: pageStructuredData("article", post.Title, post.Description, canonical, post.DateISO),
+			Canonical: canonical, Type: "article", DateISO: post.DateISO, OGImage: siteBaseURL + "/og-image.png",
+			StructuredData: pageStructuredData("article", post.Title, post.Description, canonical, post.DateISO),
 		}, filepath.Join(blogDir, post.Slug+".html")); err != nil {
 			return err
 		}
+	}
+	if err := writeRSS(output, posts); err != nil {
+		return err
 	}
 	return writeSitemap(output, posts)
 }
@@ -198,6 +210,7 @@ func writeSitemap(output string, posts []Post) error {
 		{"/blog", ""},
 		{"/about", ""},
 		{"/portfolio", ""},
+		{"/feed.xml", ""},
 	}
 	for _, post := range posts {
 		entries = append(entries, struct{ path, lastmod string }{"/blog/" + post.Slug, post.DateISO})
@@ -216,4 +229,44 @@ func writeSitemap(output string, posts []Post) error {
 	}
 	buffer.WriteString("</urlset>\n")
 	return os.WriteFile(filepath.Join(output, "sitemap.xml"), buffer.Bytes(), 0o644)
+}
+
+// writeRSS gera o feed RSS 2.0 com o conteúdo completo de cada post.
+func writeRSS(output string, posts []Post) error {
+	var buffer bytes.Buffer
+	buffer.WriteString(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")
+	buffer.WriteString(`<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:atom="http://www.w3.org/2005/Atom">` + "\n")
+	buffer.WriteString("<channel>\n")
+	buffer.WriteString("  <title>Vitor Almeida</title>\n")
+	buffer.WriteString("  <link>" + siteBaseURL + "/</link>\n")
+	buffer.WriteString("  <description>Página pessoal de Vitor Almeida</description>\n")
+	buffer.WriteString("  <language>pt-br</language>\n")
+	buffer.WriteString("  <atom:link href=\"" + siteBaseURL + "/feed.xml\" rel=\"self\" type=\"application/rss+xml\" />\n")
+	buffer.WriteString("  <lastBuildDate>" + time.Now().UTC().Format(time.RFC1123Z) + "</lastBuildDate>\n")
+
+	for _, post := range posts {
+		buffer.WriteString("  <item>\n")
+		buffer.WriteString("    <title>" + rssEscape(post.Title) + "</title>\n")
+		buffer.WriteString("    <link>" + siteBaseURL + "/blog/" + post.Slug + "</link>\n")
+		buffer.WriteString("    <guid isPermaLink=\"true\">" + siteBaseURL + "/blog/" + post.Slug + "</guid>\n")
+		if pubDate, err := time.Parse("2006-01-02", post.DateISO); err == nil {
+			buffer.WriteString("    <pubDate>" + pubDate.Format(time.RFC1123Z) + "</pubDate>\n")
+		}
+		content := "<![CDATA[" + string(post.Content) + "]]>"
+		buffer.WriteString("    <description>" + content + "</description>\n")
+		buffer.WriteString("    <content:encoded>" + content + "</content:encoded>\n")
+		buffer.WriteString("    <author>vitor@vitoralmeida.tech (Vitor Almeida)</author>\n")
+		buffer.WriteString("  </item>\n")
+	}
+	buffer.WriteString("</channel>\n</rss>\n")
+	return os.WriteFile(filepath.Join(output, "feed.xml"), buffer.Bytes(), 0o644)
+}
+
+// rssEscape escapa caracteres especiais para o conteúdo textual do XML.
+func rssEscape(value string) string {
+	var buffer bytes.Buffer
+	if err := xml.EscapeText(&buffer, []byte(value)); err != nil {
+		return value
+	}
+	return buffer.String()
 }

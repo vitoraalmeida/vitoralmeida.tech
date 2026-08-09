@@ -28,7 +28,7 @@ func TestBuildProducesExpectedSite(t *testing.T) {
 
 	required := []string{
 		"index.html", "404.html", "blog.html", "blog/hello.html", "blog/second-post.html",
-		"styles/global.css", "public/posts/hello/diagram.png", "robots.txt", "sitemap.xml",
+		"styles/global.css", "public/posts/hello/diagram.png", "robots.txt", "sitemap.xml", "feed.xml",
 	}
 	for _, name := range required {
 		if info, err := os.Stat(filepath.Join(output, filepath.FromSlash(name))); err != nil || !info.Mode().IsRegular() {
@@ -44,6 +44,8 @@ func TestBuildProducesExpectedSite(t *testing.T) {
 	for _, want := range []string{
 		`<link rel="canonical" href="https://vitoralmeida.tech/" />`,
 		`"@type":"WebSite"`,
+		`<meta property="og:type" content="website" />`,
+		`<meta property="og:image" content="https://vitoralmeida.tech/og-image.png" />`,
 	} {
 		if !strings.Contains(index, want) {
 			t.Errorf("index.html missing %q", want)
@@ -54,6 +56,8 @@ func TestBuildProducesExpectedSite(t *testing.T) {
 		`<link rel="canonical" href="https://vitoralmeida.tech/blog/hello" />`,
 		`"@type":"BlogPosting"`,
 		`"datePublished":"2026-08-01"`,
+		`<meta property="og:type" content="article" />`,
+		`<meta property="article:published_time" content="2026-08-01" />`,
 	} {
 		if !strings.Contains(post, want) {
 			t.Errorf("blog/hello.html missing %q", want)
@@ -65,11 +69,26 @@ func TestBuildProducesExpectedSite(t *testing.T) {
 		"<loc>https://vitoralmeida.tech/blog</loc>",
 		"<loc>https://vitoralmeida.tech/blog/hello</loc>",
 		"<loc>https://vitoralmeida.tech/blog/second-post</loc>",
+		"<loc>https://vitoralmeida.tech/feed.xml</loc>",
 		"<lastmod>2026-08-01</lastmod>",
 		"<lastmod>2026-08-02</lastmod>",
 	} {
 		if !strings.Contains(sitemap, want) {
 			t.Errorf("sitemap.xml missing %q", want)
+		}
+	}
+	feed := readTestFile(t, filepath.Join(output, "feed.xml"))
+	for _, want := range []string{
+		`<rss version="2.0"`,
+		`<language>pt-br</language>`,
+		"<link>https://vitoralmeida.tech/blog/hello</link>",
+		"<guid isPermaLink=\"true\">https://vitoralmeida.tech/blog/second-post</guid>",
+		"<pubDate>Sat, 01 Aug 2026 00:00:00 +0000</pubDate>",
+		"<content:encoded>",
+		"<author>vitor@vitoralmeida.tech (Vitor Almeida)</author>",
+	} {
+		if !strings.Contains(feed, want) {
+			t.Errorf("feed.xml missing %q", want)
 		}
 	}
 

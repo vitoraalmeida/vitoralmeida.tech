@@ -32,3 +32,5 @@ verify:
 	test -f dist/fonts/space-mono-bold.woff2
 	test -f dist/robots.txt
 	test -f dist/sitemap.xml
+	test -f dist/feed.xml
+	test -f dist/og-image.png

@@ -37,6 +37,7 @@ type TOCItem struct {
 
 var (
 	standaloneImageParagraphPattern = regexp.MustCompile(`<p>(<img src="[^"]*" alt="([^"]*)"(?: title="[^"]*")? />)</p>`)
+	imgTagPattern                   = regexp.MustCompile(`<img[^>]*>`)
 	headingPattern                  = regexp.MustCompile(`(?s)<h([23]) id="([^"]+)">(.*?)</h[23]>`)
 	htmlTagPattern                  = regexp.MustCompile(`<[^>]+>`)
 )
@@ -136,9 +137,30 @@ func renderMarkdown(markdown []byte) (template.HTML, []TOCItem) {
 		return `<figure class="article-figure">` + matches[1] +
 			`<figcaption class="article-figure__caption">` + matches[2] + `</figcaption></figure>`
 	})
+	rendered = addLazyLoadingToImages(rendered)
 	tableOfContents := buildTableOfContents(rendered)
 	rendered = addHeadingPermalinks(rendered)
 	return template.HTML(rendered), tableOfContents // Repository Markdown and generated article markup are trusted HTML.
+}
+
+// addLazyLoadingToImages adiciona loading="lazy" a todas as imagens exceto a
+// primeira do artigo, preservando a imagem acima da dobra para o LCP.
+func addLazyLoadingToImages(rendered string) string {
+	firstImage := true
+	return imgTagPattern.ReplaceAllStringFunc(rendered, func(img string) string {
+		if firstImage {
+			firstImage = false
+			return img
+		}
+		if strings.Contains(img, "loading=") {
+			return img
+		}
+		index := strings.LastIndex(img, "/>")
+		if index < 0 {
+			return img
+		}
+		return strings.TrimRight(img[:index], " ") + ` loading="lazy"` + img[index:]
+	})
 }
 
 func buildTableOfContents(rendered string) []TOCItem {
