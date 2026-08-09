@@ -41,6 +41,9 @@ class DeployStaticTest(unittest.TestCase):
             "404.html": b"not found",
             "styles/global.css": b"body {}",
             "robots.txt": b"User-agent: *",
+            "sitemap.xml": b'<?xml version="1.0"?><urlset/>',
+            "feed.xml": b'<?xml version="1.0"?><rss/>',
+            "og-image.png": b"\x89PNG",
         }
         with tarfile.open(package, "w:gz") as archive:
             for name, content in files.items():

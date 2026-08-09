@@ -76,7 +76,7 @@ content/posts/03-meu-novo-post/
 
 O prefixo numérico define a ordenação, com os maiores aparecendo primeiro. A
 parte após o primeiro hífen é usada como slug; o exemplo será publicado em
-`/blog/meu-novo-post.html`.
+`/blog/meu-novo-post`.
 
 O arquivo `meta.toml` deve conter título, descrição e data no formato
 `DD/MM/YYYY`:

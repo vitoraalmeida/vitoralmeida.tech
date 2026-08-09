@@ -260,8 +260,8 @@ ls -la /srv/www/vitoralmeida.tech/incoming
 ```
 
 Teste pelo menos `/`, `/about`, `/portfolio`, `/blog`, um post existente,
-`/robots.txt`, `/favicon.png` e uma URL inexistente. A URL inexistente deve
-retornar `404`.
+`/robots.txt`, `/favicon.png`, `/sitemap.xml`, `/feed.xml`, `/og-image.png`
+e uma URL inexistente. A URL inexistente deve retornar `404`.
 
 ## 10. Rollback manual
 

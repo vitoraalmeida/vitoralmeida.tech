@@ -22,7 +22,15 @@ from typing import Iterator
 DEFAULT_APP_ROOT = Path("/srv/www/vitoralmeida.tech")
 DEFAULT_HEALTHCHECK_URL = "https://vitoralmeida.tech/"
 DEFAULT_KEEP_RELEASES = 5
-REQUIRED_FILES = ("index.html", "404.html", "styles/global.css", "robots.txt")
+REQUIRED_FILES = (
+    "index.html",
+    "404.html",
+    "styles/global.css",
+    "robots.txt",
+    "sitemap.xml",
+    "feed.xml",
+    "og-image.png",
+)
 COMMIT_PATTERN = re.compile(r"^[0-9a-f]{7,64}$")
 SHA256_PATTERN = re.compile(r"^[0-9a-fA-F]{64}$")
 

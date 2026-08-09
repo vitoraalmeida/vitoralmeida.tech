@@ -299,6 +299,9 @@ curl --fail --location https://SEU_DOMINIO/about
 curl --fail --location https://SEU_DOMINIO/portfolio
 curl --fail --location https://SEU_DOMINIO/blog
 curl --fail --location https://SEU_DOMINIO/robots.txt
+curl --fail --location https://SEU_DOMINIO/sitemap.xml
+curl --fail --location https://SEU_DOMINIO/feed.xml
+curl --fail --location https://SEU_DOMINIO/og-image.png
 ```
 
 Uma URL inexistente deve retornar `404`:
