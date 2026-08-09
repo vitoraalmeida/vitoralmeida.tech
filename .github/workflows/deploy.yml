@@ -1,9 +1,10 @@
-name: Publish staging OCI image
+name: Publish OCI image
 
 on:
   workflow_dispatch:
   push:
     branches:
+      - main
       - staging
 
 permissions:
@@ -11,7 +12,7 @@ permissions:
   packages: write
 
 concurrency:
-  group: staging-vitoralmeida-tech
+  group: publish-vitoralmeida-tech
   cancel-in-progress: true
 
 jobs:
@@ -76,8 +77,9 @@ jobs:
         run: |
           image="ghcr.io/vitoraalmeida/vitoralmeida.tech:${{ github.sha }}"
           podman push --digestfile=digest.txt "$image"
-          podman tag "$image" "ghcr.io/vitoraalmeida/vitoralmeida.tech:staging"
-          podman push "ghcr.io/vitoraalmeida/vitoralmeida.tech:staging"
+          branch_tag="${{ github.ref_name }}"
+          podman tag "$image" "ghcr.io/vitoraalmeida/vitoralmeida.tech:${branch_tag}"
+          podman push "ghcr.io/vitoraalmeida/vitoralmeida.tech:${branch_tag}"
 
           digest="$(cat digest.txt)"
 
@@ -90,13 +92,18 @@ jobs:
           IMAGE: ${{ steps.push.outputs.image }}
           DIGEST: ${{ steps.push.outputs.digest }}
         run: |
+          if [ "${{ github.ref_name }}" = "main" ]; then
+            app="vitoralmeida-tech-prod"
+          else
+            app="vitoralmeida-tech-staging"
+          fi
           {
-            echo "## Staging image published"
+            echo "## ${{ github.ref_name }} image published"
             echo ""
             echo "Deploy this exact immutable reference:"
             echo ""
             echo '```'
-            echo "pneuma --verbose app deploy vitoralmeida-tech-staging \\"
+            echo "pneuma --verbose app deploy ${app} \\"
             echo "  --image ${IMAGE}@${DIGEST}"
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
