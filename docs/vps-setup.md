@@ -198,7 +198,7 @@ server {
 
     location / {
         if ($request_uri ~ ^/(.+)\.html(?:\?|$)) {
-            return 302 /$1;
+            return 301 /$1;
         }
 
         try_files $uri $uri.html $uri/ =404;

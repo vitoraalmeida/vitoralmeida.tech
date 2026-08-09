@@ -2,17 +2,22 @@ package sitegen
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"html/template"
 	"os"
 	"path/filepath"
 )
 
+const siteBaseURL = "https://vitoralmeida.tech"
+
 type Page struct {
-	Title         string
-	Description   string
-	ActiveSection string
-	Content       template.HTML
+	Title          string
+	Description    string
+	ActiveSection  string
+	Content        template.HTML
+	Canonical      string
+	StructuredData template.HTML
 }
 
 type PostLink struct {
@@ -38,22 +43,27 @@ func renderSite(templatesDir, output string, posts []Post) error {
 	}
 
 	pages := []struct {
-		name, title, description, activeSection string
-		nested                                  template.HTML
+		name, title, description, activeSection, canonical, kind string
+		nested                                                    template.HTML
 	}{
-		{"index", "Vitor Almeida", "Página pessoal de Vitor Almeida", "home", listing},
-		{"blog", "Vitor Almeida - Blog", "Blog de Vitor Almeida", "blog", listing},
-		{"about", "Vitor Almeida - Sobre mim", "Página pessoal de Vitor Almeida", "about", ""},
-		{"portfolio", "Vitor Almeida - Portfólio", "Portfólio de Vitor Almeida", "portfolio", ""},
-		{"404", "Vitor Almeida - Not found", "Fim da linha", "", ""},
+		{"index", "Vitor Almeida", "Página pessoal de Vitor Almeida", "home", "/", "website", listing},
+		{"blog", "Vitor Almeida - Blog", "Blog de Vitor Almeida", "blog", "/blog", "webpage", listing},
+		{"about", "Vitor Almeida - Sobre mim", "Página pessoal de Vitor Almeida", "about", "/about", "webpage", ""},
+		{"portfolio", "Vitor Almeida - Portfólio", "Portfólio de Vitor Almeida", "portfolio", "/portfolio", "webpage", ""},
+		{"404", "Vitor Almeida - Not found", "Fim da linha", "", "", "webpage", ""},
 	}
 	for _, page := range pages {
 		content, err := renderTemplate(filepath.Join(templatesDir, page.name+".gohtml"), page.nested)
 		if err != nil {
 			return err
 		}
+		canonical := ""
+		if page.canonical != "" {
+			canonical = siteBaseURL + page.canonical
+		}
 		if err := RenderPage(filepath.Join(templatesDir, "base-template.gohtml"), Page{
 			Title: page.title, Description: page.description, ActiveSection: page.activeSection, Content: content,
+			Canonical: canonical, StructuredData: pageStructuredData(page.kind, page.title, page.description, canonical, ""),
 		}, filepath.Join(output, page.name+".html")); err != nil {
 			return err
 		}
@@ -83,13 +93,15 @@ func renderSite(templatesDir, output string, posts []Post) error {
 		if err != nil {
 			return err
 		}
+		canonical := siteBaseURL + "/blog/" + post.Slug
 		if err := RenderPage(filepath.Join(templatesDir, "base-template.gohtml"), Page{
 			Title: post.Title, Description: post.Description, ActiveSection: "blog", Content: content,
+			Canonical: canonical, StructuredData: pageStructuredData("article", post.Title, post.Description, canonical, post.DateISO),
 		}, filepath.Join(blogDir, post.Slug+".html")); err != nil {
 			return err
 		}
 	}
-	return nil
+	return writeSitemap(output, posts)
 }
 
 func renderTemplate(path string, data any) (template.HTML, error) {
@@ -121,4 +133,87 @@ func RenderPage(baseTemplate string, page Page, destination string) error {
 		return fmt.Errorf("close page %q: %w", destination, err)
 	}
 	return nil
+}
+
+// pageStructuredData gera o JSON-LD (schema.org) para a página, retornando
+// HTML vazio quando não há URL canônica, evitando indexar páginas inválidas.
+func pageStructuredData(kind, title, description, url, dateISO string) template.HTML {
+	if url == "" {
+		return ""
+	}
+	author := map[string]any{
+		"@type": "Person",
+		"name":  "Vitor Almeida",
+		"url":   siteBaseURL + "/about",
+	}
+	var schema map[string]any
+	switch kind {
+	case "website":
+		schema = map[string]any{
+			"@context":   "https://schema.org",
+			"@type":      "WebSite",
+			"name":       title,
+			"url":        url,
+			"inLanguage": "pt-BR",
+			"author":     author,
+		}
+	case "article":
+		schema = map[string]any{
+			"@context":         "https://schema.org",
+			"@type":            "BlogPosting",
+			"headline":         title,
+			"description":      description,
+			"url":              url,
+			"inLanguage":       "pt-BR",
+			"author":           author,
+			"publisher":        author,
+			"mainEntityOfPage": map[string]any{"@type": "WebPage", "@id": url},
+		}
+		if dateISO != "" {
+			schema["datePublished"] = dateISO
+			schema["dateModified"] = dateISO
+		}
+	default:
+		schema = map[string]any{
+			"@context":    "https://schema.org",
+			"@type":       "WebPage",
+			"name":        title,
+			"description": description,
+			"url":         url,
+			"inLanguage":  "pt-BR",
+		}
+	}
+	encoded, err := json.Marshal(schema)
+	if err != nil {
+		return ""
+	}
+	return template.HTML(`<script type="application/ld+json">` + string(encoded) + `</script>`)
+}
+
+// writeSitemap gera o sitemap.xml com as páginas fixas e todos os posts,
+// usando a data ISO do post como lastmod quando disponível.
+func writeSitemap(output string, posts []Post) error {
+	entries := []struct{ path, lastmod string }{
+		{"/", ""},
+		{"/blog", ""},
+		{"/about", ""},
+		{"/portfolio", ""},
+	}
+	for _, post := range posts {
+		entries = append(entries, struct{ path, lastmod string }{"/blog/" + post.Slug, post.DateISO})
+	}
+
+	var buffer bytes.Buffer
+	buffer.WriteString(`<?xml version="1.0" encoding="UTF-8"?>` + "\n")
+	buffer.WriteString(`<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">` + "\n")
+	for _, entry := range entries {
+		buffer.WriteString("  <url>\n")
+		buffer.WriteString("    <loc>" + siteBaseURL + entry.path + "</loc>\n")
+		if entry.lastmod != "" {
+			buffer.WriteString("    <lastmod>" + entry.lastmod + "</lastmod>\n")
+		}
+		buffer.WriteString("  </url>\n")
+	}
+	buffer.WriteString("</urlset>\n")
+	return os.WriteFile(filepath.Join(output, "sitemap.xml"), buffer.Bytes(), 0o644)
 }

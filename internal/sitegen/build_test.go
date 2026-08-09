@@ -28,7 +28,7 @@ func TestBuildProducesExpectedSite(t *testing.T) {
 
 	required := []string{
 		"index.html", "404.html", "blog.html", "blog/hello.html", "blog/second-post.html",
-		"styles/global.css", "public/posts/hello/diagram.png", "robots.txt",
+		"styles/global.css", "public/posts/hello/diagram.png", "robots.txt", "sitemap.xml",
 	}
 	for _, name := range required {
 		if info, err := os.Stat(filepath.Join(output, filepath.FromSlash(name))); err != nil || !info.Mode().IsRegular() {
@@ -38,6 +38,39 @@ func TestBuildProducesExpectedSite(t *testing.T) {
 
 	for _, name := range []string{"index.html", "blog/hello.html"} {
 		assertGolden(t, name, readTestFile(t, filepath.Join(output, filepath.FromSlash(name))))
+	}
+
+	index := readTestFile(t, filepath.Join(output, "index.html"))
+	for _, want := range []string{
+		`<link rel="canonical" href="https://vitoralmeida.tech/" />`,
+		`"@type":"WebSite"`,
+	} {
+		if !strings.Contains(index, want) {
+			t.Errorf("index.html missing %q", want)
+		}
+	}
+	post := readTestFile(t, filepath.Join(output, "blog", "hello.html"))
+	for _, want := range []string{
+		`<link rel="canonical" href="https://vitoralmeida.tech/blog/hello" />`,
+		`"@type":"BlogPosting"`,
+		`"datePublished":"2026-08-01"`,
+	} {
+		if !strings.Contains(post, want) {
+			t.Errorf("blog/hello.html missing %q", want)
+		}
+	}
+	sitemap := readTestFile(t, filepath.Join(output, "sitemap.xml"))
+	for _, want := range []string{
+		"<loc>https://vitoralmeida.tech/</loc>",
+		"<loc>https://vitoralmeida.tech/blog</loc>",
+		"<loc>https://vitoralmeida.tech/blog/hello</loc>",
+		"<loc>https://vitoralmeida.tech/blog/second-post</loc>",
+		"<lastmod>2026-08-01</lastmod>",
+		"<lastmod>2026-08-02</lastmod>",
+	} {
+		if !strings.Contains(sitemap, want) {
+			t.Errorf("sitemap.xml missing %q", want)
+		}
 	}
 
 	newestPost := readTestFile(t, filepath.Join(output, "blog", "second-post.html"))
