@@ -236,6 +236,10 @@ pela árvore `/srv/www/vitoralmeida.tech`.
 
 ## Releases e rollback
 
+As seções abaixo descrevem somente o método de deploy estático (o fallback
+manual descrito em [Deployment](#deployment)). Quando o site é publicado por
+meio do gerenciador de containers, releases e rollback são tratados por ele.
+
 A VPS mantém a seguinte estrutura:
 
 ```text
