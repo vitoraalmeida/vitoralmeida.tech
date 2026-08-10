@@ -4,19 +4,11 @@ schema_version = 3
 name = "personal-website"
 
 [application]
-name = "vitoralmeida-tech-staging"
+name = "vitoralmeida-tech-prod"
 
 [delivery]
 type = "oci"
 image = "ghcr.io/vitoraalmeida/vitoralmeida.tech"
-
-[source]
-repository = "https://github.com/vitoraalmeida/vitoralmeida.tech"
-branch = "staging"
-
-[build]
-containerfile = "Containerfile"
-context = "."
 
 [runtime]
 container_port = 8080
@@ -25,4 +17,4 @@ expected_status = 200
 
 [exposure]
 default_visibility = "public"
-domain = "staging.vitoralmeida.tech"
+domain = "vitoralmeida.tech"
