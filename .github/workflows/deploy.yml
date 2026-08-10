@@ -204,16 +204,16 @@ jobs:
       - name: Print deployment instructions
         shell: bash
         env:
-            IMAGE: ${{ steps.push.outputs.image }}
-            DIGEST: ${{ steps.push.outputs.digest }}
-          run: |
-            {
-              echo "## Production image published"
-              echo ""
-              echo "Deploy this exact immutable reference:"
-              echo ""
-              echo '```'
-              echo "pneuma --verbose app deploy vitoralmeida-tech-prod \\"
-              echo "  --image ${IMAGE}@${DIGEST}"
-              echo '```'
-            } >> "$GITHUB_STEP_SUMMARY"
+          IMAGE: ${{ steps.push.outputs.image }}
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          {
+            echo "## Production image published"
+            echo ""
+            echo "Deploy this exact immutable reference:"
+            echo ""
+            echo '```'
+            echo "pneuma --verbose app deploy vitoralmeida-tech-prod \\"
+            echo "  --image ${IMAGE}@${DIGEST}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
