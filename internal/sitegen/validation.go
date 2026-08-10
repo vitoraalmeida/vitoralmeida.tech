@@ -21,6 +21,8 @@ var requiredTemplates = []string{
 	"blog.gohtml", "about.gohtml", "portfolio.gohtml", "404.gohtml",
 }
 
+// check executa todas as validações de entrada — diretórios, templates, posts
+// e colisões de destino — retornando os posts carregados quando tudo é válido.
 func check(config Config) ([]Post, error) {
 	if err := validateInputs(config); err != nil {
 		return nil, err
@@ -41,6 +43,8 @@ func check(config Config) ([]Post, error) {
 	return posts, nil
 }
 
+// validateTemplates garante que todos os templates obrigatórios existem, são
+// arquivos regulares e compilam, falhando cedo antes de qualquer renderização.
 func validateTemplates(directory string) error {
 	for _, name := range requiredTemplates {
 		path := filepath.Join(directory, name)
@@ -58,6 +62,9 @@ func validateTemplates(directory string) error {
 	return nil
 }
 
+// validatePosts valida os metadados e estrutura de cada post: nome de
+// diretório no padrão NN-slug, slug único e obrigatório, title/description
+// presentes, data em DD/MM/YYYY, referências de assets e diretório de assets.
 func validatePosts(posts []Post) error {
 	seenSlugs := make(map[string]string, len(posts))
 	for _, post := range posts {
@@ -97,6 +104,8 @@ func validatePosts(posts []Post) error {
 	return nil
 }
 
+// validateDestinations garante que nenhum arquivo gerado colida com outro
+// (páginas, posts, assets e estáticos), pois sobrescreveria arquivos na saída.
 func validateDestinations(staticDir string, posts []Post) error {
 	generated := map[string]string{
 		"index.html": "index page", "blog.html": "blog page", "about.html": "about page",
@@ -142,6 +151,8 @@ func validateDestinations(staticDir string, posts []Post) error {
 	})
 }
 
+// validateAssetReferences confere que cada imagem referenciada no Markdown usa
+// o slug do próprio post, aponta para um caminho seguro e existe como arquivo.
 func validateAssetReferences(post Post) error {
 	for _, match := range assetReferencePattern.FindAllSubmatch(post.Markdown, -1) {
 		publicPath, slug, asset := string(match[1]), string(match[2]), string(match[3])

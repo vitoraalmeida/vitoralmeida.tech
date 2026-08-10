@@ -41,6 +41,8 @@ type PostPage struct {
 	Newer           *PostLink
 }
 
+// renderSite gera todo o HTML do site (páginas fixas, posts, RSS e sitemap)
+// no diretório de saída, usando os posts já carregados e ordenados.
 func renderSite(templatesDir, output string, posts []Post) error {
 	listing, err := renderTemplate(filepath.Join(templatesDir, "post-listing.gohtml"), posts)
 	if err != nil {
@@ -116,6 +118,9 @@ func renderSite(templatesDir, output string, posts []Post) error {
 	return writeSitemap(output, posts)
 }
 
+// renderTemplate executa um único arquivo de template Go com os dados
+// fornecidos e devolve o HTML resultante. Retorna template.HTML porque os
+// templates do repositório são HTML confiável e não devem ser re-escapados.
 func renderTemplate(path string, data any) (template.HTML, error) {
 	tmpl, err := template.ParseFiles(path)
 	if err != nil {
@@ -128,6 +133,8 @@ func renderTemplate(path string, data any) (template.HTML, error) {
 	return template.HTML(output.String()), nil // Repository templates are trusted HTML.
 }
 
+// RenderPage monta uma página completa a partir do template base e grava o
+// resultado no destino, retornando erro contextual em cada etapa da escrita.
 func RenderPage(baseTemplate string, page Page, destination string) error {
 	tmpl, err := template.ParseFiles(baseTemplate)
 	if err != nil {

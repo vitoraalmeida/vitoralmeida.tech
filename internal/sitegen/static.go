@@ -8,6 +8,8 @@ import (
 	"path/filepath"
 )
 
+// CopyStatic copia recursivamente os arquivos estáticos (CSS, fontes, imagens)
+// do diretório de origem para o destino, preservando a estrutura e permissões.
 func CopyStatic(source, destination string) error {
 	if err := copyDirectoryContents(source, destination); err != nil {
 		return fmt.Errorf("copy static files from %q: %w", source, err)
@@ -15,6 +17,8 @@ func CopyStatic(source, destination string) error {
 	return nil
 }
 
+// copyPostAssets copia os assets de cada post (imagens referenciadas no
+// Markdown) para public/posts/{slug}/ no output, espelhando o caminho público.
 func copyPostAssets(posts []Post, output string) error {
 	for _, post := range posts {
 		if post.AssetsDir == "" {
@@ -28,6 +32,8 @@ func copyPostAssets(posts []Post, output string) error {
 	return nil
 }
 
+// copyDirectoryContents percorre source recursivamente, recriando diretórios
+// e copiando arquivos com suas permissões originais sob destination.
 func copyDirectoryContents(source, destination string) error {
 	return filepath.WalkDir(source, func(path string, entry fs.DirEntry, walkErr error) error {
 		if walkErr != nil {
@@ -49,6 +55,8 @@ func copyDirectoryContents(source, destination string) error {
 	})
 }
 
+// copyFile copia o conteúdo de um arquivo para outro preservando as permissões
+// e fechando ambos os handles mesmo em caso de erro.
 func copyFile(source, destination string, mode fs.FileMode) error {
 	input, err := os.Open(source)
 	if err != nil {

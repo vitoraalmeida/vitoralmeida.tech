@@ -19,6 +19,8 @@ func main() {
 	}
 }
 
+// run despacha o primeiro argumento para o comando correspondente (build,
+// check ou version) e reporta erro para comandos desconhecidos ou ausentes.
 func run(args []string) error {
 	if len(args) == 0 {
 		return errors.New("expected a command: build, check, or version")
@@ -37,6 +39,8 @@ func run(args []string) error {
 	}
 }
 
+// runConfiguredCommand define as flags do CLI, aplica as configurações na
+// Config compartilhada e executa a função (Build ou Check) com esses valores.
 func runConfiguredCommand(command string, args []string, execute func(sitegen.Config) error) error {
 	flags := flag.NewFlagSet(command, flag.ContinueOnError)
 	config := sitegen.Config{}

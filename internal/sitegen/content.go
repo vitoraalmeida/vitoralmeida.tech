@@ -48,6 +48,8 @@ type postMeta struct {
 	Description string `toml:"description"`
 }
 
+// LoadPosts lê todos os posts do diretório raiz, ordenando-os do mais recente
+// para o mais antigo, já com Markdown renderizado e slug extraído do nome.
 func LoadPosts(postsRoot string) ([]Post, error) {
 	entries, err := os.ReadDir(postsRoot)
 	if err != nil {
@@ -66,6 +68,9 @@ func LoadPosts(postsRoot string) ([]Post, error) {
 	return posts, nil
 }
 
+// loadPost carrega um único post: meta.toml (metadados), post.md (conteúdo)
+// e a pasta assets (imagens). A data em DD/MM/YYYY é convertida para ISO para
+// uso em sitemap e structured data, sem falhar se o formato for inesperado.
 func loadPost(postsRoot string, entry fs.DirEntry) (Post, error) {
 	if !entry.IsDir() {
 		return Post{}, fmt.Errorf("load post %q: expected a directory", entry.Name())
@@ -114,6 +119,9 @@ func loadPost(postsRoot string, entry fs.DirEntry) (Post, error) {
 	}, nil
 }
 
+// renderMarkdown converte Markdown em HTML com blackfriday e depois aplica as
+// transformações de artigo: imagens isoladas viram figure, imagens subsequentes
+// recebem lazy loading, headings ganham permalink e um TOC é construído.
 func renderMarkdown(markdown []byte) (template.HTML, []TOCItem) {
 	htmlFlags := blackfriday.HTML_USE_XHTML |
 		blackfriday.HTML_USE_SMARTYPANTS |
@@ -163,6 +171,8 @@ func addLazyLoadingToImages(rendered string) string {
 	})
 }
 
+// buildTableOfContents extrai os headings h2/h3 do HTML, aninhando h3 sob o
+// h2 anterior. Retorna nil quando há menos de 3 headings para omitir o TOC.
 func buildTableOfContents(rendered string) []TOCItem {
 	headings := headingPattern.FindAllStringSubmatch(rendered, -1)
 	if len(headings) < 3 {
@@ -184,6 +194,8 @@ func buildTableOfContents(rendered string) []TOCItem {
 	return items
 }
 
+// addHeadingPermalinks injeta um link âncora (#) ao lado do texto de cada
+// heading para que leitores possam compartilhar URLs diretas para a seção.
 func addHeadingPermalinks(rendered string) string {
 	return headingPattern.ReplaceAllStringFunc(rendered, func(heading string) string {
 		matches := headingPattern.FindStringSubmatch(heading)
@@ -195,6 +207,8 @@ func addHeadingPermalinks(rendered string) string {
 	})
 }
 
+// errorsIsNotExist reporta se err representa um caminho inexistente, usado
+// para tratar a ausência de assets como estado válido em vez de erro.
 func errorsIsNotExist(err error) bool {
 	return err != nil && os.IsNotExist(err)
 }
