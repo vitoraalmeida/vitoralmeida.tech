@@ -8,13 +8,76 @@ Podman rootless, faz health checks e expõe os apps públicos através do Caddy.
 Foi desenhado para sites pessoais e projetos pequenos que precisam de um
 deployment com cara de produção sem a complexidade de Kubernetes.
 
-Este documento descreve o fluxo de deployment estático (via tarball) que
-mantenho como fallback para o caso de voltar a servir o site sem o pneuma:
-`.github/workflows/deploy-static.yml` e `scripts/deploy_static.py`. A
-preparação de uma VPS nova, incluindo usuário, chave SSH, Nginx, DNS e TLS,
-está documentada em [`vps-setup.md`](vps-setup.md).
+Este documento descreve o fluxo de deployment atual, automatizado pelo pneuma
+via `.github/workflows/deploy.yml`, e o fluxo de deployment estático (via
+tarball) mantido como fallback: `.github/workflows/deploy-static.yml` e
+`scripts/deploy_static.py`. A preparação de uma VPS nova, incluindo usuário,
+chave SSH, Nginx, DNS e TLS, está documentada em
+[`vps-setup.md`](vps-setup.md).
 
-## 1. Visão geral
+## 1. Fluxo automatizado (pneuma)
+
+O CI publica o artifact do commit como `ghcr.io/vitoraalmeida/vitoralmeida.tech:<commit-sha>`
+e o pneuma descobre o digest por essa convenção (`image:<commit>`), sem build
+local nem edição manual de Caddy.
+
+```text
+push em staging ou main
+              │
+              ▼
+        testes e validação
+              │
+              ▼
+        geração de dist/
+              │
+              ▼
+        build da imagem OCI
+              │
+              ▼
+   push para o GHCR (tag <commit-sha>)
+              │
+              ▼
+   pneuma app deploy <app> --branch <branch>
+              │
+              ▼
+  release imutável + health check + ativação
+```
+
+O deploy é disparado pelo próprio workflow:
+
+- push na branch `staging` → deploy automático de `vitoralmeida-tech-staging`
+  com `--branch staging`;
+- push na branch `main` → deploy de `vitoralmeida-tech-prod` com `--branch main`,
+  protegido pelo environment `production` (exige aprovação manual).
+
+Cada aplicação é importada uma única vez na VPS com o manifesto v3:
+
+```bash
+runuser -u pneuma -- bash -lc "cd \$HOME && \
+  pneuma app import https://github.com/vitoraalmeida/vitoralmeida.tech \
+  --manifest deploy/staging/pneuma.toml"
+runuser -u pneuma -- bash -lc "cd \$HOME && \
+  pneuma app import https://github.com/vitoraalmeida/vitoralmeida.tech \
+  --manifest deploy/production/pneuma.toml"
+```
+
+Os manifestos ficam em `deploy/staging/pneuma.toml` e
+`deploy/production/pneuma.toml`.
+
+### Histórico e rollback
+
+```bash
+pneuma app deployments <app>
+pneuma deployment rollback <app>
+```
+
+O rollback cria um novo deployment a partir da release anterior e não depende
+do container antigo existir.
+
+## 2. Fluxo estático (fallback)
+
+O método estático é o fallback para o caso de voltar a servir o site sem o
+pneuma.
 
 O site é gerado uma única vez no GitHub Actions. O conteúdo validado pelo job
 de build é empacotado, transferido para a VPS e publicado sem um segundo build:
@@ -61,7 +124,7 @@ rodarem um de cada vez no GitHub Actions. Se uma execução já estiver publican
 a próxima aguarda; `cancel-in-progress: false` garante que o deployment em
 andamento não seja interrompido pelo novo.
 
-## 2. Job de build
+## 3. Job de build
 
 O job `build` executa, nesta ordem:
 
@@ -89,7 +152,7 @@ Os dois arquivos são armazenados em um artifact chamado
 limite entre os jobs: o job de deployment baixa exatamente o resultado
 produzido e aprovado pelo job de build.
 
-## 3. Job de deployment
+## 4. Job de deployment
 
 O job `deploy` só começa depois do sucesso de `build` e usa o environment
 `production`. Ele executa:
@@ -115,7 +178,7 @@ python3 /srv/www/vitoralmeida.tech/incoming/deploy_static.py <commit-sha>
 
 O workflow também confirma que `python3` existe antes de executar o script.
 
-## 4. Credenciais e configuração
+## 5. Credenciais e configuração
 
 O environment `production` contém:
 
@@ -143,7 +206,7 @@ O script aceita três variáveis de ambiente:
 explicitamente `APP_ROOT` e `HEALTHCHECK_URL`; ele usa o padrão de
 `KEEP_RELEASES`.
 
-## 5. Estrutura na VPS
+## 6. Estrutura na VPS
 
 Depois de um deployment, a árvore possui esta forma:
 
@@ -175,7 +238,7 @@ Arquivos temporários de extração podem aparecer em `releases/` com o prefixo
 `.deploy-<commit>.` enquanto o script está em execução. Eles são removidos ao
 final, inclusive quando ocorre uma falha esperada.
 
-## 6. Validação de uma release
+## 7. Validação de uma release
 
 O script recebe o SHA do commit como único argumento. Ele aceita de 7 a 64
 caracteres hexadecimais minúsculos, impedindo que o argumento seja usado para
@@ -207,7 +270,7 @@ robots.txt
 O `make verify` examina mais arquivos durante o build, enquanto essa lista
 menor representa o contrato mínimo que o servidor exige antes da ativação.
 
-## 7. Promoção e troca atômica
+## 8. Promoção e troca atômica
 
 Depois da validação, o diretório temporário é renomeado para
 `releases/<commit-sha>`. Um rename no mesmo filesystem evita que uma release
@@ -223,7 +286,7 @@ observa o link antigo ou o novo, nunca um intervalo no qual `current` não
 existe. O nome `.current-new` usado na preparação inicial segue o mesmo
 princípio, embora não faça parte das execuções recorrentes do script.
 
-## 8. Health check, rollback e limpeza
+## 9. Health check, rollback e limpeza
 
 Depois da troca de `current`, o script acessa `HEALTHCHECK_URL` com timeout de
 20 segundos e exige uma resposta HTTP entre `200` e `299`.
@@ -246,7 +309,7 @@ release ativa nessa ordenação, a árvore pode conservar uma release adicional.
 O pacote, o checksum e a cópia enviada de `deploy_static.py` são removidos de
 `incoming/` no final, tanto no sucesso quanto nas falhas tratadas pelo script.
 
-## 9. Inspeção operacional
+## 10. Inspeção operacional
 
 Para identificar a release ativa:
 
@@ -273,7 +336,7 @@ Teste pelo menos `/`, `/about`, `/portfolio`, `/blog`, um post existente,
 `/robots.txt`, `/favicon.png`, `/sitemap.xml`, `/feed.xml`, `/og-image.png`
 e uma URL inexistente. A URL inexistente deve retornar `404`.
 
-## 10. Rollback manual
+## 11. Rollback manual
 
 Use rollback manual somente quando for necessário restaurar uma release que já
 existe em `releases/`. Execute como `site-deploy`:
@@ -293,7 +356,7 @@ rollback automático oferecido pelo script.
 Registre o SHA que estava publicado, o SHA restaurado, o motivo e o resultado
 da verificação pública.
 
-## 11. Garantias e limites
+## 12. Garantias e limites
 
 O desenho atual oferece:
 

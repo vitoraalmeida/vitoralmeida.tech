@@ -194,10 +194,11 @@ em um único host, que publica releases OCI imutáveis com Podman rootless, faz
 health checks e expõe os apps públicos através do Caddy.
 
 O workflow `.github/workflows/deploy.yml` builda a imagem OCI, faz um smoke test,
-publica no GHCR e imprime o comando pneuma para fazer o deploy:
+publica no GHCR e implanta automaticamente com o pneuma. O artifact do commit é
+descoberto pela convenção `image:<commit-sha>`:
 
 ```text
-push em main ou execução manual
+push em staging ou main
               ↓
     testes e validação
               ↓
@@ -207,10 +208,17 @@ push em main ou execução manual
               ↓
         push para o GHCR
               ↓
-   pneuma app deploy <app> --image <imagem>@<digest>
+   pneuma app deploy <app> --branch <branch>
               ↓
         release imutável + health check
 ```
+
+O deploy é automático para staging (push na branch `staging`) e protegido por
+aprovação manual para production (push na branch `main`, via environment
+`production`):
+
+- `vitoralmeida-tech-staging` → `pneuma app deploy vitoralmeida-tech-staging --branch staging`
+- `vitoralmeida-tech-prod` → `pneuma app deploy vitoralmeida-tech-prod --branch main`
 
 Mantenho também um fallback de deploy estático (tarball enviado por SSH) para o
 caso de voltar a servir o site sem o pneuma. O workflow
@@ -229,16 +237,19 @@ O environment `production` usa as seguintes configurações:
 | Secret | `DEPLOY_KNOWN_HOSTS` | host key SSH previamente validada |
 | Variable | `DEPLOY_HOST` | hostname ou endereço da VPS |
 | Variable | `DEPLOY_PORT` | porta SSH |
-| Variable | `DEPLOY_USER` | usuário restrito `site-deploy` |
+| Variable | `DEPLOY_USER` | usuário SSH que executa `runuser -u pneuma` no deploy |
 
-O usuário `site-deploy` não possui acesso a `sudo` e é responsável somente
-pela árvore `/srv/www/vitoralmeida.tech`.
+O usuário de deployment (conectado por `DEPLOY_USER`) não possui acesso a `sudo`;
+ele executa o pneuma com `runuser -u pneuma` para disparar os deploys.
 
 ## Releases e rollback
 
 As seções abaixo descrevem somente o método de deploy estático (o fallback
 manual descrito em [Deployment](#deployment)). Quando o site é publicado por
-meio do gerenciador de containers, releases e rollback são tratados por ele.
+meio do pneuma, releases e rollback são tratados por ele: `pneuma app
+deployments <app>` lista o histórico e `pneuma deployment rollback <app>`
+restaura a release anterior. O fluxo completo de rollback via pneuma está em
+[`docs/deployment.md`](docs/deployment.md).
 
 A VPS mantém a seguinte estrutura:
 
