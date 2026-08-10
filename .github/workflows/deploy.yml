@@ -16,7 +16,8 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  publish:
+  publish-staging:
+    if: github.ref_name == 'staging'
     runs-on: ubuntu-latest
     outputs:
       image: ${{ steps.push.outputs.image }}
@@ -87,7 +88,6 @@ jobs:
           echo "digest=$digest" >> "$GITHUB_OUTPUT"
 
       - name: Deploy to staging
-        if: github.ref_name == 'staging'
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
@@ -100,9 +100,95 @@ jobs:
             ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} \
             "cd \$HOME && pneuma app deploy vitoralmeida-tech-staging --branch staging"
 
+      - name: Print deployment instructions
+        shell: bash
+        env:
+          IMAGE: ${{ steps.push.outputs.image }}
+          DIGEST: ${{ steps.push.outputs.digest }}
+        run: |
+          {
+            echo "## Staging image published"
+            echo ""
+            echo "Deploy this exact immutable reference:"
+            echo ""
+            echo '```'
+            echo "pneuma --verbose app deploy vitoralmeida-tech-staging \\"
+            echo "  --image ${IMAGE}@${DIGEST}"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+  publish-production:
+    if: github.ref_name == 'main'
+    runs-on: ubuntu-latest
+    environment: production
+    outputs:
+      image: ${{ steps.push.outputs.image }}
+      digest: ${{ steps.push.outputs.digest }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+
+      - name: Run tests
+        run: make test
+
+      - name: Validate content
+        run: make check
+
+      - name: Build site
+        run: make build
+
+      - name: Verify site artifact
+        run: make verify
+
+      - name: Build OCI image
+        run: |
+          podman build \
+            -t "ghcr.io/vitoraalmeida/vitoralmeida.tech:${{ github.sha }}" \
+            .
+
+      - name: Smoke test image
+        run: |
+          container=$(podman run -d \
+            -p 18080:8080 \
+            "ghcr.io/vitoraalmeida/vitoralmeida.tech:${{ github.sha }}")
+          trap 'podman rm -f "$container" >/dev/null 2>&1 || true' EXIT
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent http://127.0.0.1:18080/healthz >/dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          echo "healthz did not return 200 within 30s"
+          exit 1
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Push image to GHCR
+        id: push
+        shell: bash
+        run: |
+          image="ghcr.io/vitoraalmeida/vitoralmeida.tech:${{ github.sha }}"
+          podman push --digestfile=digest.txt "$image"
+          podman tag "$image" "ghcr.io/vitoraalmeida/vitoralmeida.tech:main"
+          podman push "ghcr.io/vitoraalmeida/vitoralmeida.tech:main"
+
+          digest="$(cat digest.txt)"
+
+          echo "image=$image" >> "$GITHUB_OUTPUT"
+          echo "digest=$digest" >> "$GITHUB_OUTPUT"
+
       - name: Deploy to production
-        if: github.ref_name == 'main'
-        environment: production
         env:
           DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
           DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
@@ -118,21 +204,16 @@ jobs:
       - name: Print deployment instructions
         shell: bash
         env:
-          IMAGE: ${{ steps.push.outputs.image }}
-          DIGEST: ${{ steps.push.outputs.digest }}
-        run: |
-          if [ "${{ github.ref_name }}" = "main" ]; then
-            app="vitoralmeida-tech-prod"
-          else
-            app="vitoralmeida-tech-staging"
-          fi
-          {
-            echo "## ${{ github.ref_name }} image published"
-            echo ""
-            echo "Deploy this exact immutable reference:"
-            echo ""
-            echo '```'
-            echo "pneuma --verbose app deploy ${app} \\"
-            echo "  --image ${IMAGE}@${DIGEST}"
-            echo '```'
-          } >> "$GITHUB_STEP_SUMMARY"
+            IMAGE: ${{ steps.push.outputs.image }}
+            DIGEST: ${{ steps.push.outputs.digest }}
+          run: |
+            {
+              echo "## Production image published"
+              echo ""
+              echo "Deploy this exact immutable reference:"
+              echo ""
+              echo '```'
+              echo "pneuma --verbose app deploy vitoralmeida-tech-prod \\"
+              echo "  --image ${IMAGE}@${DIGEST}"
+              echo '```'
+            } >> "$GITHUB_STEP_SUMMARY"
