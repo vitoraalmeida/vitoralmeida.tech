@@ -191,38 +191,39 @@ branch de produção por meio das regras de proteção de `main`.
 O workflow `.github/workflows/deploy.yml` é executado automaticamente em pushes
 para `main` e também pode ser iniciado manualmente pelo GitHub Actions.
 
-O processo de publicação é:
+O workflow `.github/workflows/deploy.yml` builda a imagem OCI, faz um smoke test,
+publica no GHCR e implanta automaticamente com o pneuma. O artifact do commit é
+descoberto pela convenção `image:<commit-sha>`:
 
 ```text
-job build                         job deploy
-─────────                         ──────────
-testes e validação
-        ↓
-build de dist/
-        ↓
-site-<commit>.tar.gz + SHA-256 → download do artifact
-                                      ↓
-                                upload por SSH
-                                      ↓
-                                validação na VPS
-                                      ↓
-                                release imutável
-                                      ↓
-                                troca de current
-                                      ↓
-                                health checks
+push em staging ou main
+              ↓
+    testes e validação
+              ↓
+        geração de dist/
+              ↓
+        build da imagem OCI
+              ↓
+        push para o GHCR
+              ↓
+   pneuma app deploy <app> --branch <branch>
+              ↓
+        release imutável + health check
 ```
 
-O job `build` executa o mesmo contrato usado localmente, empacota diretamente o
-conteúdo de `dist/` e armazena o pacote e o checksum como um artifact por 14
-dias. O job `deploy` só começa depois do sucesso do build; ele baixa esse mesmo
-artifact e envia o pacote, o checksum e `scripts/deploy_static.py` para a VPS.
-Assim, produção recebe exatamente o conteúdo produzido e aprovado no CI, sem
-reconstruí-lo no servidor.
+O deploy é automático para staging (push na branch `staging`) e protegido por
+aprovação manual para production (push na branch `main`, via environment
+`production`):
 
-Deployments usam o environment `production` e rodam um de cada vez por meio do
-grupo de concorrência `production-vitoralmeida-tech`. Se uma execução já estiver
-publicando, a próxima aguarda sem cancelar a que está em andamento.
+- `vitoralmeida-tech-staging` → `pneuma app deploy vitoralmeida-tech-staging --branch staging`
+- `vitoralmeida-tech-prod` → `pneuma app deploy vitoralmeida-tech-prod --branch main`
+
+Mantenho também um fallback de deploy estático (tarball enviado por SSH) para o
+caso de voltar a servir o site sem o pneuma. O workflow
+`.github/workflows/deploy-static.yml` executa esse método apenas manualmente,
+por `workflow_dispatch` com confirmação explícita; a automação em pushes fica a
+cargo do pneuma. O fluxo completo do método estático e seu rollback estão em
+[`docs/deployment.md`](docs/deployment.md).
 
 ## Configuração do environment de produção
 
@@ -234,12 +235,19 @@ O environment `production` usa as seguintes configurações:
 | Secret | `DEPLOY_KNOWN_HOSTS` | host key SSH previamente validada |
 | Variable | `DEPLOY_HOST` | hostname ou endereço da VPS |
 | Variable | `DEPLOY_PORT` | porta SSH |
-| Variable | `DEPLOY_USER` | usuário restrito `site-deploy` |
+| Variable | `DEPLOY_USER` | usuário SSH que executa `runuser -u pneuma` no deploy |
 
-O usuário `site-deploy` não possui acesso a `sudo` e é responsável somente
-pela árvore `/srv/www/vitoralmeida.tech`.
+O usuário de deployment (conectado por `DEPLOY_USER`) não possui acesso a `sudo`;
+ele executa o pneuma com `runuser -u pneuma` para disparar os deploys.
 
 ## Releases e rollback
+
+As seções abaixo descrevem somente o método de deploy estático (o fallback
+manual descrito em [Deployment](#deployment)). Quando o site é publicado por
+meio do pneuma, releases e rollback são tratados por ele: `pneuma app
+deployments <app>` lista o histórico e `pneuma deployment rollback <app>`
+restaura a release anterior. O fluxo completo de rollback via pneuma está em
+[`docs/deployment.md`](docs/deployment.md).
 
 A VPS mantém a seguinte estrutura:
 
