@@ -276,3 +276,4 @@ O passo a passo para preparar uma VPS nova está em
 [`docs/vps-setup.md`](docs/vps-setup.md). O fluxo completo, seu contrato,
 procedimentos de inspeção e rollback estão em
 [`docs/deployment.md`](docs/deployment.md).
+
