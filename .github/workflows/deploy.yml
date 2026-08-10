@@ -96,8 +96,7 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh -i ~/.ssh/deploy_key -o BatchMode=yes \
             ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} \
-            "runuser -u pneuma -- bash -lc 'cd \$HOME && \
-              pneuma app deploy vitoralmeida-tech-staging --branch staging'"
+            "cd \$HOME && pneuma app deploy vitoralmeida-tech-staging --branch staging"
 
       - name: Deploy to production
         if: github.ref_name == 'main'
@@ -112,8 +111,7 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh -i ~/.ssh/deploy_key -o BatchMode=yes \
             ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} \
-            "runuser -u pneuma -- bash -lc 'cd \$HOME && \
-              pneuma app deploy vitoralmeida-tech-prod --branch main'"
+            "cd \$HOME && pneuma app deploy vitoralmeida-tech-prod --branch main"
 
       - name: Print deployment instructions
         shell: bash
