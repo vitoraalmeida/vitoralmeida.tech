@@ -1,9 +1,10 @@
-name: Publish staging OCI image
+name: Publish OCI image
 
 on:
   workflow_dispatch:
   push:
     branches:
+      - main
       - staging
 
 permissions:
@@ -11,7 +12,7 @@ permissions:
   packages: write
 
 concurrency:
-  group: staging-vitoralmeida-tech
+  group: publish-vitoralmeida-tech
   cancel-in-progress: true
 
 jobs:
@@ -77,8 +78,9 @@ jobs:
         run: |
           image="ghcr.io/vitoraalmeida/vitoralmeida.tech:${{ github.sha }}"
           podman push --digestfile=digest.txt "$image"
-          podman tag "$image" "ghcr.io/vitoraalmeida/vitoralmeida.tech:staging"
-          podman push "ghcr.io/vitoraalmeida/vitoralmeida.tech:staging"
+          branch_tag="${{ github.ref_name }}"
+          podman tag "$image" "ghcr.io/vitoraalmeida/vitoralmeida.tech:${branch_tag}"
+          podman push "ghcr.io/vitoraalmeida/vitoralmeida.tech:${branch_tag}"
 
           digest="$(cat digest.txt)"
 
