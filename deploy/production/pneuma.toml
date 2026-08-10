@@ -1,0 +1,20 @@
+schema_version = 3
+
+[system]
+name = "personal-website"
+
+[application]
+name = "vitoralmeida-tech-prod"
+
+[delivery]
+type = "oci"
+image = "ghcr.io/vitoraalmeida/vitoralmeida.tech"
+
+[runtime]
+container_port = 8080
+healthcheck_path = "/healthz"
+expected_status = 200
+
+[exposure]
+default_visibility = "public"
+domain = "vitoralmeida.tech"
