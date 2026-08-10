@@ -64,13 +64,12 @@ html {
   line-height: var(--line-height-tight);
 }
 
-
 body {
   background-color: var(--color-background);
   font-family: var(--font-body);
   font-variant-ligatures: none;
   color: var(--color-text);
-  margin: 0 auto; /* centraliza todo o conteúdo */
+  margin: 0 auto;
   padding-inline: var(--page-padding);
   width: 100%;
   max-width: var(--page-width);
@@ -106,11 +105,8 @@ h1,
 h2,
 h3,
 .header__logo,
-.intro__title,
-.about__title,
-.blog-page__title,
-.blog-post-page-title,
-.portfolio__title,
+.section-title,
+.blog-post__page-title,
 .footer__status {
   font-family: var(--font-display);
 }
@@ -119,7 +115,100 @@ ul {
   list-style-type: none;
 }
 
-/* accessibility */
+/* ============================================
+   BASE CLASSES
+   ============================================ */
+
+/* section-title: títulos de seção reutilizável */
+.section-title {
+  color: var(--color-text-strong);
+  padding-bottom: 2px;
+  margin-bottom: 1rem;
+  display: inline-block;
+  font-size: var(--font-xl);
+}
+
+.section-title--dashed {
+  border-bottom: 2px dashed var(--color-accent);
+  margin-bottom: 0.8rem;
+  font-size: var(--font-lg);
+}
+
+/* prefix-arrow: padrão ::before com » */
+.prefix-arrow::before {
+  color: var(--color-accent);
+  content: "» ";
+}
+
+/* typewriter: animação typewriter base */
+.typewriter {
+  display: inline-block;
+  overflow: hidden;
+  border-right: 3px solid var(--color-accent);
+  white-space: nowrap;
+  animation:
+    typing var(--typing-duration) steps(var(--typing-steps), end),
+    blink-caret 0.8s infinite;
+  width: var(--typing-resting-width);
+}
+
+.typewriter::before {
+  color: var(--color-accent);
+  content: "» ";
+}
+
+/* typewriter modifiers */
+.typewriter--intro {
+  --typing-duration: 1.5s;
+  --typing-steps: 13;
+  --typing-width: 15ch;
+  --typing-resting-width: 16ch;
+}
+
+.typewriter--about {
+  --typing-duration: 1s;
+  --typing-steps: 11;
+  --typing-width: 12ch;
+  --typing-resting-width: 12ch;
+}
+
+.typewriter--blog {
+  --typing-duration: 1s;
+  --typing-steps: 6;
+  --typing-width: 7ch;
+  --typing-resting-width: 7ch;
+}
+
+.typewriter--portfolio {
+  --typing-duration: 1s;
+  --typing-steps: 11;
+  --typing-width: 12ch;
+  --typing-resting-width: 12ch;
+}
+
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: var(--typing-width);
+  }
+}
+
+@keyframes blink-caret {
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-right: 8px solid var(--color-accent);
+  }
+}
+
+/* ============================================
+   ACCESSIBILITY
+   ============================================ */
+
 .skip-link {
   position: fixed;
   top: 0;
@@ -135,7 +224,11 @@ ul {
 .skip-link:focus {
   transform: translateY(0);
 }
-/* header */
+
+/* ============================================
+   HEADER
+   ============================================ */
+
 .header {
   display: flex;
   justify-content: space-between;
@@ -206,67 +299,13 @@ ul {
   text-decoration-line: underline;
 }
 
-/*  intro */
+/* ============================================
+   INTRO
+   ============================================ */
+
 .intro {
   color: var(--color-text);
   margin: 1.4rem 0;
-}
-
-.intro__title {
-  color: var(--color-text-strong);
-  padding-bottom: 2px;
-  margin-bottom: 1rem;
-  display: inline-block;
-  font-size: var(--font-xl);
-}
-
-.animation,
-.about__animation,
-.blog-page__animation,
-.portfolio__animation {
-  display: inline-block;
-  overflow: hidden; /* Ensures the content is not revealed until the animation */
-  border-right: 3px solid var(--color-accent); /* The typewriter cursor */
-  white-space: nowrap; /* Keeps the content on a single line */
-  animation:
-    typing var(--typing-duration) steps(var(--typing-steps), end),
-    blink-caret 0.8s infinite;
-  width: var(--typing-resting-width);
-}
-
-.animation::before,
-.about__animation::before,
-.blog-page__animation::before,
-.portfolio__animation::before {
-  color: var(--color-accent);
-  content: "» ";
-}
-
-.animation {
-  --typing-duration: 1.5s;
-  --typing-steps: 13;
-  --typing-width: 15ch;
-  --typing-resting-width: 16ch;
-}
-
-@keyframes typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: var(--typing-width);
-  }
-}
-
-/* The typewriter cursor effect */
-@keyframes blink-caret {
-  from,
-  to {
-    border-color: transparent;
-  }
-  50% {
-    border-right: 8px solid var(--color-accent);
-  }
 }
 
 .intro__description {
@@ -274,7 +313,10 @@ ul {
   letter-spacing: -0.09px;
 }
 
-/* post-listing*/
+/* ============================================
+   POST LISTING
+   ============================================ */
+
 .post-listing {
   margin: 0;
 }
@@ -298,7 +340,10 @@ ul {
   margin-bottom: 4rem;
 }
 
-/* post-short */
+/* ============================================
+   POST SHORT
+   ============================================ */
+
 .post-short {
   margin: 20px 0;
 }
@@ -328,27 +373,14 @@ ul {
   margin-top: 4px;
 }
 
-/* about */
+/* ============================================
+   ABOUT
+   ============================================ */
+
 .about {
   margin: 1.4rem 0;
 }
 
-.about__title {
-  color: var(--color-text-strong);
-  padding-bottom: 2px;
-  margin-bottom: 0.3rem;
-  display: inline-block;
-  font-size: var(--font-xl);
-}
-
-.about__animation {
-  --typing-duration: 1s;
-  --typing-steps: 11;
-  --typing-width: 12ch;
-  --typing-resting-width: 12ch;
-}
-
-/*  about description */
 .about-description {
   margin-top: 0.8rem;
 }
@@ -373,7 +405,10 @@ ul {
   content: "» ";
 }
 
-/* contact-list */
+/* ============================================
+   CONTACT LIST
+   ============================================ */
+
 .contact-list {
   margin-top: 1rem;
   padding-bottom: 4rem;
@@ -405,7 +440,10 @@ ul {
   content: "» ";
 }
 
-/* blog page */
+/* ============================================
+   BLOG PAGE
+   ============================================ */
+
 .blog {
   margin: 0;
 }
@@ -414,22 +452,10 @@ ul {
   margin-top: 1.4rem;
 }
 
-.blog-page__title {
-  color: var(--color-text-strong);
-  display: inline-block;
-  padding-bottom: 2px;
-  margin-bottom: 1px;
-  font-size: var(--font-xl);
-}
-.blog-page__animation {
-  --typing-duration: 1s;
-  --typing-steps: 6;
-  --typing-width: 7ch;
-  --typing-resting-width: 7ch;
-}
+/* ============================================
+   TABLE OF CONTENTS
+   ============================================ */
 
-
-/* table of contents */
 .table-of-contents {
   max-width: var(--article-width);
   margin: 1.75rem 0 2.5rem;
@@ -482,7 +508,10 @@ ul {
   content: "› ";
 }
 
-/* blog post */
+/* ============================================
+   BLOG POST
+   ============================================ */
+
 .blog-post {
   width: 100%;
   max-width: var(--article-width);
@@ -491,6 +520,19 @@ ul {
 
 .blog-post strong {
   color: var(--color-text-strong);
+}
+
+.blog-post__page-title {
+  color: var(--color-text-strong);
+  font-size: var(--font-xl);
+  padding-bottom: 7px;
+  margin-top: 1.4rem;
+  margin-bottom: 1px;
+}
+
+.blog-post__page-title::before {
+  color: var(--color-accent);
+  content: "» ";
 }
 
 .blog-post__article {
@@ -517,18 +559,6 @@ ul {
 }
 
 .blog-post__article h2::before {
-  color: var(--color-accent);
-  content: "» ";
-}
-
-.blog-post-page-title {
-  color: var(--color-text-strong);
-  font-size: var(--font-xl);
-  padding-bottom: 7px;
-  margin-top: 1.4rem;
-  margin-bottom: 1px;
-}
-.blog-post-page-title::before {
   color: var(--color-accent);
   content: "» ";
 }
@@ -641,7 +671,10 @@ ul {
   line-height: var(--line-height-normal);
 }
 
-/* post-meta */
+/* ============================================
+   POST META
+   ============================================ */
+
 .post-meta {
   margin-bottom: 1rem;
   padding: 0.6rem 0.75rem;
@@ -659,7 +692,10 @@ ul {
   font-size: var(--font-md);
 }
 
-/* adjacent posts */
+/* ============================================
+   POST NAVIGATION
+   ============================================ */
+
 .post-navigation {
   display: flex;
   justify-content: space-between;
@@ -696,7 +732,10 @@ ul {
   text-decoration: none;
 }
 
-/* footer */
+/* ============================================
+   FOOTER
+   ============================================ */
+
 .footer {
   width: 100%;
   background-color: var(--color-background);
@@ -706,7 +745,7 @@ ul {
   border-top: 1px solid var(--color-accent);
 }
 
-.footer-text {
+.footer__text {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -715,7 +754,7 @@ ul {
   margin-top: 1px;
 }
 
-.footer-text > * + *::before {
+.footer__text > * + *::before {
   content: "|";
   margin-right: 0.6rem;
   color: var(--color-text-muted);
@@ -731,38 +770,36 @@ ul {
   font-size: var(--font-xs);
 }
 
-/* portfolio */
+/* ============================================
+   PORTFOLIO
+   ============================================ */
+
 .portfolio {
   margin: 1.4rem 0;
 }
 
-.portfolio__title {
-  color: var(--color-text-strong);
-  padding-bottom: 2px;
-  margin-bottom: 1px;
-  font-size: var(--font-xl);
-}
+/* ============================================
+   UTILITY CLASSES
+   ============================================ */
 
-.portfolio__animation {
-  --typing-duration: 1s;
-  --typing-steps: 11;
-  --typing-width: 12ch;
-  --typing-resting-width: 12ch;
-}
-
-/* utility class */
 .building {
   display: flex;
   justify-content: center;
   margin: 10rem 0;
 }
 
+/* ============================================
+   GISCUS (comments)
+   ============================================ */
 
-/* giscus = comentários*/
 .giscus {
   margin-top: 2rem;
   padding-bottom: 3.5rem;
 }
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
 
 @media (max-width: 660px) {
   .header,
@@ -820,10 +857,7 @@ ul {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .animation,
-  .about__animation,
-  .blog-page__animation,
-  .portfolio__animation {
+  .typewriter {
     animation: none;
     border-right: 0;
   }
