@@ -128,6 +128,14 @@ ul {
   font-size: var(--font-xl);
 }
 
+.section-title--tight {
+  margin-bottom: 0.3rem;
+}
+
+.section-title--tighter {
+  margin-bottom: 1px;
+}
+
 .section-title--dashed {
   border-bottom: 2px dashed var(--color-accent);
   margin-bottom: 0.8rem;
@@ -146,9 +154,6 @@ ul {
   overflow: hidden;
   border-right: 3px solid var(--color-accent);
   white-space: nowrap;
-  animation:
-    typing var(--typing-duration) steps(var(--typing-steps), end),
-    blink-caret 0.8s infinite;
   width: var(--typing-resting-width);
 }
 
@@ -163,6 +168,9 @@ ul {
   --typing-steps: 13;
   --typing-width: 15ch;
   --typing-resting-width: 16ch;
+  animation:
+    typing var(--typing-duration) steps(var(--typing-steps), end),
+    blink-caret 0.8s infinite;
 }
 
 .typewriter--about {
@@ -170,6 +178,9 @@ ul {
   --typing-steps: 11;
   --typing-width: 12ch;
   --typing-resting-width: 12ch;
+  animation:
+    typing var(--typing-duration) steps(var(--typing-steps), end),
+    blink-caret 0.8s infinite;
 }
 
 .typewriter--blog {
@@ -177,6 +188,9 @@ ul {
   --typing-steps: 6;
   --typing-width: 7ch;
   --typing-resting-width: 7ch;
+  animation:
+    typing var(--typing-duration) steps(var(--typing-steps), end),
+    blink-caret 0.8s infinite;
 }
 
 .typewriter--portfolio {
@@ -184,6 +198,9 @@ ul {
   --typing-steps: 11;
   --typing-width: 12ch;
   --typing-resting-width: 12ch;
+  animation:
+    typing var(--typing-duration) steps(var(--typing-steps), end),
+    blink-caret 0.8s infinite;
 }
 
 @keyframes typing {
