@@ -28,7 +28,8 @@ func TestBuildProducesExpectedSite(t *testing.T) {
 
 	required := []string{
 		"index.html", "404.html", "blog.html", "blog/hello.html", "blog/second-post.html",
-		"styles/global.css", "public/posts/hello/diagram.png", "robots.txt", "sitemap.xml", "feed.xml",
+		"styles/global.css", "public/posts/hello/diagram.png", "public/posts/hello/hero.png",
+		"og-image.png", "robots.txt", "sitemap.xml", "feed.xml",
 	}
 	for _, name := range required {
 		if info, err := os.Stat(filepath.Join(output, filepath.FromSlash(name))); err != nil || !info.Mode().IsRegular() {
@@ -82,6 +83,7 @@ func TestBuildProducesExpectedSite(t *testing.T) {
 		`<rss version="2.0"`,
 		`<language>pt-br</language>`,
 		"<link>https://vitoralmeida.tech/blog/hello</link>",
+		`<title>Hello &lt;world&gt;</title>`,
 		"<guid isPermaLink=\"true\">https://vitoralmeida.tech/blog/second-post</guid>",
 		"<pubDate>Sat, 01 Aug 2026 00:00:00 +0000</pubDate>",
 		"<content:encoded>",
