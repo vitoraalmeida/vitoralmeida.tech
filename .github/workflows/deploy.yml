@@ -86,6 +86,37 @@ jobs:
           echo "image=$image" >> "$GITHUB_OUTPUT"
           echo "digest=$digest" >> "$GITHUB_OUTPUT"
 
+      - name: Deploy to staging
+        if: github.ref_name == 'staging'
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/deploy_key
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes \
+            ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} \
+            "runuser -u pneuma -- bash -lc 'cd \$HOME && \
+              pneuma app deploy vitoralmeida-tech-staging --branch staging'"
+
+      - name: Deploy to production
+        if: github.ref_name == 'main'
+        environment: production
+        env:
+          DEPLOY_SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          DEPLOY_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          mkdir -p ~/.ssh
+          printf '%s\n' "$DEPLOY_SSH_KEY" > ~/.ssh/deploy_key
+          printf '%s\n' "$DEPLOY_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/deploy_key
+          ssh -i ~/.ssh/deploy_key -o BatchMode=yes \
+            ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} \
+            "runuser -u pneuma -- bash -lc 'cd \$HOME && \
+              pneuma app deploy vitoralmeida-tech-prod --branch main'"
+
       - name: Print deployment instructions
         shell: bash
         env:
