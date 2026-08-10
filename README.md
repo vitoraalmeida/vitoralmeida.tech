@@ -188,41 +188,36 @@ branch de produção por meio das regras de proteção de `main`.
 
 ## Deployment
 
-O workflow `.github/workflows/deploy.yml` é executado automaticamente em pushes
-para `main` e também pode ser iniciado manualmente pelo GitHub Actions.
+Hoje o site é publicado com auxílio do **pneuma**, uma ferramenta que eu criei
+para rodar meus projetos: um CLI de deployment para aplicações containerizadas
+em um único host, que publica releases OCI imutáveis com Podman rootless, faz
+health checks e expõe os apps públicos através do Caddy.
 
-O processo de publicação é:
+O workflow `.github/workflows/deploy.yml` builda a imagem OCI, faz um smoke test,
+publica no GHCR e imprime o comando pneuma para fazer o deploy:
 
 ```text
-job build                         job deploy
-─────────                         ──────────
-testes e validação
-        ↓
-build de dist/
-        ↓
-site-<commit>.tar.gz + SHA-256 → download do artifact
-                                      ↓
-                                upload por SSH
-                                      ↓
-                                validação na VPS
-                                      ↓
-                                release imutável
-                                      ↓
-                                troca de current
-                                      ↓
-                                health checks
+push em main ou execução manual
+              ↓
+    testes e validação
+              ↓
+        geração de dist/
+              ↓
+        build da imagem OCI
+              ↓
+        push para o GHCR
+              ↓
+   pneuma app deploy <app> --image <imagem>@<digest>
+              ↓
+        release imutável + health check
 ```
 
-O job `build` executa o mesmo contrato usado localmente, empacota diretamente o
-conteúdo de `dist/` e armazena o pacote e o checksum como um artifact por 14
-dias. O job `deploy` só começa depois do sucesso do build; ele baixa esse mesmo
-artifact e envia o pacote, o checksum e `scripts/deploy_static.py` para a VPS.
-Assim, produção recebe exatamente o conteúdo produzido e aprovado no CI, sem
-reconstruí-lo no servidor.
-
-Deployments usam o environment `production` e rodam um de cada vez por meio do
-grupo de concorrência `production-vitoralmeida-tech`. Se uma execução já estiver
-publicando, a próxima aguarda sem cancelar a que está em andamento.
+Mantenho também um fallback de deploy estático (tarball enviado por SSH) para o
+caso de voltar a servir o site sem o pneuma. O workflow
+`.github/workflows/deploy-static.yml` executa esse método apenas manualmente,
+por `workflow_dispatch` com confirmação explícita; a automação em pushes fica a
+cargo do pneuma. O fluxo completo do método estático e seu rollback estão em
+[`docs/deployment.md`](docs/deployment.md).
 
 ## Configuração do environment de produção
 

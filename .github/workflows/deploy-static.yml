@@ -1,0 +1,93 @@
+name: Deploy static site
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Digite "deploy" para confirmar o deploy manual'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - name: Confirm manual deploy
+        if: inputs.confirm != 'deploy'
+        run: |
+          echo "Deploy manual cancelado: confirme digitando 'deploy' no input."
+          exit 1
+
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Go
+        uses: actions/setup-go@v6
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.sum
+
+      - name: Run tests
+        run: make test
+
+      - name: Validate content
+        run: make check
+
+      - name: Build site
+        run: make build
+
+      - name: Verify site artifact
+        run: make verify
+
+      - name: Create tarball and checksum
+        run: |
+          tar czf "site-${{ github.sha }}.tar.gz" -C dist .
+          sha256sum "site-${{ github.sha }}.tar.gz" > "site-${{ github.sha }}.tar.gz.sha256"
+
+      - name: Configure SSH
+        run: |
+          mkdir -p ~/.ssh
+          install -m 600 /dev/null ~/.ssh/deploy_key
+          printf '%s\n' "${{ secrets.DEPLOY_SSH_KEY }}" > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          printf '%s\n' "${{ secrets.DEPLOY_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+
+      - name: Upload package to VPS
+        run: |
+          scp -P ${{ vars.DEPLOY_PORT }} \
+            -i ~/.ssh/deploy_key \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "site-${{ github.sha }}.tar.gz" \
+            "site-${{ github.sha }}.tar.gz.sha256" \
+            scripts/deploy_static.py \
+            "${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}:/srv/www/vitoralmeida.tech/incoming/"
+
+      - name: Run deploy script on VPS
+        run: |
+          ssh -p ${{ vars.DEPLOY_PORT }} \
+            -i ~/.ssh/deploy_key \
+            -o BatchMode=yes \
+            -o StrictHostKeyChecking=yes \
+            "${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }}" \
+            "APP_ROOT=/srv/www/vitoralmeida.tech \
+             HEALTHCHECK_URL=https://vitoralmeida.tech/ \
+             python3 /srv/www/vitoralmeida.tech/incoming/deploy_static.py ${{ github.sha }}"
+
+      - name: Public health check
+        run: |
+          for attempt in $(seq 1 3); do
+            if curl --fail --location --silent --show-error https://vitoralmeida.tech/ >/dev/null; then
+              echo "public health check passed"
+              exit 0
+            fi
+            echo "public health check failed, attempt $attempt of 3"
+            sleep 5
+          done
+          echo "public health check failed after 3 attempts"
+          exit 1

@@ -1,9 +1,18 @@
 # Deployment em produção
 
-Este documento descreve o fluxo de deployment implementado em
-`.github/workflows/deploy.yml` e `scripts/deploy_static.py`. A preparação de uma
-VPS nova, incluindo usuário, chave SSH, Nginx, DNS e TLS, está documentada em
-[`vps-setup.md`](vps-setup.md).
+Hoje o deploy do site é feito com auxílio do **pneuma**, uma ferramenta que
+eu criei para rodar meus projetos. O pneuma é um CLI de deployment para
+aplicações containerizadas em um único host: ele importa repositórios de apps
+declarados por um manifesto `pneuma.toml`, publica releases OCI imutáveis com
+Podman rootless, faz health checks e expõe os apps públicos através do Caddy.
+Foi desenhado para sites pessoais e projetos pequenos que precisam de um
+deployment com cara de produção sem a complexidade de Kubernetes.
+
+Este documento descreve o fluxo de deployment estático (via tarball) que
+mantenho como fallback para o caso de voltar a servir o site sem o pneuma:
+`.github/workflows/deploy-static.yml` e `scripts/deploy_static.py`. A
+preparação de uma VPS nova, incluindo usuário, chave SSH, Nginx, DNS e TLS,
+está documentada em [`vps-setup.md`](vps-setup.md).
 
 ## 1. Visão geral
 
@@ -41,10 +50,11 @@ push em main ou execução manual
  health check e verificação pública
 ```
 
-O workflow é iniciado:
-
-- automaticamente, a cada push na branch `main`;
-- manualmente, por `workflow_dispatch` no GitHub Actions.
+O workflow estático é iniciado apenas manualmente, por `workflow_dispatch` no
+GitHub Actions, exigindo confirmação explícita (`deploy`) no input `confirm`.
+Ele não roda em pushes: essa automação fica por conta do pneuma. Se um dia eu
+quiser voltar a publicar automaticamente com o método estático, basta adicionar
+`push` com a branch `main` aos triggers do workflow.
 
 O grupo de concorrência `production-vitoralmeida-tech` faz os deployments
 rodarem um de cada vez no GitHub Actions. Se uma execução já estiver publicando,

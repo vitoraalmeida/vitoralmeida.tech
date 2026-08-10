@@ -1,8 +1,14 @@
 # Preparação de uma VPS para deployment
 
-Este guia descreve como preparar uma VPS nova para receber os deployments do
-site. Ele considera uma distribuição baseada em Debian, acesso administrativo
-com `sudo` e Nginx como servidor HTTP.
+Hoje o site é publicado com auxílio do **pneuma**, uma ferramenta que eu criei
+para rodar meus projetos: um CLI de deployment para aplicações containerizadas
+em um único host, baseado em releases OCI imutáveis com Podman rootless e
+exposição via Caddy.
+
+Este guia descreve a preparação de uma VPS para o **método estático**, que
+mantenho como fallback para o caso de voltar a servir o site sem o pneuma. Ele
+considera uma distribuição baseada em Debian, acesso administrativo com `sudo`
+e Nginx como servidor HTTP.
 
 Ao final, o GitHub Actions deverá conseguir enviar uma release usando o usuário
 restrito `site-deploy`, enquanto o Nginx servirá o conteúdo apontado pelo symlink
