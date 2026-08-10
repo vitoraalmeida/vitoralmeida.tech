@@ -71,37 +71,55 @@ func Check(config Config) error {
 // para que validações e comparações não dependam do diretório de trabalho nem
 // de representações diferentes do mesmo caminho.
 func normalizeConfig(config Config) (Config, error) {
-	fields := []struct {
+	for _, field := range []struct {
 		name  string
-		value *string
+		value string
 	}{
-		{"content", &config.ContentDir},
-		{"templates", &config.TemplatesDir},
-		{"static", &config.StaticDir},
-		{"output", &config.OutputDir},
-	}
-	for _, field := range fields {
-		if *field.value == "" {
+		{"content", config.ContentDir},
+		{"templates", config.TemplatesDir},
+		{"static", config.StaticDir},
+		{"output", config.OutputDir},
+	} {
+		if field.value == "" {
 			return Config{}, fmt.Errorf("%s directory is required", field.name)
 		}
-		absolute, err := filepath.Abs(*field.value)
-		if err != nil {
-			return Config{}, fmt.Errorf("resolve %s directory %q: %w", field.name, *field.value, err)
-		}
-		*field.value = filepath.Clean(absolute)
 	}
-	return config, nil
+
+	contentDir, err := filepath.Abs(config.ContentDir)
+	if err != nil {
+		return Config{}, fmt.Errorf("resolve content directory %q: %w", config.ContentDir, err)
+	}
+	templatesDir, err := filepath.Abs(config.TemplatesDir)
+	if err != nil {
+		return Config{}, fmt.Errorf("resolve templates directory %q: %w", config.TemplatesDir, err)
+	}
+	staticDir, err := filepath.Abs(config.StaticDir)
+	if err != nil {
+		return Config{}, fmt.Errorf("resolve static directory %q: %w", config.StaticDir, err)
+	}
+	outputDir, err := filepath.Abs(config.OutputDir)
+	if err != nil {
+		return Config{}, fmt.Errorf("resolve output directory %q: %w", config.OutputDir, err)
+	}
+
+	return Config{
+		ContentDir:   filepath.Clean(contentDir),
+		TemplatesDir: filepath.Clean(templatesDir),
+		StaticDir:    filepath.Clean(staticDir),
+		OutputDir:    filepath.Clean(outputDir),
+	}, nil
 }
 
 // validateInputs confirma que as fontes são diretórios utilizáveis e que não
 // se sobrepõem à saída, evitando apagar fontes ou copiar arquivos gerados de
 // volta para o próprio build.
 func validateInputs(config Config) error {
-	for name, path := range map[string]string{
+	inputs := map[string]string{
 		"content":   config.ContentDir,
 		"templates": config.TemplatesDir,
 		"static":    config.StaticDir,
-	} {
+	}
+	for name, path := range inputs {
 		info, err := os.Stat(path)
 		if err != nil {
 			return fmt.Errorf("validate %s directory %q: %w", name, path, err)
@@ -109,12 +127,8 @@ func validateInputs(config Config) error {
 		if !info.IsDir() {
 			return fmt.Errorf("validate %s directory %q: not a directory", name, path)
 		}
-	}
-	for name, input := range map[string]string{
-		"content": config.ContentDir, "templates": config.TemplatesDir, "static": config.StaticDir,
-	} {
-		if pathContains(input, config.OutputDir) || pathContains(config.OutputDir, input) {
-			return fmt.Errorf("output directory %q must not overlap %s directory %q", config.OutputDir, name, input)
+		if pathContains(path, config.OutputDir) || pathContains(config.OutputDir, path) {
+			return fmt.Errorf("output directory %q must not overlap %s directory %q", config.OutputDir, name, path)
 		}
 	}
 	return nil
@@ -124,7 +138,7 @@ func validateInputs(config Config) error {
 // caminhos relativos, centralizando a regra usada para detectar sobreposições.
 func pathContains(parent, child string) bool {
 	relative, err := filepath.Rel(parent, child)
-	if err != nil || filepath.IsAbs(relative) {
+	if err != nil {
 		return false
 	}
 	return relative == "." || (relative != ".." && !strings.HasPrefix(relative, ".."+string(filepath.Separator)))
