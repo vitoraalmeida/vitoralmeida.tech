@@ -171,7 +171,8 @@ do Nginx, como resolução de páginas sem `.html` e a página 404 personalizada
 ## Integração contínua
 
 O workflow `.github/workflows/ci.yml` é executado em pull requests e pushes
-para `main`. Ele configura a versão de Go declarada em `go.mod` e executa:
+para `main` e `staging`. Ele configura a versão de Go declarada em `go.mod` e
+executa:
 
 ```text
 make test
@@ -237,10 +238,13 @@ O environment `production` usa as seguintes configurações:
 | Secret | `DEPLOY_KNOWN_HOSTS` | host key SSH previamente validada |
 | Variable | `DEPLOY_HOST` | hostname ou endereço da VPS |
 | Variable | `DEPLOY_PORT` | porta SSH |
-| Variable | `DEPLOY_USER` | usuário SSH que executa `runuser -u pneuma` no deploy |
+| Variable | `DEPLOY_USER` | usuário SSH que executa `pneuma app deploy` no deploy |
 
-O usuário de deployment (conectado por `DEPLOY_USER`) não possui acesso a `sudo`;
-ele executa o pneuma com `runuser -u pneuma` para disparar os deploys.
+O usuário de deployment (conectado por `DEPLOY_USER`) é o próprio usuário do
+pneuma na VPS: o workflow se conecta a ele e executa `pneuma app deploy` com o
+`--branch` correspondente para disparar os deploys. Ele não possui acesso a
+`sudo`; a importação inicial de cada app é feita uma única vez como esse
+usuário (o comando é descrito em [`docs/deployment.md`](docs/deployment.md)).
 
 ## Releases e rollback
 

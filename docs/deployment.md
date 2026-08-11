@@ -50,15 +50,16 @@ O deploy é disparado pelo próprio workflow:
 - push na branch `main` → deploy de `vitoralmeida-tech-prod` com `--branch main`,
   protegido pelo environment `production` (exige aprovação manual).
 
-Cada aplicação é importada uma única vez na VPS com o manifesto v3:
+Cada aplicação é importada uma única vez na VPS, conectando como o usuário do
+pneuma (o mesmo `DEPLOY_USER` usado pelo workflow), com o manifesto v3:
 
 ```bash
-runuser -u pneuma -- bash -lc "cd \$HOME && \
+ssh -i <chave-deploy> DEPLOY_USER@HOST 'cd "$HOME" && \
   pneuma app import https://github.com/vitoraalmeida/vitoralmeida.tech \
-  --manifest deploy/staging/pneuma.toml"
-runuser -u pneuma -- bash -lc "cd \$HOME && \
+  --manifest deploy/staging/pneuma.toml'
+ssh -i <chave-deploy> DEPLOY_USER@HOST 'cd "$HOME" && \
   pneuma app import https://github.com/vitoraalmeida/vitoralmeida.tech \
-  --manifest deploy/production/pneuma.toml"
+  --manifest deploy/production/pneuma.toml'
 ```
 
 Os manifestos ficam em `deploy/staging/pneuma.toml` e
@@ -265,10 +266,13 @@ index.html
 404.html
 styles/global.css
 robots.txt
+sitemap.xml
+feed.xml
+og-image.png
 ```
 
 O `make verify` examina mais arquivos durante o build, enquanto essa lista
-menor representa o contrato mínimo que o servidor exige antes da ativação.
+representa o contrato mínimo que o servidor exige antes da ativação.
 
 ## 8. Promoção e troca atômica
 
