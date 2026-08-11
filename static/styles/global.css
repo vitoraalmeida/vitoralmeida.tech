@@ -106,10 +106,13 @@ a {
   overflow-wrap: anywhere;
 }
 
-h1,
-h2,
-h3 {
-  text-wrap: balance;
+h1 {
+    text-wrap: balance;
+}
+
+.blog-post__article h2,
+.blog-post__article h3 {
+    text-wrap: wrap;
 }
 
 h1,
