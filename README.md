@@ -209,7 +209,7 @@ push em staging ou main
               ↓
         push para o GHCR
               ↓
-   pneuma app deploy <app> --branch <branch>
+   ssh ... "deploy <app> <branch>"
               ↓
         release imutável + health check
 ```
@@ -218,8 +218,14 @@ O deploy é automático para staging (push na branch `staging`) e protegido por
 aprovação manual para production (push na branch `main`, via environment
 `production`):
 
-- `vitoralmeida-tech-staging` → `pneuma app deploy vitoralmeida-tech-staging --branch staging`
-- `vitoralmeida-tech-prod` → `pneuma app deploy vitoralmeida-tech-prod --branch main`
+- `vitoralmeida-tech-staging` → `ssh ... "deploy vitoralmeida-tech-staging staging"`
+- `vitoralmeida-tech-prod` → `ssh ... "deploy vitoralmeida-tech-prod main"`
+
+A chave CI é restrita (`restrict,command="pneuma ci dispatch"`), então o
+workflow envia apenas `deploy <app> <branch>`; o dispatcher resolve o commit da
+branch, descobre o artifact `image:<commit>` e implanta. O import inicial de
+cada app na VPS é feito uma única vez com `pneuma app import <git-url>
+--manifest deploy/<env>/pneuma.toml`.
 
 Mantenho também um fallback de deploy estático (tarball enviado por SSH) para o
 caso de voltar a servir o site sem o pneuma. O workflow
@@ -241,10 +247,10 @@ O environment `production` usa as seguintes configurações:
 | Variable | `DEPLOY_USER` | usuário SSH que executa `pneuma app deploy` no deploy |
 
 O usuário de deployment (conectado por `DEPLOY_USER`) é o próprio usuário do
-pneuma na VPS: o workflow se conecta a ele e executa `pneuma app deploy` com o
-`--branch` correspondente para disparar os deploys. Ele não possui acesso a
-`sudo`; a importação inicial de cada app é feita uma única vez como esse
-usuário (o comando é descrito em [`docs/deployment.md`](docs/deployment.md)).
+pneuma na VPS: o workflow se conecta a ele e envia `deploy <app> <branch>`,
+que o dispatcher restrito (`pneuma ci dispatch`) interpreta. Ele não possui
+acesso a `sudo`; a importação inicial de cada app é feita uma única vez como
+esse usuário (o comando é descrito em [`docs/deployment.md`](docs/deployment.md)).
 
 ## Releases e rollback
 
