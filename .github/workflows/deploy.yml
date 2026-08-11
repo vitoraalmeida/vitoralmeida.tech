@@ -98,7 +98,7 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh -i ~/.ssh/deploy_key -o BatchMode=yes \
             ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} \
-            "cd \$HOME && pneuma app deploy vitoralmeida-tech-staging --branch staging"
+            "deploy vitoralmeida-tech-staging staging"
 
       - name: Print deployment instructions
         shell: bash
@@ -199,7 +199,7 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh -i ~/.ssh/deploy_key -o BatchMode=yes \
             ${{ vars.DEPLOY_USER }}@${{ vars.DEPLOY_HOST }} \
-            "cd \$HOME && pneuma app deploy vitoralmeida-tech-prod --branch main"
+            "deploy vitoralmeida-tech-prod main"
 
       - name: Print deployment instructions
         shell: bash
