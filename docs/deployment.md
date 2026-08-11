@@ -34,21 +34,29 @@ push em staging ou main
         build da imagem OCI
               │
               ▼
-   push para o GHCR (tag <commit-sha>)
+push para o GHCR (tag <commit-sha>)
               │
               ▼
-   pneuma app deploy <app> --branch <branch>
+    ssh ... "deploy <app> <branch>"
               │
               ▼
-  release imutável + health check + ativação
+   release imutável + health check + ativação
 ```
 
 O deploy é disparado pelo próprio workflow:
 
 - push na branch `staging` → deploy automático de `vitoralmeida-tech-staging`
-  com `--branch staging`;
-- push na branch `main` → deploy de `vitoralmeida-tech-prod` com `--branch main`,
-  protegido pelo environment `production` (exige aprovação manual).
+  com `deploy vitoralmeida-tech-staging staging`;
+- push na branch `main` → deploy de `vitoralmeida-tech-prod` com
+  `deploy vitoralmeida-tech-prod main`, protegido pelo environment
+  `production` (exige aprovação manual).
+
+A chave CI do workflow é restrita
+(`restrict,command="pneuma ci dispatch"`): o sshd entrega o comando como
+`SSH_ORIGINAL_COMMAND` e o dispatcher aceita apenas
+`deploy <app> <branch>` e `version`. A partir daí, ele resolve o commit da
+branch via `git ls-remote`, descobre o artifact `image:<commit-sha>` no GHCR e
+implanta.
 
 Cada aplicação é importada uma única vez na VPS, conectando como o usuário do
 pneuma (o mesmo `DEPLOY_USER` usado pelo workflow), com o manifesto v3:
