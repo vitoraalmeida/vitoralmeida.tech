@@ -53,9 +53,9 @@ func renderSite(templatesDir, output string, posts []Post) error {
 		name, title, description, activeSection, canonical, kind string
 		nested                                                    template.HTML
 	}{
-		{"index", "Vitor Almeida", "Página pessoal de Vitor Almeida", "home", "/", "website", listing},
-		{"blog", "Vitor Almeida - Blog", "Blog de Vitor Almeida", "blog", "/blog", "webpage", listing},
-		{"about", "Vitor Almeida - Sobre mim", "Página pessoal de Vitor Almeida", "about", "/about", "webpage", ""},
+		{"index", "Vitor Almeida", "Engenheiro de segurança da informação. Compartilho artigos sobre tecnologia, segurança de servidores, privacidade e desenvolvimento.", "home", "/", "website", listing},
+		{"blog", "Vitor Almeida - Blog", "Artigos sobre tecnologia, segurança da informação, privacidade e desenvolvimento.", "blog", "/blog", "webpage", listing},
+		{"about", "Vitor Almeida - Sobre mim", "Quem sou, o que faço e como me encontrar.", "about", "/about", "webpage", ""},
 		{"portfolio", "Vitor Almeida - Portfólio", "Portfólio de Vitor Almeida", "portfolio", "/portfolio", "webpage", ""},
 		{"404", "Vitor Almeida - Not found", "Fim da linha", "", "", "webpage", ""},
 	}
@@ -246,7 +246,7 @@ func writeRSS(output string, posts []Post) error {
 	buffer.WriteString("<channel>\n")
 	buffer.WriteString("  <title>Vitor Almeida</title>\n")
 	buffer.WriteString("  <link>" + siteBaseURL + "/</link>\n")
-	buffer.WriteString("  <description>Página pessoal de Vitor Almeida</description>\n")
+	buffer.WriteString("  <description>Engenheiro de segurança da informação. Compartilho artigos sobre tecnologia, segurança de servidores, privacidade e desenvolvimento.</description>\n")
 	buffer.WriteString("  <language>pt-br</language>\n")
 	buffer.WriteString("  <atom:link href=\"" + siteBaseURL + "/feed.xml\" rel=\"self\" type=\"application/rss+xml\" />\n")
 	buffer.WriteString("  <lastBuildDate>" + time.Now().UTC().Format(time.RFC1123Z) + "</lastBuildDate>\n")
