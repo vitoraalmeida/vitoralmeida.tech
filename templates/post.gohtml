@@ -58,19 +58,47 @@
 
     <a href="#top">Voltar ao topo</a>
 
-    <script src="https://giscus.app/client.js"
-            data-repo="vitoraalmeida/vitoralmeida.tech"
-            data-repo-id="R_kgDOKGa4Ng"
-            data-category="Ideas"
-            data-category-id="DIC_kwDOKGa4Ns4CkwVC"
-            data-mapping="title"
-            data-strict="0"
-            data-reactions-enabled="1"
-            data-emit-metadata="0"
-            data-input-position="top"
-            data-theme="preferred_color_scheme"
-            data-lang="pt"
-            crossorigin="anonymous"
-            async>
+    <div id="comments"></div>
+    <script>
+      (() => {
+        const comments = document.getElementById("comments");
+        const footer = document.getElementById("footer");
+        let loaded = false;
+
+        const loadComments = () => {
+          if (loaded) return;
+          loaded = true;
+          const script = document.createElement("script");
+          script.src = "https://giscus.app/client.js";
+          script.async = true;
+          script.crossOrigin = "anonymous";
+          script.dataset.repo = "vitoraalmeida/vitoralmeida.tech";
+          script.dataset.repoId = "R_kgDOKGa4Ng";
+          script.dataset.category = "Ideas";
+          script.dataset.categoryId = "DIC_kwDOKGa4Ns4CkwVC";
+          script.dataset.mapping = "title";
+          script.dataset.strict = "0";
+          script.dataset.reactionsEnabled = "1";
+          script.dataset.emitMetadata = "0";
+          script.dataset.inputPosition = "top";
+          script.dataset.theme = "preferred_color_scheme";
+          script.dataset.lang = "pt";
+          comments.append(script);
+        };
+
+        if (!footer || !("IntersectionObserver" in window)) {
+          loadComments();
+          return;
+        }
+        const observer = new IntersectionObserver(
+          ([entry]) => {
+            if (!entry.isIntersecting) return;
+            observer.disconnect();
+            loadComments();
+          },
+          { rootMargin: "800px 0px" }
+        );
+        observer.observe(footer);
+      })();
     </script>
 </section>
