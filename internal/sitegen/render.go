@@ -218,14 +218,18 @@ func pageStructuredData(kind, title, description, url, dateISO string) template.
 }
 
 // writeSitemap gera o sitemap.xml com as páginas fixas e todos os posts,
-// usando a data ISO do post como lastmod quando disponível.
+// usando a data ISO do post mais recente como lastmod para páginas dinâmicas.
 func writeSitemap(output string, posts []Post) error {
+	latestPostDate := ""
+	if len(posts) > 0 {
+		latestPostDate = posts[0].DateISO
+	}
 	entries := []struct{ path, lastmod string }{
-		{"/", ""},
-		{"/blog", ""},
-		{"/about", ""},
-		{"/portfolio", ""},
-		{"/feed.xml", ""},
+		{"/", latestPostDate},
+		{"/blog", latestPostDate},
+		{"/about", latestPostDate},
+		{"/portfolio", latestPostDate},
+		{"/feed.xml", latestPostDate},
 	}
 	for _, post := range posts {
 		entries = append(entries, struct{ path, lastmod string }{"/blog/" + post.Slug, post.DateISO})
