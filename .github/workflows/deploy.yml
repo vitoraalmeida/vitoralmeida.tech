@@ -47,6 +47,7 @@ jobs:
       - name: Build OCI image
         run: |
           podman build \
+            --build-arg NOINDEX=1 \
             -t "ghcr.io/vitoraalmeida/vitoralmeida.tech:${{ github.sha }}" \
             .
 

@@ -16,6 +16,7 @@ clean:
 NOINDEX ?= 0
 
 build:
+	./scripts/optimize_assets.sh
 	go run ./cmd/sitegen build \
 		--content ./content \
 		--templates ./templates \

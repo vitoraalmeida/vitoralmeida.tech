@@ -1,0 +1,7 @@
+.git
+dist
+.tmp
+__pycache__
+*.pyc
+src
+content/posts/*/assets/*.webp
