@@ -34,7 +34,7 @@ func TestLoadPostsOrdersAndBuildsSlug(t *testing.T) {
 }
 
 func TestRenderMarkdownBuildsNestedTableOfContents(t *testing.T) {
-	content, tableOfContents := renderMarkdown([]byte("## First heading\n\n### Detail\n\n## First heading\n"))
+	content, tableOfContents := renderMarkdown([]byte("## First heading\n\n### Detail\n\n## First heading\n"), "")
 	for _, fragment := range []string{
 		`<h2 id="first-heading">First heading<a class="heading-permalink" href="#first-heading" aria-label="Link permanente para First heading">#</a></h2>`,
 		`<h3 id="detail">Detail<a class="heading-permalink" href="#detail" aria-label="Link permanente para Detail">#</a></h3>`,
@@ -59,7 +59,7 @@ func TestRenderMarkdownBuildsNestedTableOfContents(t *testing.T) {
 }
 
 func TestRenderMarkdownOmitsShortTableOfContents(t *testing.T) {
-	_, tableOfContents := renderMarkdown([]byte("## First heading\n\n## Second heading\n"))
+	_, tableOfContents := renderMarkdown([]byte("## First heading\n\n## Second heading\n"), "")
 	if tableOfContents != nil {
 		t.Fatalf("renderMarkdown() TOC = %#v, want nil", tableOfContents)
 	}

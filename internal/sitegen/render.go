@@ -161,9 +161,11 @@ func pageStructuredData(kind, title, description, url, dateISO string) template.
 		return ""
 	}
 	author := map[string]any{
-		"@type": "Person",
-		"name":  "Vitor Almeida",
-		"url":   siteBaseURL + "/about",
+		"@type":     "Person",
+		"name":      "Vitor Almeida",
+		"url":       siteBaseURL + "/about",
+		"jobTitle":  "Application Security Engineer",
+		"sameAs":    []string{"https://github.com/vitoraalmeida", "https://www.linkedin.com/in/vitoralmeida00/"},
 	}
 	var schema map[string]any
 	switch kind {
@@ -175,6 +177,11 @@ func pageStructuredData(kind, title, description, url, dateISO string) template.
 			"url":        url,
 			"inLanguage": "pt-BR",
 			"author":     author,
+			"potentialAction": map[string]any{
+				"@type":       "SearchAction",
+				"target":      siteBaseURL + "/?q={search_term_string}",
+				"query-input": "required name=search_term_string",
+			},
 		}
 	case "article":
 		schema = map[string]any{
@@ -186,6 +193,7 @@ func pageStructuredData(kind, title, description, url, dateISO string) template.
 			"inLanguage":       "pt-BR",
 			"author":           author,
 			"publisher":        author,
+			"image":            siteBaseURL + "/og-image.png",
 			"mainEntityOfPage": map[string]any{"@type": "WebPage", "@id": url},
 		}
 		if dateISO != "" {

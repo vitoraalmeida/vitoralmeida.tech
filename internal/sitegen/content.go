@@ -4,6 +4,10 @@ import (
 	"fmt"
 	"html"
 	"html/template"
+	"image"
+	_ "image/gif"
+	_ "image/jpeg"
+	_ "image/png"
 	"io/fs"
 	"os"
 	"path/filepath"
@@ -103,7 +107,7 @@ func loadPost(postsRoot string, entry fs.DirEntry) (Post, error) {
 	if date, err := time.Parse("02/01/2006", metadata.Date); err == nil {
 		dateISO = date.Format("2006-01-02")
 	}
-	content, tableOfContents := renderMarkdown(markdown)
+	content, tableOfContents := renderMarkdown(markdown, assetsDir)
 
 	return Post{
 		Title:           metadata.Title,
@@ -122,7 +126,8 @@ func loadPost(postsRoot string, entry fs.DirEntry) (Post, error) {
 // renderMarkdown converte Markdown em HTML com blackfriday e depois aplica as
 // transformações de artigo: imagens isoladas viram figure, imagens subsequentes
 // recebem lazy loading, headings ganham permalink e um TOC é construído.
-func renderMarkdown(markdown []byte) (template.HTML, []TOCItem) {
+// Dimensões de imagens são injetadas quando os arquivos existem em assetsDir.
+func renderMarkdown(markdown []byte, assetsDir string) (template.HTML, []TOCItem) {
 	htmlFlags := blackfriday.HTML_USE_XHTML |
 		blackfriday.HTML_USE_SMARTYPANTS |
 		blackfriday.HTML_SMARTYPANTS_FRACTIONS |
@@ -145,6 +150,7 @@ func renderMarkdown(markdown []byte) (template.HTML, []TOCItem) {
 		return `<figure class="article-figure">` + matches[1] +
 			`<figcaption class="article-figure__caption">` + matches[2] + `</figcaption></figure>`
 	})
+	rendered = addImageDimensions(rendered, assetsDir)
 	rendered = addLazyLoadingToImages(rendered)
 	tableOfContents := buildTableOfContents(rendered)
 	rendered = addHeadingPermalinks(rendered)
@@ -169,6 +175,58 @@ func addLazyLoadingToImages(rendered string) string {
 		}
 		return strings.TrimRight(img[:index], " ") + ` loading="lazy"` + img[index:]
 	})
+}
+
+// addImageDimensions injeta width e height nas tags img quando o arquivo
+// existe no diretório de assets, evitando layout shift (CLS).
+func addImageDimensions(rendered string, assetsDir string) string {
+	if assetsDir == "" {
+		return rendered
+	}
+	return imgTagPattern.ReplaceAllStringFunc(rendered, func(img string) string {
+		if strings.Contains(img, "width=") && strings.Contains(img, "height=") {
+			return img
+		}
+		srcMatch := regexp.MustCompile(`src="([^"]+)"`).FindStringSubmatch(img)
+		if len(srcMatch) < 2 {
+			return img
+		}
+		src := srcMatch[1]
+		if !strings.HasPrefix(src, "/public/posts/") {
+			return img
+		}
+		filename := strings.TrimPrefix(src, "/public/posts/")
+		parts := strings.SplitN(filename, "/", 2)
+		if len(parts) != 2 {
+			return img
+		}
+		imagePath := filepath.Join(assetsDir, parts[1])
+		width, height, err := getImageDimensions(imagePath)
+		if err != nil {
+			return img
+		}
+		index := strings.LastIndex(img, "/>")
+		if index < 0 {
+			return img
+		}
+		return strings.TrimRight(img[:index], " ") +
+			fmt.Sprintf(` width="%d" height="%d"`, width, height) + img[index:]
+	})
+}
+
+// getImageDimensions lê as dimensões de um arquivo de imagem, retornando
+// erro se o arquivo não existir ou não for um formato suportado.
+func getImageDimensions(path string) (int, int, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return 0, 0, err
+	}
+	defer file.Close()
+	config, _, err := image.DecodeConfig(file)
+	if err != nil {
+		return 0, 0, err
+	}
+	return config.Width, config.Height, nil
 }
 
 // buildTableOfContents extrai os headings h2/h3 do HTML, aninhando h3 sob o
