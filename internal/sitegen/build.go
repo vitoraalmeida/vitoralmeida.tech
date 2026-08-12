@@ -13,6 +13,7 @@ type Config struct {
 	TemplatesDir string
 	StaticDir    string
 	OutputDir    string
+	NoIndex      bool
 }
 
 // Build gera e valida o site fora do destino final para que uma falha não
@@ -37,7 +38,7 @@ func Build(config Config) error {
 	}
 	defer os.RemoveAll(temporary)
 
-	if err := renderSite(config.TemplatesDir, temporary, posts); err != nil {
+	if err := renderSite(config.TemplatesDir, temporary, posts, config.NoIndex); err != nil {
 		return err
 	}
 	if err := CopyStatic(config.StaticDir, temporary); err != nil {
@@ -107,6 +108,7 @@ func normalizeConfig(config Config) (Config, error) {
 		TemplatesDir: filepath.Clean(templatesDir),
 		StaticDir:    filepath.Clean(staticDir),
 		OutputDir:    filepath.Clean(outputDir),
+		NoIndex:      config.NoIndex,
 	}, nil
 }
 

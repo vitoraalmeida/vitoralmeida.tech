@@ -24,7 +24,8 @@ func TestLoadPostsOrdersAndBuildsSlug(t *testing.T) {
 	content := string(posts[1].Content)
 	for _, fragment := range []string{
 		`<figure class="article-figure">`,
-		`<img src="/public/posts/hello/diagram.png" alt="Diagram" />`,
+		`<picture><source type="image/webp" srcset="/public/posts/hello/diagram-480w.webp 480w, /public/posts/hello/diagram-800w.webp 800w" sizes="(max-width: 700px) 100vw, 70ch" /><img src="/public/posts/hello/diagram.png" alt="Diagram" fetchpriority="high"/></picture>`,
+		`<img src="/public/posts/hello/hero.png" alt="Hero" loading="lazy"/>`,
 		`<figcaption class="article-figure__caption">Diagram</figcaption>`,
 	} {
 		if !strings.Contains(content, fragment) {
@@ -34,7 +35,7 @@ func TestLoadPostsOrdersAndBuildsSlug(t *testing.T) {
 }
 
 func TestRenderMarkdownBuildsNestedTableOfContents(t *testing.T) {
-	content, tableOfContents := renderMarkdown([]byte("## First heading\n\n### Detail\n\n## First heading\n"))
+	content, tableOfContents := renderMarkdown([]byte("## First heading\n\n### Detail\n\n## First heading\n"), "")
 	for _, fragment := range []string{
 		`<h2 id="first-heading">First heading<a class="heading-permalink" href="#first-heading" aria-label="Link permanente para First heading">#</a></h2>`,
 		`<h3 id="detail">Detail<a class="heading-permalink" href="#detail" aria-label="Link permanente para Detail">#</a></h3>`,
@@ -59,7 +60,7 @@ func TestRenderMarkdownBuildsNestedTableOfContents(t *testing.T) {
 }
 
 func TestRenderMarkdownOmitsShortTableOfContents(t *testing.T) {
-	_, tableOfContents := renderMarkdown([]byte("## First heading\n\n## Second heading\n"))
+	_, tableOfContents := renderMarkdown([]byte("## First heading\n\n## Second heading\n"), "")
 	if tableOfContents != nil {
 		t.Fatalf("renderMarkdown() TOC = %#v, want nil", tableOfContents)
 	}

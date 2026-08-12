@@ -22,6 +22,7 @@ type Page struct {
 	Type           string
 	DateISO        string
 	OGImage        string
+	NoIndex        bool
 	StructuredData template.HTML
 }
 
@@ -42,8 +43,9 @@ type PostPage struct {
 }
 
 // renderSite gera todo o HTML do site (páginas fixas, posts, RSS e sitemap)
-// no diretório de saída, usando os posts já carregados e ordenados.
-func renderSite(templatesDir, output string, posts []Post) error {
+// no diretório de saída, usando os posts já carregados e ordenados. Quando
+// noIndex é verdadeiro, todas as páginas recebem a meta tag noindex.
+func renderSite(templatesDir, output string, posts []Post, noIndex bool) error {
 	listing, err := renderTemplate(filepath.Join(templatesDir, "post-listing.gohtml"), posts)
 	if err != nil {
 		return err
@@ -51,7 +53,7 @@ func renderSite(templatesDir, output string, posts []Post) error {
 
 	pages := []struct {
 		name, title, description, activeSection, canonical, kind string
-		nested                                                    template.HTML
+		nested                                                   template.HTML
 	}{
 		{"index", "Vitor Almeida", "Engenheiro de segurança da informação. Compartilho artigos sobre tecnologia, segurança de servidores, privacidade e desenvolvimento.", "home", "/", "website", listing},
 		{"blog", "Vitor Almeida - Blog", "Artigos sobre tecnologia, segurança da informação, privacidade e desenvolvimento.", "blog", "/blog", "webpage", listing},
@@ -72,7 +74,7 @@ func renderSite(templatesDir, output string, posts []Post) error {
 		}
 		if err := RenderPage(filepath.Join(templatesDir, "base-template.gohtml"), Page{
 			Title: page.title, Description: page.description, ActiveSection: page.activeSection, Content: content,
-			Canonical: canonical, Type: page.kind, OGImage: ogImage,
+			Canonical: canonical, Type: page.kind, OGImage: ogImage, NoIndex: noIndex,
 			StructuredData: pageStructuredData(page.kind, page.title, page.description, canonical, ""),
 		}, filepath.Join(output, page.name+".html")); err != nil {
 			return err
@@ -107,6 +109,7 @@ func renderSite(templatesDir, output string, posts []Post) error {
 		if err := RenderPage(filepath.Join(templatesDir, "base-template.gohtml"), Page{
 			Title: post.Title, Description: post.Description, ActiveSection: "blog", Content: content,
 			Canonical: canonical, Type: "article", DateISO: post.DateISO, OGImage: siteBaseURL + "/og-image.png",
+			NoIndex:        noIndex,
 			StructuredData: pageStructuredData("article", post.Title, post.Description, canonical, post.DateISO),
 		}, filepath.Join(blogDir, post.Slug+".html")); err != nil {
 			return err
@@ -133,20 +136,25 @@ func renderTemplate(path string, data any) (template.HTML, error) {
 	return template.HTML(output.String()), nil // Repository templates are trusted HTML.
 }
 
-// RenderPage monta uma página completa a partir do template base e grava o
-// resultado no destino, retornando erro contextual em cada etapa da escrita.
+// RenderPage monta uma página completa a partir do template base, minifica o
+// HTML resultante e grava o arquivo no destino, retornando erro contextual em
+// cada etapa da escrita.
 func RenderPage(baseTemplate string, page Page, destination string) error {
 	tmpl, err := template.ParseFiles(baseTemplate)
 	if err != nil {
 		return fmt.Errorf("parse base template %q: %w", baseTemplate, err)
 	}
+	var buffer bytes.Buffer
+	if err := tmpl.Execute(&buffer, page); err != nil {
+		return fmt.Errorf("render page %q: %w", destination, err)
+	}
 	file, err := os.Create(destination)
 	if err != nil {
 		return fmt.Errorf("create page %q: %w", destination, err)
 	}
-	if err := tmpl.Execute(file, page); err != nil {
+	if _, err := file.Write(minifyHTML(buffer.Bytes())); err != nil {
 		_ = file.Close()
-		return fmt.Errorf("render page %q: %w", destination, err)
+		return fmt.Errorf("write page %q: %w", destination, err)
 	}
 	if err := file.Close(); err != nil {
 		return fmt.Errorf("close page %q: %w", destination, err)
@@ -161,9 +169,11 @@ func pageStructuredData(kind, title, description, url, dateISO string) template.
 		return ""
 	}
 	author := map[string]any{
-		"@type": "Person",
-		"name":  "Vitor Almeida",
-		"url":   siteBaseURL + "/about",
+		"@type":    "Person",
+		"name":     "Vitor Almeida",
+		"url":      siteBaseURL + "/about",
+		"jobTitle": "Application Security Engineer",
+		"sameAs":   []string{"https://github.com/vitoraalmeida", "https://www.linkedin.com/in/vitoralmeida00/"},
 	}
 	var schema map[string]any
 	switch kind {
@@ -175,6 +185,11 @@ func pageStructuredData(kind, title, description, url, dateISO string) template.
 			"url":        url,
 			"inLanguage": "pt-BR",
 			"author":     author,
+			"potentialAction": map[string]any{
+				"@type":       "SearchAction",
+				"target":      siteBaseURL + "/?q={search_term_string}",
+				"query-input": "required name=search_term_string",
+			},
 		}
 	case "article":
 		schema = map[string]any{
@@ -186,6 +201,7 @@ func pageStructuredData(kind, title, description, url, dateISO string) template.
 			"inLanguage":       "pt-BR",
 			"author":           author,
 			"publisher":        author,
+			"image":            siteBaseURL + "/og-image.png",
 			"mainEntityOfPage": map[string]any{"@type": "WebPage", "@id": url},
 		}
 		if dateISO != "" {
@@ -210,14 +226,18 @@ func pageStructuredData(kind, title, description, url, dateISO string) template.
 }
 
 // writeSitemap gera o sitemap.xml com as páginas fixas e todos os posts,
-// usando a data ISO do post como lastmod quando disponível.
+// usando a data ISO do post mais recente como lastmod para páginas dinâmicas.
 func writeSitemap(output string, posts []Post) error {
+	latestPostDate := ""
+	if len(posts) > 0 {
+		latestPostDate = posts[0].DateISO
+	}
 	entries := []struct{ path, lastmod string }{
-		{"/", ""},
-		{"/blog", ""},
-		{"/about", ""},
-		{"/portfolio", ""},
-		{"/feed.xml", ""},
+		{"/", latestPostDate},
+		{"/blog", latestPostDate},
+		{"/about", latestPostDate},
+		{"/portfolio", latestPostDate},
+		{"/feed.xml", latestPostDate},
 	}
 	for _, post := range posts {
 		entries = append(entries, struct{ path, lastmod string }{"/blog/" + post.Slug, post.DateISO})

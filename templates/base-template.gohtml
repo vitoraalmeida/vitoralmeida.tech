@@ -3,11 +3,26 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    {{ if .NoIndex }}<meta name="robots" content="noindex, nofollow" />{{ end }}
     <meta name="author" content="Vitor Almeida" />
     <meta name="description" content="{{ .Description }}" />
     <link
       rel="preload"
       href="/fonts/ibm-plex-mono.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/space-mono-regular.woff2"
+      as="font"
+      type="font/woff2"
+      crossorigin
+    />
+    <link
+      rel="preload"
+      href="/fonts/space-mono-bold.woff2"
       as="font"
       type="font/woff2"
       crossorigin

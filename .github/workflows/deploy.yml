@@ -39,7 +39,7 @@ jobs:
         run: make check
 
       - name: Build site
-        run: make build
+        run: NOINDEX=1 make build
 
       - name: Verify site artifact
         run: make verify
@@ -47,6 +47,7 @@ jobs:
       - name: Build OCI image
         run: |
           podman build \
+            --build-arg NOINDEX=1 \
             -t "ghcr.io/vitoraalmeida/vitoralmeida.tech:${{ github.sha }}" \
             .
 

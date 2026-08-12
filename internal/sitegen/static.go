@@ -6,6 +6,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 )
 
 // CopyStatic copia recursivamente os arquivos estáticos (CSS, fontes, imagens)
@@ -56,7 +57,8 @@ func copyDirectoryContents(source, destination string) error {
 }
 
 // copyFile copia o conteúdo de um arquivo para outro preservando as permissões
-// e fechando ambos os handles mesmo em caso de erro.
+// e fechando ambos os handles mesmo em caso de erro. Arquivos CSS são
+// minificados na cópia; os demais são copiados byte a byte.
 func copyFile(source, destination string, mode fs.FileMode) error {
 	input, err := os.Open(source)
 	if err != nil {
@@ -67,7 +69,19 @@ func copyFile(source, destination string, mode fs.FileMode) error {
 		_ = input.Close()
 		return err
 	}
-	if _, err := io.Copy(output, input); err != nil {
+	if strings.EqualFold(filepath.Ext(source), ".css") {
+		content, err := io.ReadAll(input)
+		if err != nil {
+			_ = input.Close()
+			_ = output.Close()
+			return err
+		}
+		if _, err := output.Write(minifyCSS(content)); err != nil {
+			_ = input.Close()
+			_ = output.Close()
+			return err
+		}
+	} else if _, err := io.Copy(output, input); err != nil {
 		_ = input.Close()
 		_ = output.Close()
 		return err

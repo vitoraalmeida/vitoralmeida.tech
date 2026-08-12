@@ -13,12 +13,16 @@ check:
 clean:
 	rm -rf dist
 
+NOINDEX ?= 0
+
 build:
+	./scripts/optimize_assets.sh
 	go run ./cmd/sitegen build \
 		--content ./content \
 		--templates ./templates \
 		--static ./static \
-		--output ./dist
+		--output ./dist \
+		$(if $(filter 1,$(NOINDEX)),--noindex,)
 
 verify:
 	test -f dist/index.html

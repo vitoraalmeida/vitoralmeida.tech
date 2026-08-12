@@ -132,6 +132,27 @@ func TestBuildFailurePreservesExistingOutput(t *testing.T) {
 	}
 }
 
+func TestBuildNoIndexAddsRobotsMeta(t *testing.T) {
+	output := filepath.Join(t.TempDir(), "dist")
+	config := fixtureConfig(output)
+	config.NoIndex = true
+	if err := Build(config); err != nil {
+		t.Fatalf("Build() error = %v", err)
+	}
+
+	for _, name := range []string{"index.html", "blog/hello.html"} {
+		page := readTestFile(t, filepath.Join(output, filepath.FromSlash(name)))
+		for _, want := range []string{
+			`<meta name="robots" content="noindex, nofollow" />`,
+			`<link rel="canonical" href="https://vitoralmeida.tech`,
+		} {
+			if !strings.Contains(page, want) {
+				t.Errorf("%s missing %q", name, want)
+			}
+		}
+	}
+}
+
 func TestCheckRejectsOverlappingOutput(t *testing.T) {
 	config := fixtureConfig(filepath.Join("testdata", "site", "static", "dist"))
 	err := Check(config)
