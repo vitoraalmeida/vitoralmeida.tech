@@ -4,6 +4,7 @@
   --color-text-strong: #c8cacb;
   --color-text-muted: #808080;
   --color-accent: #00d992;
+  --color-accent-muted: color-mix(in srgb, var(--color-accent) 40%, var(--color-background));
   --color-surface: #0b181b;
   --color-border: #1d3a38;
   color-scheme: dark;
@@ -383,7 +384,7 @@ ul {
   color: inherit;
   text-decoration: none;
   display: block;
-  border-left: 3px solid transparent;
+  border-left: 3px solid var(--color-accent-muted);
   padding: 0.75rem 1rem;
   transition:
     background-color 0.2s ease,
