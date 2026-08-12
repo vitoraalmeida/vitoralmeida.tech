@@ -22,6 +22,7 @@ type Page struct {
 	Type           string
 	DateISO        string
 	OGImage        string
+	NoIndex        bool
 	StructuredData template.HTML
 }
 
@@ -42,8 +43,9 @@ type PostPage struct {
 }
 
 // renderSite gera todo o HTML do site (páginas fixas, posts, RSS e sitemap)
-// no diretório de saída, usando os posts já carregados e ordenados.
-func renderSite(templatesDir, output string, posts []Post) error {
+// no diretório de saída, usando os posts já carregados e ordenados. Quando
+// noIndex é verdadeiro, todas as páginas recebem a meta tag noindex.
+func renderSite(templatesDir, output string, posts []Post, noIndex bool) error {
 	listing, err := renderTemplate(filepath.Join(templatesDir, "post-listing.gohtml"), posts)
 	if err != nil {
 		return err
@@ -72,7 +74,7 @@ func renderSite(templatesDir, output string, posts []Post) error {
 		}
 		if err := RenderPage(filepath.Join(templatesDir, "base-template.gohtml"), Page{
 			Title: page.title, Description: page.description, ActiveSection: page.activeSection, Content: content,
-			Canonical: canonical, Type: page.kind, OGImage: ogImage,
+			Canonical: canonical, Type: page.kind, OGImage: ogImage, NoIndex: noIndex,
 			StructuredData: pageStructuredData(page.kind, page.title, page.description, canonical, ""),
 		}, filepath.Join(output, page.name+".html")); err != nil {
 			return err
@@ -107,6 +109,7 @@ func renderSite(templatesDir, output string, posts []Post) error {
 		if err := RenderPage(filepath.Join(templatesDir, "base-template.gohtml"), Page{
 			Title: post.Title, Description: post.Description, ActiveSection: "blog", Content: content,
 			Canonical: canonical, Type: "article", DateISO: post.DateISO, OGImage: siteBaseURL + "/og-image.png",
+			NoIndex: noIndex,
 			StructuredData: pageStructuredData("article", post.Title, post.Description, canonical, post.DateISO),
 		}, filepath.Join(blogDir, post.Slug+".html")); err != nil {
 			return err

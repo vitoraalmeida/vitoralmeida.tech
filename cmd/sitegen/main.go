@@ -48,6 +48,7 @@ func runConfiguredCommand(command string, args []string, execute func(sitegen.Co
 	flags.StringVar(&config.TemplatesDir, "templates", "./templates", "templates directory")
 	flags.StringVar(&config.StaticDir, "static", "./static", "static files directory")
 	flags.StringVar(&config.OutputDir, "output", "./dist", "output directory")
+	flags.BoolVar(&config.NoIndex, "noindex", false, "add robots noindex meta to every page")
 	if err := flags.Parse(args); err != nil {
 		return err
 	}
