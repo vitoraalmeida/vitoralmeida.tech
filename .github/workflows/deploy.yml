@@ -39,7 +39,7 @@ jobs:
         run: make check
 
       - name: Build site
-        run: make build
+        run: NOINDEX=1 make build
 
       - name: Verify site artifact
         run: make verify
