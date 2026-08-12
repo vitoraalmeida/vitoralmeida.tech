@@ -151,6 +151,7 @@ func renderMarkdown(markdown []byte, assetsDir string) (template.HTML, []TOCItem
 			`<figcaption class="article-figure__caption">` + matches[2] + `</figcaption></figure>`
 	})
 	rendered = addImageDimensions(rendered, assetsDir)
+	rendered = wrapWithPicture(rendered, assetsDir)
 	rendered = addLazyLoadingToImages(rendered)
 	tableOfContents := buildTableOfContents(rendered)
 	rendered = addHeadingPermalinks(rendered)
@@ -158,12 +159,18 @@ func renderMarkdown(markdown []byte, assetsDir string) (template.HTML, []TOCItem
 }
 
 // addLazyLoadingToImages adiciona loading="lazy" a todas as imagens exceto a
-// primeira do artigo, preservando a imagem acima da dobra para o LCP.
+// primeira do artigo, preservando a imagem acima da dobra para o LCP. A
+// primeira imagem também recebe fetchpriority="high" para antecipar o LCP.
 func addLazyLoadingToImages(rendered string) string {
 	firstImage := true
 	return imgTagPattern.ReplaceAllStringFunc(rendered, func(img string) string {
 		if firstImage {
 			firstImage = false
+			if !strings.Contains(img, "fetchpriority=") {
+				if index := strings.LastIndex(img, "/>"); index >= 0 {
+					img = strings.TrimRight(img[:index], " ") + ` fetchpriority="high"` + img[index:]
+				}
+			}
 			return img
 		}
 		if strings.Contains(img, "loading=") {
@@ -175,6 +182,61 @@ func addLazyLoadingToImages(rendered string) string {
 		}
 		return strings.TrimRight(img[:index], " ") + ` loading="lazy"` + img[index:]
 	})
+}
+
+// responsiveWidths lista as larguras alvo das variantes responsivas WebP
+// geradas quando a imagem original é maior que cada largura.
+var responsiveWidths = []int{480, 800, 1280}
+
+// wrapWithPicture converte cada <img> em <picture> com um <source> WebP quando
+// as variantes otimizadas existem no diretório de assets do post; caso
+// contrário mantém o <img> original como fallback para navegadores antigos.
+func wrapWithPicture(rendered string, assetsDir string) string {
+	if assetsDir == "" {
+		return rendered
+	}
+	return imgTagPattern.ReplaceAllStringFunc(rendered, func(img string) string {
+		ok, source := webpSource(img, assetsDir)
+		if !ok {
+			return img
+		}
+		return "<picture>" + source + img + "</picture>"
+	})
+}
+
+// webpSource monta a tag <source type="image/webp"> para um <img> cujo caminho
+// é /public/posts/{slug}/{resto}, usando srcset responsivo quando as variantes
+// de largura existem. Retorna false quando não há variante WebP disponível.
+func webpSource(img string, assetsDir string) (bool, string) {
+	srcMatch := regexp.MustCompile(`src="([^"]+)"`).FindStringSubmatch(img)
+	if len(srcMatch) < 2 {
+		return false, ""
+	}
+	filename := strings.TrimPrefix(srcMatch[1], "/public/posts/")
+	parts := strings.SplitN(filename, "/", 2)
+	if len(parts) != 2 {
+		return false, ""
+	}
+	dir, base := filepath.Split(parts[1])
+	stem := strings.TrimSuffix(base, filepath.Ext(base))
+	baseDir := filepath.Join(assetsDir, dir)
+	dirURL := "/public/posts/" + parts[0] + "/" + dir
+
+	if _, err := os.Stat(filepath.Join(baseDir, stem+".webp")); err != nil {
+		return false, ""
+	}
+	candidates := make([]string, 0, len(responsiveWidths))
+	for _, width := range responsiveWidths {
+		name := fmt.Sprintf("%s-%dw.webp", stem, width)
+		if info, err := os.Stat(filepath.Join(baseDir, name)); err == nil && info.Mode().IsRegular() {
+			candidates = append(candidates, fmt.Sprintf("%s%s %dw", dirURL, name, width))
+		}
+	}
+	if len(candidates) > 0 {
+		return true, `<source type="image/webp" srcset="` + strings.Join(candidates, ", ") +
+			`" sizes="(max-width: 700px) 100vw, 70ch" />`
+	}
+	return true, `<source type="image/webp" srcset="` + dirURL + stem + `.webp" />`
 }
 
 // addImageDimensions injeta width e height nas tags img quando o arquivo

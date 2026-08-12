@@ -53,7 +53,7 @@ func renderSite(templatesDir, output string, posts []Post, noIndex bool) error {
 
 	pages := []struct {
 		name, title, description, activeSection, canonical, kind string
-		nested                                                    template.HTML
+		nested                                                   template.HTML
 	}{
 		{"index", "Vitor Almeida", "Engenheiro de segurança da informação. Compartilho artigos sobre tecnologia, segurança de servidores, privacidade e desenvolvimento.", "home", "/", "website", listing},
 		{"blog", "Vitor Almeida - Blog", "Artigos sobre tecnologia, segurança da informação, privacidade e desenvolvimento.", "blog", "/blog", "webpage", listing},
@@ -109,7 +109,7 @@ func renderSite(templatesDir, output string, posts []Post, noIndex bool) error {
 		if err := RenderPage(filepath.Join(templatesDir, "base-template.gohtml"), Page{
 			Title: post.Title, Description: post.Description, ActiveSection: "blog", Content: content,
 			Canonical: canonical, Type: "article", DateISO: post.DateISO, OGImage: siteBaseURL + "/og-image.png",
-			NoIndex: noIndex,
+			NoIndex:        noIndex,
 			StructuredData: pageStructuredData("article", post.Title, post.Description, canonical, post.DateISO),
 		}, filepath.Join(blogDir, post.Slug+".html")); err != nil {
 			return err
@@ -136,20 +136,25 @@ func renderTemplate(path string, data any) (template.HTML, error) {
 	return template.HTML(output.String()), nil // Repository templates are trusted HTML.
 }
 
-// RenderPage monta uma página completa a partir do template base e grava o
-// resultado no destino, retornando erro contextual em cada etapa da escrita.
+// RenderPage monta uma página completa a partir do template base, minifica o
+// HTML resultante e grava o arquivo no destino, retornando erro contextual em
+// cada etapa da escrita.
 func RenderPage(baseTemplate string, page Page, destination string) error {
 	tmpl, err := template.ParseFiles(baseTemplate)
 	if err != nil {
 		return fmt.Errorf("parse base template %q: %w", baseTemplate, err)
 	}
+	var buffer bytes.Buffer
+	if err := tmpl.Execute(&buffer, page); err != nil {
+		return fmt.Errorf("render page %q: %w", destination, err)
+	}
 	file, err := os.Create(destination)
 	if err != nil {
 		return fmt.Errorf("create page %q: %w", destination, err)
 	}
-	if err := tmpl.Execute(file, page); err != nil {
+	if _, err := file.Write(minifyHTML(buffer.Bytes())); err != nil {
 		_ = file.Close()
-		return fmt.Errorf("render page %q: %w", destination, err)
+		return fmt.Errorf("write page %q: %w", destination, err)
 	}
 	if err := file.Close(); err != nil {
 		return fmt.Errorf("close page %q: %w", destination, err)
@@ -164,11 +169,11 @@ func pageStructuredData(kind, title, description, url, dateISO string) template.
 		return ""
 	}
 	author := map[string]any{
-		"@type":     "Person",
-		"name":      "Vitor Almeida",
-		"url":       siteBaseURL + "/about",
-		"jobTitle":  "Application Security Engineer",
-		"sameAs":    []string{"https://github.com/vitoraalmeida", "https://www.linkedin.com/in/vitoralmeida00/"},
+		"@type":    "Person",
+		"name":     "Vitor Almeida",
+		"url":      siteBaseURL + "/about",
+		"jobTitle": "Application Security Engineer",
+		"sameAs":   []string{"https://github.com/vitoraalmeida", "https://www.linkedin.com/in/vitoralmeida00/"},
 	}
 	var schema map[string]any
 	switch kind {

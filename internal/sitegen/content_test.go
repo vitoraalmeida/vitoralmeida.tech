@@ -24,7 +24,8 @@ func TestLoadPostsOrdersAndBuildsSlug(t *testing.T) {
 	content := string(posts[1].Content)
 	for _, fragment := range []string{
 		`<figure class="article-figure">`,
-		`<img src="/public/posts/hello/diagram.png" alt="Diagram" />`,
+		`<picture><source type="image/webp" srcset="/public/posts/hello/diagram-480w.webp 480w, /public/posts/hello/diagram-800w.webp 800w" sizes="(max-width: 700px) 100vw, 70ch" /><img src="/public/posts/hello/diagram.png" alt="Diagram" fetchpriority="high"/></picture>`,
+		`<img src="/public/posts/hello/hero.png" alt="Hero" loading="lazy"/>`,
 		`<figcaption class="article-figure__caption">Diagram</figcaption>`,
 	} {
 		if !strings.Contains(content, fragment) {
