@@ -401,6 +401,11 @@ ul {
   color: var(--color-accent);
 }
 
+.post-short__link:hover .post-short__date,
+.post-short__link:hover .post-short__subtitle {
+  color: var(--color-text-strong);
+}
+
 .post-short__subtitle {
   font-size: var(--font-md);
   letter-spacing: -0.09px;
