@@ -732,6 +732,7 @@ ul {
 
 .post-meta__subtitle {
   margin-top: 0.1rem;
+  font-family: var(--font-display);
   font-size: var(--font-md);
 }
 
