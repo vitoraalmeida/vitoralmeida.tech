@@ -93,6 +93,14 @@ main {
 
 a {
   color: var(--color-accent);
+  transition:
+    text-decoration-color 0.2s ease,
+    text-decoration-thickness 0.2s ease;
+}
+
+a:hover {
+  text-decoration-thickness: 0.16em;
+  text-underline-offset: 0.24em;
 }
 
 :focus-visible {
@@ -299,6 +307,14 @@ ul {
   color: var(--color-accent);
 }
 
+.header__logo-link:hover,
+.header__link:hover {
+  color: var(--color-accent);
+  text-decoration-line: underline;
+  text-decoration-thickness: 0.14em;
+  text-underline-offset: 0.2em;
+}
+
 .header__menu {
   display: flex;
   flex-wrap: nowrap;
@@ -446,6 +462,13 @@ ul {
   text-decoration: underline;
   text-decoration-color: var(--color-accent);
   margin-left: 1rem;
+}
+
+.contact-list__link:hover,
+.table-of-contents__link:hover {
+  color: var(--color-accent);
+  text-decoration-thickness: 0.16em;
+  text-underline-offset: 0.24em;
 }
 
 /* ============================================
